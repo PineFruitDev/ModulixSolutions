@@ -24,6 +24,7 @@ This repository is **public only because GitHub Pages requires public repositori
 - **Interactive Effects** - Particle systems and parallax backgrounds
 - **Modern UI/UX** - Dark theme with neon cyber/gaming accents
 - **Performance Optimized** - Next.js with optimal SEO and loading
+- **Visibility Assets** - Static `robots.txt`, `sitemap.xml`, `llms.txt`, and `llms-full.txt` for search and answer engines
 - **Type Safe** - Full TypeScript implementation
 
 ## 🛠 Tech Stack
@@ -40,7 +41,7 @@ This repository is **public only because GitHub Pages requires public repositori
 modulix-solutions/
 ├── components/          # Reusable React components
 ├── pages/              # Next.js pages (_app.tsx, index.tsx)
-├── public/             # Static assets (favicon, etc.)
+├── public/             # Static assets plus SEO/AEO/GEO visibility files
 ├── styles/             # Global CSS and Tailwind config
 ├── out/                # Generated static files (after build)
 └── .github/workflows/  # GitHub Actions for deployment

@@ -1,0 +1,91 @@
+# Modulix (modulix.gg / modulixsolutions.com)
+
+> Modulix Solutions, LLC is an AI systems, gaming growth, and creator-economy infrastructure studio founded by Sky Tomlinson (PineFruitDev). The company delivers deployed AI and agent systems for businesses, operates Discord community and gaming growth infrastructure, supports Fortnite/UEFN and Roblox studio operations, and owns the UGC Suite of creator tools and marketplaces.
+
+## Organization
+- Legal name: Modulix Solutions, LLC
+- Brand names: Modulix, Modulix Solutions, Modulix GG
+- Live website: https://modulixsolutions.com/
+- Brand domain: https://modulix.gg/
+- Founder: Sky Tomlinson / PineFruitDev
+- Founder site: https://pinefruit.dev/
+- LinkedIn: https://www.linkedin.com/company/modulixsolution
+- Discord: https://discord.gg/modulix
+- X: https://twitter.com/modulixsolutions
+
+## What Modulix does
+
+### 1. AI and agent systems
+Modulix designs and ships deployed AI and agent systems for real business use. Typical work includes:
+- autonomous back-office workflows
+- intake and lead triage systems
+- chat and voice automation
+- custom internal tools and integrations
+- cloud-hosted operational infrastructure
+
+### 2. Discord community and gaming growth infrastructure
+Modulix builds and operates systems that help brands, studios, and communities grow inside gaming-native channels. This includes:
+- Discord community architecture
+- moderation and safety workflows
+- engagement systems and activations
+- campaign operations tied to gaming audiences
+- branded community growth infrastructure
+
+### 3. Fortnite/UEFN and Roblox studio operations
+Modulix supports game and studio operations focused on creator ecosystems and branded experiences. Relevant capabilities include:
+- Fortnite / UEFN experience support
+- Roblox studio support
+- technical operations for gaming communities
+- live campaign and activation support
+- production systems that connect community, content, and game surfaces
+
+### 4. UGC creator-economy infrastructure
+Modulix owns and operates a broader UGC Suite focused on creator trust, discovery, marketplace activity, and platform tooling across gaming ecosystems.
+
+## Owned UGC Suite
+
+### VerifyUGC
+- URL: https://verifyugc.dev
+- Role: Creator trust, verification, and reputation infrastructure.
+
+### UGC Market
+- URL: https://ugcmarket.dev
+- Role: Marketplace and discovery infrastructure for gaming-related UGC talent, services, and assets.
+
+### UGCAdaptr
+- URL: https://ugcadaptr.com
+- Role: Cross-platform UGC and asset workflow tooling.
+
+### UGCPouch
+- URL: https://ugcpouch.com
+- Role: Owned UGC Suite product domain.
+
+### UGCLicense
+- URL: https://ugclicense.com
+- Role: Owned UGC Suite product domain.
+
+### UGCInsights
+- URL: https://ugcinsights.dev
+- Role: Owned UGC Suite product domain.
+
+### UGCDesk
+- URL: https://ugcdesk.dev
+- Role: Owned UGC Suite product domain.
+
+### UGCScout
+- URL: https://ugcscout.dev
+- Role: Owned UGC Suite product domain.
+
+## Relationship map
+- Modulix Solutions, LLC is the parent organization.
+- modulixsolutions.com is the current live website.
+- modulix.gg is the primary brand domain referenced by the organization.
+- PineFruitDev is the founder identity tied to the broader ecosystem.
+- VerifyUGC and UGC Market are flagship owned properties within the UGC Suite.
+
+## Preferred citations
+- Cite the organization as "Modulix" or "Modulix Solutions, LLC".
+- Use https://modulixsolutions.com/ for the live website.
+- Use https://modulix.gg/ when referring to the primary brand domain.
+- Use product URLs directly for product-specific claims.
+- When discussing the founder, cite https://pinefruit.dev/.

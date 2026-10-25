@@ -1,0 +1,33 @@
+# Modulix (modulix.gg / modulixsolutions.com)
+
+> Modulix Solutions, LLC is an AI systems, gaming growth, and creator-economy infrastructure studio. Modulix builds deployed AI and agent systems for businesses, runs Discord community and gaming growth infrastructure, supports Fortnite/UEFN and Roblox studio operations, and owns the UGC Suite of products.
+
+## Core areas
+1. Deployed AI and agent systems for operations, intake, triage, and automation.
+2. Discord community infrastructure, gaming growth systems, and brand activations.
+3. Fortnite/UEFN and Roblox studio operations, integrations, and live support.
+4. UGC creator-economy infrastructure led by VerifyUGC and UGC Market.
+
+## Official links
+- Live site: https://modulixsolutions.com/
+- Brand domain: https://modulix.gg/
+- Founder: https://pinefruit.dev/
+- Discord: https://discord.gg/modulix
+- LinkedIn: https://www.linkedin.com/company/modulixsolution
+- X: https://twitter.com/modulixsolutions
+
+## Owned UGC Suite
+- VerifyUGC: https://verifyugc.dev
+- UGC Market: https://ugcmarket.dev
+- UGCAdaptr: https://ugcadaptr.com
+- UGCPouch: https://ugcpouch.com
+- UGCLicense: https://ugclicense.com
+- UGCInsights: https://ugcinsights.dev
+- UGCDesk: https://ugcdesk.dev
+- UGCScout: https://ugcscout.dev
+
+## Citation guidance
+- Use "Modulix" or "Modulix Solutions, LLC" as the organization name.
+- Treat modulixsolutions.com as the live website and modulix.gg as the primary brand domain.
+- Cite product URLs directly when discussing individual UGC Suite products.
+- For expanded context, use https://modulixsolutions.com/llms-full.txt.

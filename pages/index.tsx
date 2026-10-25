@@ -347,6 +347,75 @@ export default function Home() {
     { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re gaming natives: Modular, UEFN-savvy solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up.' },
   ];
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://modulixsolutions.com/#organization",
+        "name": "Modulix",
+        "legalName": "Modulix Solutions, LLC",
+        "alternateName": ["Modulix Solutions", "Modulix GG"],
+        "url": "https://modulixsolutions.com",
+        "logo": "https://modulixsolutions.com/modulix-icon.png",
+        "image": "https://modulixsolutions.com/og-image.jpg",
+        "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
+        "sameAs": [
+          "https://modulix.gg",
+          "https://pinefruit.dev",
+          "https://verifyugc.dev",
+          "https://ugcmarket.dev",
+          "https://discord.gg/modulix",
+          "https://twitter.com/modulixsolutions",
+          "https://www.linkedin.com/company/modulixsolution"
+        ],
+        "owns": [
+          {
+            "@type": "SoftwareApplication",
+            "name": "VerifyUGC",
+            "url": "https://verifyugc.dev"
+          },
+          {
+            "@type": "WebApplication",
+            "name": "UGC Market",
+            "url": "https://ugcmarket.dev"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "UGCAdaptr",
+            "url": "https://ugcadaptr.com"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "UGCPouch",
+            "url": "https://ugcpouch.com"
+          }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://modulixsolutions.com/#website",
+        "name": "Modulix Solutions",
+        "url": "https://modulixsolutions.com",
+        "publisher": {
+          "@id": "https://modulixsolutions.com/#organization"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://modulixsolutions.com/#faq",
+        "mainEntity": faqs.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      }
+    ]
+  };
+
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set());
 
   // Handle scroll breakout for reviews
@@ -395,7 +464,7 @@ export default function Home() {
         <meta property="og:url" content="https://modulixsolutions.com" />
         <meta property="og:title" content="Modulix Solutions - Discord Community Management & Gaming Brand Advertising" />
         <meta property="og:description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
-        <meta property="og:image" content="/og-image.jpg" />
+        <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Modulix Solutions" />
@@ -405,34 +474,13 @@ export default function Home() {
         <meta name="twitter:url" content="https://modulixsolutions.com" />
         <meta name="twitter:title" content="Modulix Solutions - Discord Community Management & Gaming Brand Advertising" />
         <meta name="twitter:description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
-        <meta name="twitter:image" content="/og-image.jpg" />
+        <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
 
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Modulix Solutions",
-              "url": "https://modulixsolutions.com",
-              "logo": "https://modulixsolutions.com/logo.png",
-              "description": "Discord community management and gaming brand advertising specialists, offering authentic engagements, UEFN integrations, and community building services.",
-              "foundingDate": "2024",
-              "industry": "Digital Marketing, Gaming, Community Management",
-              "serviceType": ["Discord Advertising", "Community Management", "Gaming Marketing", "UEFN Integration"],
-              "areaServed": "Global",
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "contactType": "Customer Service",
-                "url": "https://modulixsolutions.com#contact"
-              },
-              "sameAs": [
-                "https://discord.gg/modulix",
-                "https://twitter.com/modulixsolutions",
-                "https://www.linkedin.com/company/modulixsolution"
-              ]
-            })
+            __html: JSON.stringify(structuredData)
           }}
         />
       </Head>
