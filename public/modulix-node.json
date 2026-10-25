@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "service": "modulix-solutions",
+  "domain": "modulixsolutions.com",
+  "version": "modulix-foundation/1.1.0",
+  "foundation": "@modulix/foundation@1.1.0",
+  "status": "ok",
+  "foundation_compliant": true,
+  "security_headers": true,
+  "aeo_ready": true,
+  "bnw_theme": true
+}

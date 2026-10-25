@@ -1,0 +1,5 @@
+Contact: mailto:security@pinefruit.dev
+Expires: 2027-10-25T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://modulixsolutions.com/.well-known/security.txt
+Policy: https://modulixsolutions.com/security.txt
