@@ -29,7 +29,7 @@ export default function ContactConfirmed() {
       }
     >
       <p>
-        Your message is with our team and we'll get back to you within 24 hours. We're keen to hear
+        Your message is with our team and we&apos;ll get back to you within 24 hours. We&apos;re keen to hear
         how you want your community to grow, whether that is on Discord, inside a game like Fortnite,
         or wherever else your audience already gathers.
       </p>
