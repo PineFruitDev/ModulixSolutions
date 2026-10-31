@@ -15,9 +15,8 @@ module.exports = {
         'neon-purple': '#A855F7',
       },
       fontFamily: {
-        'logo': ['Lato', 'sans-serif'],
-        'logo-alt': ['Exo', 'sans-serif'],
-        'body': ['Inter', 'sans-serif'],
+        'logo': ['var(--font-lato)', 'sans-serif'],
+        'body': ['var(--font-inter)', 'sans-serif'],
       },
       boxShadow: {
         'neon-purple': '0 0 20px rgba(168, 85, 247, 0.7)',

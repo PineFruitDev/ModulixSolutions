@@ -7,7 +7,8 @@ Use Node 22 and `npm ci`.
 - `npx playwright install chromium`: install the smoke-test browser.
 - `npm run test:smoke`: build the static export and test it on localhost port 3100.
 
-Smoke tests cover desktop and mobile Chromium viewports, homepage sections,
+Unit tests also cover landmarks, named controls, image dimensions, FAQ buttons,
+and the absence of render-blocking font CSS. Smoke tests cover desktop and mobile Chromium viewports, homepage sections,
 contact submission with a synthetic response, confirmation, and the exported
 404 page's return navigation. They block external requests by default and never
 submit a real inquiry. Tracing is disabled to avoid retaining form request data.

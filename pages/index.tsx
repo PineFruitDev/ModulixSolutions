@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
-import { Parallax } from 'react-parallax';
-import { Bot, Network, Users, Target, Palette, TrendingUp, Shield, Settings, MessageCircle, Gamepad2, Star } from 'lucide-react';
+import { Bot, Network, Users, Target, Palette, TrendingUp, Shield, Settings, MessageCircle, Gamepad2 } from 'lucide-react';
 
 import Container from '../components/Container';
 import RowContainer from '../components/RowContainer';
@@ -16,8 +15,6 @@ import ParticleBackground from '../components/ParticleBackground';
 
 export default function Home() {
   const [currentTagline, setCurrentTagline] = useState(0);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [isHoveringTestimonials, setIsHoveringTestimonials] = useState(false);
   const [currentBotFeature, setCurrentBotFeature] = useState(0);
   const [isHoveringBotFeature, setIsHoveringBotFeature] = useState(false);
 
@@ -164,75 +161,6 @@ export default function Home() {
     }
   };
 
-  const services = [
-    [
-      { title: 'Scalable Ad Services', description: 'Automated, intelligent advertising solutions that seamlessly integrate into Discord conversations, delivering authentic engagement at scale.', iconKey: 'Bot', isHeader: true },
-      { title: 'Automated Ads via Bots', description: 'Deploy intelligent bots for seamless, conversation-embedded placements across active servers—delivering high-frequency, authentic exposure that blends effortlessly into daily chats, scaling with minimal oversight.', iconKey: 'Bot' },
-      { title: 'Network Ads Across Servers', description: 'Tap into curated Discord networks for targeted, incentive-aligned visibility; we handle placements, ensuring genuine interactions while sharing success with community owners.', iconKey: 'Network' },
-    ],
-    [
-      { title: 'Managed Campaigns', description: 'End-to-end campaign management with strategic community selection, creative development, and comprehensive execution for maximum impact.', iconKey: 'Target', isHeader: true },
-      { title: 'Tailored Community Selection', description: 'Leverage proprietary insights on interests, demographics, and cultural resonance to match your brand with the perfect servers—predicting performance before launch.', iconKey: 'Target' },
-      { title: 'Immersive Ad Formats', description: 'From sponsored gaming tournaments and explosive giveaways to UGC challenges and bespoke Discord Activities, we craft touchpoints like announcements, pinned events, and chat insertions that feel organic.', iconKey: 'Gamepad2' },
-    ],
-    [
-      { title: 'Bespoke Creative Strategy', description: 'Develop community-first narratives with native visuals and hooks; extend top performers to Reddit and beyond for amplified reach.', iconKey: 'Palette' },
-      { title: 'End-to-End Execution', description: 'Full-cycle management: From brief intake and approvals to flawless rollout and post-campaign debriefs, freeing you to focus on strategy.', iconKey: 'Settings' },
-    ],
-    [
-      { title: 'Comprehensive Analytics', description: 'Real-time dashboards tracking impressions, engagements, conversions, and brand lift—proving ROI with uplift studies included standard.', iconKey: 'TrendingUp' },
-      { title: 'Trusted Brand Safety', description: 'Onboard vetting, AI-moderated environments, and dedicated oversight ensure activations align with platform rules and community vibes.', iconKey: 'Shield' },
-    ],
-    [
-      { title: 'Premium Builds', description: 'Custom server development and management solutions designed for long-term brand presence and community engagement.', iconKey: 'MessageCircle', isHeader: true },
-      { title: 'Custom Community Builds', description: 'Design and launch branded servers as loyalty engines—modular channels, bots, and launch events; opt for full management or trained handover.', iconKey: 'MessageCircle' },
-      { title: 'Moderation & Gaming Integrations', description: '24/7 engagement fueling with events and content; specialize in UEFN tie-ins, weaving brands into interactive game worlds for immersive retention.', iconKey: 'Users' },
-    ],
-  ];
-
-  const testimonials = [
-    {
-      id: 't1',
-      name: 'Sarah Chen',
-      role: 'Community Manager',
-      company: 'Epic Games',
-      content: 'Modulix transformed our Discord presence from a basic chat room into a thriving community ecosystem. Their UEFN integration and custom moderation tools increased user engagement by 340% in just two months.',
-      rating: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-      accentColor: 'cyan'
-    },
-    {
-      id: 't2',
-      name: 'Marcus Rodriguez',
-      role: 'Brand Director',
-      company: 'Riot Games',
-      content: 'The authenticity Modulix brings to Discord advertising is unparalleled. Their bot-driven placements feel natural and conversational, not forced. We saw a 280% uplift in brand sentiment within our gaming community.',
-      rating: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      accentColor: 'purple'
-    },
-    {
-      id: 't3',
-      name: 'Elena Volkov',
-      role: 'VP of Marketing',
-      company: 'Ubisoft',
-      content: 'Modulix\'s end-to-end Discord strategy turned our server into a brand loyalty powerhouse. Their custom server designs and 24/7 moderation created genuine connections that traditional platforms simply can\'t match.',
-      rating: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      accentColor: 'blue'
-    },
-    {
-      id: 't4',
-      name: 'David Kim',
-      role: 'Community Lead',
-      company: 'Discord',
-      content: 'Working with Modulix has been transformative. Their deep understanding of Discord dynamics and innovative approach to community building has set new standards for what\'s possible in platform marketing.',
-      rating: 5,
-      avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-      accentColor: 'purple'
-    }
-  ];
-
   const companies = [
     {
       id: 'readyup',
@@ -324,20 +252,6 @@ export default function Home() {
     },
   ];
 
-  const getAccentColors = (color: string) => {
-    switch (color) {
-      case 'cyan': return { glow: 'hover:shadow-neon-cyan', text: 'text-cyan-400' };
-      case 'blue': return { glow: 'hover:shadow-neon-blue', text: 'text-blue-400' };
-      case 'purple': return { glow: 'hover:shadow-neon-purple', text: 'text-purple-400' };
-      case 'green': return { glow: 'hover:shadow-neon-green', text: 'text-green-400' };
-      case 'orange': return { glow: 'hover:shadow-neon-orange', text: 'text-orange-400' };
-      case 'yellow': return { glow: 'hover:shadow-neon-yellow', text: 'text-yellow-400' };
-      case 'pink': return { glow: 'hover:shadow-neon-pink', text: 'text-pink-400' };
-      case 'red': return { glow: 'hover:shadow-neon-red', text: 'text-red-400' };
-      default: return { glow: 'hover:shadow-neon-gray', text: 'text-gray-400' };
-    }
-  };
-
   const faqs = [
     { question: 'How do you ensure the right community fit for our brand?', answer: 'We map servers using interest profiles, location data, and cultural alignment—drawing from admin insights and content analysis to predict resonance and avoid mismatches.' },
     { question: 'What makes your ad formats stand out in gaming spaces?', answer: 'Beyond static posts, we specialize in interactive spectacles like tournament sponsorships, live giveaways, and UEFN-linked Activities—formats that ignite participation and feel like community events.' },
@@ -416,33 +330,6 @@ export default function Home() {
 
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set());
 
-  // Handle scroll breakout for reviews
-  const handleReviewScroll = (e: React.WheelEvent<HTMLDivElement>) => {
-    const target = e.currentTarget;
-    const { scrollTop, scrollHeight, clientHeight } = target;
-
-    // If we're at the top and scrolling up, or at the bottom and scrolling down, allow page scroll
-    if ((scrollTop === 0 && e.deltaY < 0) || (scrollTop + clientHeight >= scrollHeight && e.deltaY > 0)) {
-      // Don't prevent default - allow page scroll to continue
-      return;
-    }
-
-    // Otherwise, prevent the event from bubbling to page scroll
-    e.stopPropagation();
-  };
-
-
-  // Auto-advance testimonials (for fallback)
-  useEffect(() => {
-    if (isHoveringTestimonials) return;
-
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % (testimonials.length - 1));
-    }, 8000); // Change every 8 seconds
-
-    return () => clearInterval(interval);
-  }, [testimonials.length, isHoveringTestimonials]);
-
   return (
     <>
       <Head>
@@ -492,120 +379,43 @@ export default function Home() {
         </div>
         <Header />
 
-          <main>
+          <main id="main">
             {/* Hero Section */}
-            <SectionWrapper id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-              {/* Black overlay */}
+            <SectionWrapper id="hero" reveal={false} className="min-h-screen flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-black/20 z-0"></div>
                 <div className="min-h-screen flex items-center justify-center">
                   <Container className="py-20">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1.2, staggerChildren: 0.3 }}
-                  className="text-center flex flex-col items-center justify-center min-h-screen"
-                >
-                  {/* Congratulatory Intro */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.1 }}
-                    className="text-lg md:text-xl text-gray-300 font-medium mb-4"
-                  >
+                <div className="text-center flex flex-col items-center justify-center min-h-screen">
+                  <p className="text-lg md:text-xl text-gray-300 font-medium mb-4">
                     Congratulations! You've just stumbled upon...
-                  </motion.p>
+                  </p>
 
-                  {/* H1 - Main Headline */}
-                  <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight"
-                  >
-                    <motion.span
-                      className="gradient-text text-glow"
-                      animate={{ scale: [1, 1.02, 1] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      MODULIX
-                    </motion.span>{' '}
+                  <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
+                    <span className="gradient-text text-glow">MODULIX</span>{' '}
                     <span className="text-white">SOLUTIONS</span>
-                  </motion.h1>
+                  </h1>
 
-
-                  {/* Rotating Taglines */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="h-16 md:h-20 flex items-center justify-center mb-6"
-                  >
-                    <motion.h2
-                      key={currentTagline}
-                      className="text-2xl md:text-3xl lg:text-4xl font-semibold text-white"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.5 }}
-                    >
+                  <div className="h-16 md:h-20 flex items-center justify-center mb-6">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-white">
                       {taglines[currentTagline]}
-                    </motion.h2>
-                  </motion.div>
+                    </h2>
+                  </div>
 
-                  {/* CTA Button */}
-                  {/* Subtitle */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                    className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed"
-                  >
+                  <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
                     Craft authentic, scalable engagements that transform fleeting interactions into enduring brand loyalty empowering gaming studios and brands to own the conversation in the heart of gaming's digital universe.
-                  </motion.p>
+                  </p>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 1.2 }}
-                  >
-                    <Button onClick={scrollToContact} size="lg" className="text-lg px-10 py-5">
-                      Launch Your Campaign
-                    </Button>
-                  </motion.div>
-
-                </motion.div>
+                  <Button onClick={scrollToContact} size="lg" className="text-lg px-10 py-5">
+                    Launch Your Campaign
+                  </Button>
+                </div>
               </Container>
                 </div>
             </SectionWrapper>
 
             {/* About & Value Propositions Section */}
             <SectionWrapper id="about" className="py-16 bg-deeper-blue/60 relative">
-              {/* Background Icon */}
-              <div className="absolute inset-0 pointer-events-none z-[2]" style={{
-                backgroundImage: `url("data:image/svg+xml;base64,${btoa(`
-                  <svg viewBox="0 0 369 431" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="white" d="M123.2097,256.5419c3.3564,1.7799 53.7644,28.8017 56.1421,30.1319c6.3382,2.3372 5.079,2.2875 11.6624,-0.0176c2.5274,-1.2166 43.6758,-25.6452 52.6758,-29.6452c6.5646,-3 11.4212,0.011 11.5849,6c0.0678,2.4821 -0.3991,127.7513 -0.3991,127.7513c0,0 -57.4462,34.3318 -58.3051,34.8516c-0.7469,0.4541 -1.4939,0.9081 -2.2634,1.376c-4.7664,2.779 -8.5079,4.2789 -14.1155,3.2334c-3.8871,-1.6292 -69.2518,-39.3998 -69.2518,-39.3998c0,0 0.7214,-119.6568 0.75,-127.8125c0,-4.5559 6,-9 11.5198,-6.4691zM143.1918,304.2234c0,0 -0.5018,59.7877 -0.5018,63.7877c0.723,2.7111 24,17 31.929,21.4987c12.071,5.5013 7.071,5.5013 18.5639,0.5013c10.5071,-5.7445 29.1747,-19.8304 31.0089,-21.7877c1.196,-4.0046 1,-64 1,-64c0,0 -28.2424,15.0938 -33.5018,17.7877c-7.1107,3.0497 -6.3401,3.2991 -15,0c-8.352,-3.4781 -33.4982,-17.7877 -33.4982,-17.7877z"/>
-                    <path fill="white" d="M299.7864,64.2624c0,0 47.0288,27.2661 49.8263,28.8228c14.6721,8.3242 18.5414,6.9259 18.7414,22.9259c0.1814,2.5997 -0.1478,74.2208 -0.1478,74.2208c0,0 -100.1194,55.3851 -104.1224,56.1388c-10.1567,0.4837 -16.0429,-5.0602 -16.0429,-18.1188c-0.5018,-15.7356 1.1508,-49.0284 1.1508,-49.0284c0,0 -50.2786,-28.2105 -51.0681,-28.665c-3.8749,-2.6776 -5.4519,-5.7952 -6.3342,-10.4639c-1.0812,-3.1249 -1.2068,-13.6738 13.7375,-22.5902c6.7814,-4.1442 94.2595,-53.2419 94.2595,-53.2419zM333.36,170.6384c0,0 3.2625,-2.8544 3.7351,-6.49c0.0935,-1.6544 0.4808,-18.9164 0.6201,-21.7551c-0.2851,-8.6466 -0.0252,-13.0514 -2.8463,-16.8838c-7.7379,-7.4985 -31.6039,-18.3798 -35.6654,-21.0361c-3.2216,-2.0018 -3.7682,-0.81 -6.7734,1.2773c-0.7821,0.5404 -51.2383,33.4727 -51.2383,33.4727l25.6753,15.3555c0,0 7.8229,4.0558 10.3247,6.6445c1.4982,1.7877 1.375,21.5 1.375,21.5l-0.375,20.5z"/>
-                    <path fill="white" d="M67.0935,64.8489c0,0 98.4979,56.6556 100.898,57.9393c8.1541,4.8922 12.1117,19.421 3.5975,26.435c-3.4338,3.9933 -52.3973,30.0001 -52.3973,30.0001c0,0 0.6479,46.986 0.6798,48.2506c-0.5033,14.0301 -7.1902,20.508 -18.513,18.799c-4.5437,-1.8932 -101.2912,-55.482 -101.2912,-55.482c0,0 -0.0079,-72.6544 0,-75.2474c0.1952,-10.2347 1.9319,-10.0437 5.4984,-13.8551c2.7523,-2.48 61.5277,-36.8396 61.5277,-36.8396zM66.69,105.61c-0.8886,0.5562 -28.6315,17.2106 -29.2153,17.5182c-2.7689,1.6596 -4.7847,2.8828 -5.7847,6.8828c-0.3503,2.4004 -1.8376,25.6401 -1.996,28.4602c-0.4379,9.0891 0.996,8.5398 4.0458,11.5662c3.8006,3.1432 56.452,33.186 56.452,33.186c0,0 1.2643,-36.2576 1.4982,-37.9568c0.2059,-1.4963 -0.0137,-3.4783 1.6735,-4.464c11.1973,-6.542 33.8283,-21.5792 33.8283,-21.5792c0,0 -48.6841,-31.334 -52.5018,-34.2123c-3.3409,-2.4132 -3.2877,-2.401 -8,0.599z"/>
-                    <path fill="white" d="M201.1918,71.2234M167.1918,71.2234M217.69,59.503c0,0 -20.7688,-13.6719 -26,-16.9438c-7,-3.5481 -7,-3.5481 -13.4357,-0.0233c-0.9423,0.5607 -24.5124,14.6758 -28.0625,16.6875c0.66,0.66 34.4982,22.7877 34.4982,22.7877zM261.1871,42.0237c6.3773,3.6649 12.7134,7.3888 19.0046,11.1997c-2.5536,2.6956 -85.834,52.7356 -91.7734,56.9531c-2.9796,1.4009 -4.1209,1.1184 -7.2266,0.0469c-2.5197,-1.2741 -92,-55 -93,-57c6.4901,-3.928 53.0293,-30.7914 69.6072,-40.6501c4.4129,-2.971 16.8037,-10.8862 21.2788,-11.9181c3.7885,-0.8736 6.9926,-0.8736 9.6122,0c3.6474,1.3559 15.5248,8.1363 19.4865,10.715c1.7094,0.9634 44.4801,25.757 53.0106,30.6535z"/>
-                    <path fill="white" d="M368.1918,213.2234c0,0 0.3642,96.7817 0.3733,97.59c-0.0277,5.9999 -0.751,10.4051 -4.8459,15.0975c-4.8647,4.016 -88.5273,52.3125 -88.5273,52.3125c0,0 0,-71.94 0,-109c0.0473,-0.2123 -0.0287,-4.2123 4.4982,-7.2123c3,-2.5676 88.5018,-48.7877 88.5018,-48.7877zM320.1918,314.2234M335.1918,304.2234c0,-13.86 0,-42 0,-42c0,0 -12.5018,4.7877 -28.9389,13.8507c-4.9717,3.937 -5.4328,5.7724 -5.546,12.7897c-0.0806,4.9994 0.4849,35.3596 0.4849,35.3596c0,0 33.1999,-19.2123 34,-20z"/>
-                    <path fill="white" d="M0.1918,213.2234c0,0 76.8875,44.1738 82,47c9.4982,6.0904 10.2128,6.7877 11.0646,12.479c0.66,0 -0.0646,105.521 -0.0646,105.521c0,0 -67.8491,-39.074 -72.8125,-41.9375c-18.6893,-10.7905 -20.1145,-16.7673 -20.361,-27.2748c-0.0886,-1.4468 0.1735,-95.7877 0.1735,-95.7877zM33.1918,262.2234v42l34,20c0,0 1.0094,-35.3274 1.1153,-37.6574c0.5097,-3.5338 -1.9078,-7.0407 -6.5203,-9.944c-6.5068,-3.6126 -28.595,-14.3986 -28.595,-14.3986z"/>
-                  </svg>
-                `)}")`,
-                backgroundSize: '70vh',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center calc(16vh)',
-                backgroundAttachment: 'fixed',
-                opacity: 0.02
-              }}></div>
-              <div className="absolute inset-0 pointer-events-none z-[1] hidden md:block" style={{
-                backgroundImage: "url('/hex-bg.png')",
-                backgroundRepeat: 'repeat',
-                backgroundAttachment: 'fixed',
-                WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                maskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                opacity: 1
-              }}></div>
+              <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
                 {/* About Us Section */}
                 <div className="mb-20">
@@ -663,20 +473,7 @@ export default function Home() {
 
             {/* Modulix Bot Teaser Section */}
             <SectionWrapper id="modulix-bot" className="relative overflow-hidden">
-              <div className="absolute inset-0 backdrop-blur-[2px] hidden md:block"></div>
-              <div className="absolute inset-0 pointer-events-none z-[2] hidden md:block" style={{
-                backgroundImage: "url('/hex-bg.png')",
-                backgroundRepeat: 'repeat',
-                backgroundAttachment: 'fixed',
-                WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                maskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                opacity: 1
-              }}></div>
-              <Parallax
-                bgImage="https://source.unsplash.com/random/1920x1080/?technology,network"
-                strength={200}
-                className="hidden md:block"
-              ></Parallax>
+              <div className="hex-overlay" aria-hidden="true"></div>
               <div className="pt-20 pb-20 relative">
                 <div className="absolute inset-0 bg-gradient-to-b from-cyber-blue/20 via-neon-purple/10 to-transparent"></div>
               <Container className="relative z-10">
@@ -706,7 +503,7 @@ export default function Home() {
                           }}
                           transition={{ duration: 3, repeat: Infinity }}
                         >
-                          <svg className="w-full h-full text-white" viewBox="0 0 369 431" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                          <svg className="w-full h-full text-white" viewBox="0 0 369 431" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
                             <path d="M123.2097,256.5419c3.3564,1.7799 53.7644,28.8017 56.1421,30.1319c6.3382,2.3372 5.079,2.2875 11.6624,-0.0176c2.5274,-1.2166 43.6758,-25.6452 52.6758,-29.6452c6.5646,-3 11.4212,0.011 11.5849,6c0.0678,2.4821 -0.3991,127.7513 -0.3991,127.7513c0,0 -57.4462,34.3318 -58.3051,34.8516c-0.7469,0.4541 -1.4939,0.9081 -2.2634,1.376c-4.7664,2.779 -8.5079,4.2789 -14.1155,3.2334c-3.8871,-1.6292 -69.2518,-39.3998 -69.2518,-39.3998c0,0 0.7214,-119.6568 0.75,-127.8125c0,-4.5559 6,-9 11.5198,-6.4691zM143.1918,304.2234c0,0 -0.5018,59.7877 -0.5018,63.7877c0.723,2.7111 24,17 31.929,21.4987c12.071,5.5013 7.071,5.5013 18.5639,0.5013c10.5071,-5.7445 29.1747,-19.8304 31.0089,-21.7877c1.196,-4.0046 1,-64 1,-64c0,0 -28.2424,15.0938 -33.5018,17.7877c-7.1107,3.0497 -6.3401,3.2991 -15,0c-8.352,-3.4781 -33.4982,-17.7877 -33.4982,-17.7877z"/>
                             <path d="M299.7864,64.2624c0,0 47.0288,27.2661 49.8263,28.8228c14.6721,8.3242 18.5414,6.9259 18.7414,22.9259c0.1814,2.5997 -0.1478,74.2208 -0.1478,74.2208c0,0 -100.1194,55.3851 -104.1224,56.1388c-10.1567,0.4837 -16.0429,-5.0602 -16.0429,-18.1188c-0.5018,-15.7356 1.1508,-49.0284 1.1508,-49.0284c0,0 -50.2786,-28.2105 -51.0681,-28.665c-3.8749,-2.6776 -5.4519,-5.7952 -6.3342,-10.4639c-1.0812,-3.1249 -1.2068,-13.6738 13.7375,-22.5902c6.7814,-4.1442 94.2595,-53.2419 94.2595,-53.2419zM333.36,170.6384c0,0 3.2625,-2.8544 3.7351,-6.49c0.0935,-1.6544 0.4808,-18.9164 0.6201,-21.7551c-0.2851,-8.6466 -0.0252,-13.0514 -2.8463,-16.8838c-7.7379,-7.4985 -31.6039,-18.3798 -35.6654,-21.0361c-3.2216,-2.0018 -3.7682,-0.81 -6.7734,1.2773c-0.7821,0.5404 -51.2383,33.4727 -51.2383,33.4727l25.6753,15.3555c0,0 7.8229,4.0558 10.3247,6.6445c1.4982,1.7877 1.375,21.5 1.375,21.5l-0.375,20.5z"/>
                             <path d="M67.0935,64.8489c0,0 98.4979,56.6556 100.898,57.9393c8.1541,4.8922 12.1117,19.421 3.5975,26.435c-3.4338,3.9933 -52.3973,30.0001 -52.3973,30.0001c0,0 0.6479,46.986 0.6798,48.2506c-0.5033,14.0301 -7.1902,20.508 -18.513,18.799c-4.5437,-1.8932 -101.2912,-55.482 -101.2912,-55.482c0,0 -0.0079,-72.6544 0,-75.2474c0.1952,-10.2347 1.9319,-10.0437 5.4984,-13.8551c2.7523,-2.48 61.5277,-36.8396 61.5277,-36.8396zM66.69,105.61c-0.8886,0.5562 -28.6315,17.2106 -29.2153,17.5182c-2.7689,1.6596 -4.7847,2.8828 -5.7847,6.8828c-0.3503,2.4004 -1.8376,25.6401 -1.996,28.4602c-0.4379,9.0891 0.996,8.5398 4.0458,11.5662c3.8006,3.1432 56.452,33.186 56.452,33.186c0,0 1.2643,-36.2576 1.4982,-37.9568c0.2059,-1.4963 -0.0137,-3.4783 1.6735,-4.464c11.1973,-6.542 33.8283,-21.5792 33.8283,-21.5792c0,0 -48.6841,-31.334 -52.5018,-34.2123c-3.3409,-2.4132 -3.2877,-2.401 -8,0.599z"/>
@@ -719,7 +516,7 @@ export default function Home() {
                             animate={{ rotate: [0, 10, -10, 0] }}
                             transition={{ duration: 2, repeat: Infinity }}
                           >
-                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                               <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0789.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0789-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0067.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0408.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9758 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
                             </svg>
                           </motion.div>
@@ -830,15 +627,15 @@ export default function Home() {
                                         {feature.icon}
                     </div>
                     </div>
-                                    <h4 className="text-2xl font-bold mb-4" style={{ color: feature.color === 'blue' ? '#00D4FF' : '#A855F7' }}>
+                                    <h4 className="text-2xl font-bold mb-4" style={{ color: feature.color === 'blue' ? '#00D4FF' : '#C084FC' }}>
                                       {feature.title}
                                     </h4>
                                     <div
                                       className="w-full h-1 mb-6 rounded-full"
                                       style={{
                                         background: feature.color === 'blue'
-                                          ? 'linear-gradient(90deg, #00D4FF, #A855F7)'
-                                          : 'linear-gradient(90deg, #A855F7, #00D4FF)'
+                                          ? 'linear-gradient(90deg, #00D4FF, #C084FC)'
+                                          : 'linear-gradient(90deg, #C084FC, #00D4FF)'
                                       }}
                                     />
                                     <ul className="text-left space-y-4 max-w-xl mx-auto">
@@ -846,7 +643,7 @@ export default function Home() {
                                         <li key={bulletIndex} className="flex items-start">
                                           <span
                                             className="text-2xl mr-3 flex-shrink-0 mt-[-2px]"
-                                            style={{ color: feature.color === 'blue' ? '#00D4FF' : '#A855F7' }}
+                                            style={{ color: feature.color === 'blue' ? '#00D4FF' : '#C084FC' }}
                                           >
                                             •
                                           </span>
@@ -878,6 +675,7 @@ export default function Home() {
                             <div className="relative w-6 h-6">
                               {/* Outer rotating hexagon */}
                               <motion.svg
+                                aria-hidden="true"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -897,6 +695,7 @@ export default function Home() {
 
                               {/* Inner tumbling hexagon - passively moved by outer hexagon's rotation */}
                               <motion.svg
+                                aria-hidden="true"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -933,19 +732,7 @@ export default function Home() {
 
             {/* Services Section */}
             <SectionWrapper id="services" className="py-20 bg-deeper-blue/60 relative">
-              <div className="absolute inset-0 pointer-events-none z-[1] hidden md:block" style={{
-                backgroundImage: "url('/hex-bg.png')",
-                backgroundRepeat: 'repeat',
-                backgroundAttachment: 'fixed',
-                WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                maskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                opacity: 1
-              }}></div>
-              <Parallax
-                bgImage="https://source.unsplash.com/random/1920x1080/?abstract,tech"
-                strength={200}
-                className="hidden md:block"
-              ></Parallax>
+              <div className="hex-overlay" aria-hidden="true"></div>
               <div className="py-0">
                 <Container className="relative z-[10]">
                 <motion.div
@@ -1303,6 +1090,7 @@ export default function Home() {
                     {[...companies, ...companies].map((company, index) => {
                       const cardColor = index % 2 === 0 ? 'blue' : 'purple';
                       const glowClass = cardColor === 'purple' ? 'hover:shadow-neon-purple-glow' : 'hover:shadow-neon-blue-glow';
+                      const isClone = index >= companies.length;
                       
                       return (
                       <motion.div
@@ -1314,51 +1102,54 @@ export default function Home() {
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.1 }}
                       >
+                        <a
+                          href={company.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-hidden={isClone || undefined}
+                          tabIndex={isClone ? -1 : undefined}
+                          className="block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
+                        >
                         <Card
-                            className={`h-full cursor-pointer p-0 flex flex-col transition-all duration-300 ${glowClass}`}
+                            className={`h-full p-0 flex flex-col transition-all duration-300 ${glowClass}`}
                             glowColor={cardColor}
-                        onClick={() => {
-                          if (company.link !== '#') {
-                            window.open(company.link, '_blank');
-                          }
-                        }}
                       >
-
-                        {/* Company Logo Area - Larger logos to fill most of the card */}
                         <div className="flex items-center justify-center" style={{ height: '220px' }}>
                           {company.logoUrl ? (
                             <img
                               src={company.logoUrl}
-                              alt={`${company.name} logo`}
+                              alt=""
+                              width={256}
+                              height={256}
                               className="w-full h-full object-contain transition-all duration-300 rounded-2xl"
                               loading="lazy"
+                              decoding="async"
                               onError={(e) => {
                                 const target = e.currentTarget as HTMLImageElement;
                                 const container = target.parentElement;
                                 if (container) {
-                                  // Hide the broken image and show fallback
                                   target.style.display = 'none';
                                   const fallback = document.createElement('div');
-                                  fallback.className = 'text-6xl font-bold transition-colors duration-300 text-gray-400';
+                                  fallback.className = 'text-6xl font-bold transition-colors duration-300 text-gray-300';
                                   fallback.textContent = company.displayName.charAt(0);
                                   container.appendChild(fallback);
                                 }
                               }}
                             />
                           ) : (
-                            <div className="text-6xl font-bold transition-colors duration-300 text-gray-400 group-hover:text-white">
+                            <div className="text-6xl font-bold transition-colors duration-300 text-gray-300 group-hover:text-white">
                               {company.displayName.charAt(0)}
                             </div>
                           )}
                         </div>
 
-                        {/* Company Name - Bottom section */}
                         <div className="flex items-center justify-center transition-all duration-300 p-4">
                           <p className="transition-colors duration-300 text-base font-medium text-center text-gray-300">
                             {company.name}
                           </p>
                         </div>
                       </Card>
+                        </a>
                       </motion.div>
                       );
                     })}
@@ -1369,14 +1160,7 @@ export default function Home() {
 
             {/* CTA/Contact Section */}
             <SectionWrapper id="contact" className="py-20 relative">
-              <div className="absolute inset-0 pointer-events-none z-[1] hidden md:block" style={{
-                backgroundImage: "url('/hex-bg-white.png')",
-                backgroundRepeat: 'repeat',
-                backgroundAttachment: 'fixed',
-                WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.055) 12.5%, rgba(0,0,0,0.01) 25%, rgba(0,0,0,0.01) 75%, rgba(0,0,0,0.055) 87.5%, rgba(0,0,0,0.1) 100%)',
-                maskImage: 'linear-gradient(to right, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.055) 12.5%, rgba(0,0,0,0.01) 25%, rgba(0,0,0,0.01) 75%, rgba(0,0,0,0.055) 87.5%, rgba(0,0,0,0.1) 100%)',
-                opacity: 1
-              }}></div>
+              <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -1447,7 +1231,7 @@ export default function Home() {
                           href="https://discord.gg/modulix"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0789.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0789-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0067.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0408.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9758 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
@@ -1458,7 +1242,7 @@ export default function Home() {
                           href="https://x.com/ModulixSolution"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
                           <svg width="16" height="16" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
                             <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="currentColor"/>
@@ -1469,7 +1253,7 @@ export default function Home() {
                           href="https://www.linkedin.com/company/modulixsolution"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -1495,14 +1279,7 @@ export default function Home() {
 
             {/* FAQ Section */}
             <SectionWrapper id="faq" className="py-20 bg-deeper-blue/60 relative">
-              <div className="absolute inset-0 pointer-events-none z-[1] hidden md:block" style={{
-                backgroundImage: "url('/hex-bg.png')",
-                backgroundRepeat: 'repeat',
-                backgroundAttachment: 'fixed',
-                WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                maskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-                opacity: 1
-              }}></div>
+              <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -1522,45 +1299,58 @@ export default function Home() {
                   {faqs.map((faq, index) => {
                     const isOpen = openFaqs.has(index);
                     const isBlue = index % 2 === 0;
-                    const accentColor = isBlue ? '#00D4FF' : '#A855F7';
+                    const accentColor = isBlue ? '#00D4FF' : '#C084FC';
                     const glowClass = isBlue ? 'hover:shadow-neon-blue-glow' : 'hover:shadow-neon-purple-glow';
 
                     return (
                       <Card
-                        key={index}
+                        key={faq.question}
                         hover={true}
                         glowColor={isBlue ? 'blue' : 'purple'}
-                        className={`cursor-pointer transition-all duration-300 ${glowClass}`}
-                        onClick={() => {
-                          const newOpenFaqs = new Set(openFaqs);
-                          if (newOpenFaqs.has(index)) {
-                            newOpenFaqs.delete(index);
-                          } else {
-                            newOpenFaqs.add(index);
-                          }
-                          setOpenFaqs(newOpenFaqs);
-                        }}
+                        className={`transition-all duration-300 ${glowClass}`}
                       >
-                        <div className="flex justify-between items-center">
-                          <h3 
+                        <h3>
+                          <button
+                            type="button"
+                            id={`faq-question-${index}`}
+                            className="flex w-full items-center justify-between gap-4 text-left rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
+                            aria-expanded={isOpen}
+                            aria-controls={`faq-answer-${index}`}
+                            onClick={() => {
+                              const newOpenFaqs = new Set(openFaqs);
+                              if (newOpenFaqs.has(index)) {
+                                newOpenFaqs.delete(index);
+                              } else {
+                                newOpenFaqs.add(index);
+                              }
+                              setOpenFaqs(newOpenFaqs);
+                            }}
+                          >
+                          <span
                             className="text-lg font-bold transition-colors duration-300"
                             style={{ color: isOpen ? accentColor : '#ffffff' }}
                           >
                             {faq.question}
-                          </h3>
+                          </span>
                           <motion.span
+                            aria-hidden="true"
                             animate={{ rotate: isOpen ? 180 : 0 }}
                             className="transition-colors duration-300"
-                            style={{ 
-                              color: isOpen 
-                                ? (isBlue ? '#A855F7' : '#00D4FF') // Purple arrow for blue cards, blue arrow for purple cards when open
+                            style={{
+                              color: isOpen
+                                ? (isBlue ? '#C084FC' : '#00D4FF')
                                 : '#ffffff'
                             }}
                           >
                             ▼
                           </motion.span>
-                        </div>
+                          </button>
+                        </h3>
                         <motion.div
+                          id={`faq-answer-${index}`}
+                          role="region"
+                          aria-labelledby={`faq-question-${index}`}
+                          aria-hidden={!isOpen}
                           initial={{ opacity: 0, height: 0 }}
                           animate={{
                             opacity: isOpen ? 1 : 0,
@@ -1573,8 +1363,8 @@ export default function Home() {
                             className="mt-4 w-full h-0.5 rounded-full"
                             style={{
                               background: isBlue 
-                                ? 'linear-gradient(90deg, #00D4FF, #A855F7)'
-                                : 'linear-gradient(90deg, #A855F7, #00D4FF)'
+                                ? 'linear-gradient(90deg, #00D4FF, #C084FC)'
+                                : 'linear-gradient(90deg, #C084FC, #00D4FF)'
                             }}
                           />
                           <div className="mt-4 text-gray-300 leading-relaxed">

@@ -167,7 +167,7 @@ export default function ContactForm() {
               />
               {fieldValidity.name && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-400" aria-hidden="true" />
                 </div>
               )}
             </div>
@@ -189,7 +189,7 @@ export default function ContactForm() {
               />
               {fieldValidity.discord && (
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-green-400" aria-hidden="true" />
                 </div>
               )}
             </div>
@@ -213,7 +213,7 @@ export default function ContactForm() {
             />
             {fieldValidity.email && (
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                <Check className="w-5 h-5 text-green-400" />
+                <Check className="w-5 h-5 text-green-400" aria-hidden="true" />
               </div>
             )}
           </div>
@@ -236,7 +236,7 @@ export default function ContactForm() {
           />
           {fieldValidity.message && (
             <div className="absolute bottom-3 right-3">
-              <Check className="w-5 h-5 text-green-400" />
+              <Check className="w-5 h-5 text-green-400" aria-hidden="true" />
             </div>
           )}
         </div>
@@ -253,7 +253,7 @@ export default function ContactForm() {
       </div>
 
       {result && (
-        <div className={`text-center mt-4 p-3 rounded-lg ${
+        <div role="status" aria-live="polite" className={`text-center mt-4 p-3 rounded-lg ${
           result.includes('successfully')
             ? 'bg-green-900/20 text-green-400 border border-green-500/30'
             : result === 'Sending...'

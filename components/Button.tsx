@@ -6,13 +6,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden',
+  'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue focus-visible:ring-offset-2 focus-visible:ring-offset-dark-navy disabled:opacity-50 disabled:pointer-events-none relative overflow-hidden',
   {
     variants: {
       variant: {
-        primary: 'bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-neon-purple hover:scale-105 active:scale-95',
-        secondary: 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:shadow-neon-blue hover:scale-105 active:scale-95',
-        outline: 'border border-purple-500 text-purple-500 hover:bg-purple-500/10 hover:shadow-neon-purple',
+        primary: 'bg-blue-800 bg-gradient-to-r from-purple-800 to-blue-800 text-white hover:shadow-neon-purple hover:scale-105 active:scale-95',
+        secondary: 'bg-blue-800 bg-gradient-to-r from-blue-800 to-cyan-800 text-white hover:shadow-neon-blue hover:scale-105 active:scale-95',
+        outline: 'border border-purple-300 text-purple-300 hover:bg-purple-300/10 hover:shadow-neon-purple',
         ghost: 'text-gray-300 hover:text-white hover:bg-white/5',
       },
       size: {

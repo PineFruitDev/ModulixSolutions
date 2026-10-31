@@ -1,32 +1,37 @@
 import React from 'react';
-import { Parallax } from 'react-parallax';
 import { motion } from 'framer-motion';
 
 interface SectionWrapperProps {
   children: React.ReactNode;
   className?: string;
   id?: string;
-  parallaxStrength?: number;
+  reveal?: boolean;
 }
 
 export default function SectionWrapper({
   children,
   className = '',
   id,
-  parallaxStrength = 500
+  reveal = true,
 }: SectionWrapperProps) {
-  return (
-    <Parallax strength={parallaxStrength}>
-      <motion.section
-        id={id}
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`relative ${className}`}
-      >
+  if (!reveal) {
+    return (
+      <section id={id} className={`relative ${className}`}>
         {children}
-      </motion.section>
-    </Parallax>
+      </section>
+    );
+  }
+
+  return (
+    <motion.section
+      id={id}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-100px' }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className={`relative ${className}`}
+    >
+      {children}
+    </motion.section>
   );
 }
