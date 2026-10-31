@@ -8,13 +8,20 @@
 3. Fortnite/UEFN and Roblox studio operations, integrations, and live support.
 4. UGC creator-economy infrastructure led by VerifyUGC and UGC Market.
 
+## Website sections
+- [About](https://modulixsolutions.com/#about): Company background.
+- [Modulix Bot](https://modulixsolutions.com/#modulix-bot): Discord bot offering.
+- [Services](https://modulixsolutions.com/#services): Community and gaming services.
+- [Contact](https://modulixsolutions.com/#contact): Inquiry form.
+- [FAQ](https://modulixsolutions.com/#faq): Answers to common campaign questions.
+
 ## Official links
 - Live site: https://modulixsolutions.com/
 - Brand domain: https://modulix.gg/
 - Founder: https://pinefruit.dev/
 - Discord: https://discord.gg/modulix
 - LinkedIn: https://www.linkedin.com/company/modulixsolution
-- X: https://twitter.com/modulixsolutions
+- X: https://x.com/ModulixSolution
 
 ## Owned UGC Suite
 - VerifyUGC: https://verifyugc.dev

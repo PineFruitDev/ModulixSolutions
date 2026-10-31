@@ -14,15 +14,19 @@ export default function ContactConfirmed() {
   return (
     <>
       <Head>
+        <link rel="canonical" href="https://modulixsolutions.com/contact-confirmed/" />
+        <meta property="og:url" content="https://modulixsolutions.com/contact-confirmed/" />
+        <meta name="robots" content="noindex, follow" />
+        <meta property="og:type" content="website" />
         <title>Message Sent Successfully | Modulix Solutions</title>
         <meta name="description" content="Thank you for contacting Modulix Solutions. Your message has been sent successfully and we'll get back to you within 24 hours." />
         <meta property="og:title" content="Message Sent Successfully | Modulix Solutions" />
         <meta property="og:description" content="Thank you for contacting Modulix Solutions. Your message has been sent successfully and we'll get back to you within 24 hours." />
-        <meta property="og:image" content="/og-image.jpg" />
+        <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Message Sent Successfully | Modulix Solutions" />
         <meta name="twitter:description" content="Thank you for contacting Modulix Solutions. Your message has been sent successfully and we'll get back to you within 24 hours." />
-        <meta name="twitter:image" content="/og-image.jpg" />
+        <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
       </Head>
 
       <div className="h-screen bg-darkest-navy relative overflow-hidden flex flex-col">
