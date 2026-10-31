@@ -20,10 +20,11 @@ This repository is **public only because GitHub Pages requires public repositori
 ## ✨ Features
 
 - **Responsive Design** - Optimized for all devices
-- **Smooth Animations** - Framer Motion with scroll-triggered effects
-- **Interactive Effects** - Particle systems and parallax backgrounds
+- **Smooth Animations** - Framer Motion with scroll-triggered effects, paused when reduced motion is requested
+- **Interactive Effects** - Particle background
 - **Modern UI/UX** - Dark theme with neon cyber/gaming accents
-- **Performance Optimized** - Next.js with optimal SEO and loading
+- **Accessible** - Skip link, landmarks, named controls, keyboard FAQ, and contrast-safe text
+- **Performance Optimized** - Self-hosted fonts, sized images, and a hero that paints without waiting on animation
 - **Visibility Assets** - Static `robots.txt`, `sitemap.xml`, `llms.txt`, and `llms-full.txt` for search and answer engines
 - **Type Safe** - Full TypeScript implementation
 
@@ -34,7 +35,6 @@ This repository is **public only because GitHub Pages requires public repositori
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
 - **Forms**: React Hook Form + Yup
-- **Parallax**: React Parallax
 
 ### Project Structure
 ```

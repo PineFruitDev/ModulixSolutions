@@ -33,19 +33,12 @@ export default function ContactConfirmed() {
         <div className="absolute inset-0">
           <ParticleBackground />
         </div>
-        <div className="absolute inset-0 pointer-events-none z-[1]" style={{
-          backgroundImage: "url('/hex-bg.png')",
-          backgroundRepeat: 'repeat',
-          backgroundAttachment: 'fixed',
-          WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-          maskImage: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 12.5%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.3) 87.5%, rgba(0,0,0,0.5) 100%)',
-          opacity: 1
-        }}></div>
+        <div className="hex-overlay" aria-hidden="true"></div>
 
         <div className="relative z-10 flex flex-col h-full">
           <Header simple={true} />
 
-        <main className="relative z-10 flex-1 flex items-center justify-center px-4">
+        <main id="main" className="relative z-10 flex-1 flex items-center justify-center px-4">
           <Container className="w-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -61,7 +54,7 @@ export default function ContactConfirmed() {
                 className="mb-8"
               >
                 <div className="w-32 h-32 mx-auto bg-gradient-to-br from-cyber-blue to-neon-purple rounded-full flex items-center justify-center shadow-2xl shadow-cyber-blue/30">
-                  <CheckCircle className="w-16 h-16 text-white" />
+                  <CheckCircle className="w-16 h-16 text-white" aria-hidden="true" />
                 </div>
               </motion.div>
 
