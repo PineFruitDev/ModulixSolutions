@@ -9,6 +9,7 @@ export default function Custom500() {
     <StatusPage
       pageTitle="Something Went Wrong | Modulix Solutions"
       metaDescription="An unexpected error stopped this page from loading. Reload it, return to the Modulix Solutions homepage, or contact us directly."
+      path="/500/"
       icon={ServerCrash}
       heading="Something Went Wrong"
       actions={

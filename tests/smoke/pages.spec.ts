@@ -8,6 +8,26 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// Every page's head now comes from one component, so it is worth asserting
+// against the built HTML and not only against the function that feeds it.
+// Playwright's strict mode fails these if a tag is emitted twice.
+test('the homepage is indexable and declares one canonical URL', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://modulixsolutions.com/'
+  );
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+    'content',
+    'https://modulixsolutions.com/'
+  );
+  await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(
+    'content',
+    'width=device-width, initial-scale=1'
+  );
+});
+
 test('homepage renders key sections and contact form', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/Modulix/i);
@@ -57,6 +77,11 @@ for (const [path, heading] of statusPages) {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       'content',
       /noindex/
+    );
+    // Self-referencing, so it cannot point the noindex at a page meant to rank.
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://modulixsolutions.com${path}`
     );
   });
 }

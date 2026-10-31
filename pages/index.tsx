@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { Bot, Network, Users, Target, Palette, TrendingUp, Shield, Settings, MessageCircle, Gamepad2, Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -14,6 +13,8 @@ import ContactForm from '../components/ContactForm';
 import ParticleBackground from '../components/ParticleBackground';
 import CompanyLogo from '../components/CompanyLogo';
 import StateMessage from '../components/states/StateMessage';
+import Seo from '../components/Seo';
+import { OG_IMAGE, SITE_URL, absoluteUrl } from '../lib/seo/site';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 // Page copy is static, so it lives outside the component: the tagline interval
@@ -236,6 +237,37 @@ const companies = [
   },
 ];
 
+/**
+ * Page metadata. Broadened from "Discord Community Management" to cover the
+ * whole user-generated content space the company works across, rather than one
+ * platform or any single game. Discord stays named because it is the site's
+ * established search term and still the largest of those surfaces; dropping it
+ * outright would give up that ranking for no gain.
+ */
+const HOME_TITLE = 'Modulix Solutions | Discord, Creator and UGC Growth Systems';
+const HOME_DESCRIPTION =
+  'Modulix builds community infrastructure, creator programmes and brand activations across Discord and the wider user-generated content space.';
+
+/**
+ * The three service groups, named once and read by both the section headings
+ * below and the Organization offer catalog in the structured data, so the
+ * schema cannot advertise services the page no longer describes.
+ */
+const serviceGroups = {
+  ads: {
+    name: 'Scalable Ad Services',
+    description: 'Automated, intelligent advertising solutions that seamlessly integrate into Discord conversations, delivering authentic engagement at scale.',
+  },
+  campaigns: {
+    name: 'Managed Campaigns',
+    description: 'End-to-end campaign management with strategic community selection, creative development, and comprehensive execution for maximum impact.',
+  },
+  builds: {
+    name: 'Premium Builds',
+    description: 'Custom server development and management solutions designed for long-term brand presence and community engagement.',
+  },
+} as const;
+
 const faqs = [
   { question: 'How do you ensure the right community fit for our brand?', answer: 'We map servers using interest profiles, location data, and cultural alignment, drawing from admin insights and content analysis to predict resonance and avoid mismatches.' },
   { question: 'What makes your ad formats stand out in gaming spaces?', answer: 'Beyond static posts, we specialize in interactive spectacles like tournament sponsorships, live giveaways, and UEFN-linked Activities: formats that ignite participation and feel like community events.' },
@@ -245,18 +277,24 @@ const faqs = [
   { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re gaming natives: Modular, UEFN-savvy solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up.' },
 ];
 
+// Node ids are referenced from several places in the graph, so they are named
+// once rather than spelled out as string literals at each use.
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+const WEBSITE_ID = `${SITE_URL}/#website`;
+const WEBPAGE_ID = `${SITE_URL}/#webpage`;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://modulixsolutions.com/#organization",
+      "@id": ORGANIZATION_ID,
       "name": "Modulix",
       "legalName": "Modulix Solutions, LLC",
       "alternateName": ["Modulix Solutions", "Modulix GG"],
-      "url": "https://modulixsolutions.com/",
-      "logo": "https://modulixsolutions.com/modulix-icon.png",
-      "image": "https://modulixsolutions.com/og-image.jpg",
+      "url": absoluteUrl('/'),
+      "logo": absoluteUrl('/modulix-icon.png'),
+      "image": absoluteUrl(OG_IMAGE.path),
       "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
       "sameAs": [
         "https://modulix.gg",
@@ -285,16 +323,56 @@ const structuredData = {
           "name": "UGCPouch",
           "url": "https://ugcpouch.com"
         }
-      ]
+      ],
+      // The contact section is a form rather than a published address or phone
+      // number, so the enquiry URL is the only contact detail asserted here.
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "url": `${SITE_URL}/#contact`,
+        "availableLanguage": "en"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Modulix service ecosystem",
+        "itemListElement": Object.values(serviceGroups).map((group) => ({
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": group.name,
+            "description": group.description,
+            "provider": { "@id": ORGANIZATION_ID }
+          }
+        }))
+      }
     },
     {
       "@type": "WebSite",
-      "@id": "https://modulixsolutions.com/#website",
+      "@id": WEBSITE_ID,
       "name": "Modulix Solutions",
-      "url": "https://modulixsolutions.com/",
+      "url": absoluteUrl('/'),
       "inLanguage": "en",
       "publisher": {
-        "@id": "https://modulixsolutions.com/#organization"
+        "@id": ORGANIZATION_ID
+      }
+    },
+    // The page itself. Without this node the graph described the company and
+    // the site but never the document a crawler was actually reading, so the
+    // FAQ answers below had no page to hang off.
+    {
+      "@type": "WebPage",
+      "@id": WEBPAGE_ID,
+      "url": absoluteUrl('/'),
+      "name": HOME_TITLE,
+      "description": HOME_DESCRIPTION,
+      "inLanguage": "en",
+      "isPartOf": { "@id": WEBSITE_ID },
+      "about": { "@id": ORGANIZATION_ID },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": absoluteUrl(OG_IMAGE.path),
+        "width": OG_IMAGE.width,
+        "height": OG_IMAGE.height
       }
     },
     // A FAQPage with an empty mainEntity is invalid structured data, so the
@@ -303,7 +381,8 @@ const structuredData = {
       ? [
           {
             "@type": "FAQPage",
-            "@id": "https://modulixsolutions.com/#faq",
+            "@id": `${SITE_URL}/#faq`,
+            "isPartOf": { "@id": WEBPAGE_ID },
             "mainEntity": faqs.map((faq) => ({
               "@type": "Question",
               "name": faq.question,
@@ -367,46 +446,16 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Modulix Solutions - Discord Community Management</title>
-        <meta name="description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
-        <meta name="keywords" content="Discord community management, gaming server advertising, UEFN marketing, Discord bot advertising, gaming community engagement, Discord marketing campaigns, gaming brand promotion, community building, Discord server management, Fortnite advertising, Discord ad network, gaming community growth, Discord advertising agency, Modulix Solutions, Chartis Games, WildFire Discord, Readyup" />
-        <meta name="author" content="Modulix Solutions" />
-        <meta name="robots" content="index, follow" />
-        <meta name="language" content="English" />
-        <meta name="revisit-after" content="7 days" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="canonical" href="https://modulixsolutions.com/" />
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://modulixsolutions.com/" />
-        <meta property="og:title" content="Modulix Solutions - Discord Community Management" />
-        <meta property="og:description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
-        <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:locale" content="en_US" />
-        <meta property="og:image:alt" content="Modulix Solutions" />
-        <meta name="twitter:image:alt" content="Modulix Solutions" />
-        <meta property="og:site_name" content="Modulix Solutions" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://modulixsolutions.com/" />
-        <meta name="twitter:title" content="Modulix Solutions - Discord Community Management" />
-        <meta name="twitter:description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
-        <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
-
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: structuredDataJson
-          }}
-        />
-      </Head>
+      {/* Dropped along the way: a keywords meta (ignored by every major engine
+          since 2009, and it named third-party companies), plus the
+          non-standard language and revisit-after tags. The html lang attribute
+          in _document.tsx already carries the language. */}
+      <Seo
+        title={HOME_TITLE}
+        description={HOME_DESCRIPTION}
+        path="/"
+        jsonLd={structuredDataJson}
+      />
 
       <div className="min-h-screen relative">
         <div className="absolute inset-0">
@@ -865,10 +914,10 @@ export default function Home() {
                       className="text-center mb-8"
                     >
                       <h3 className="text-3xl font-bold text-cyber-blue">
-                        Scalable Ad Services
+                        {serviceGroups.ads.name}
                       </h3>
                       <p className="text-lg text-gray-300 mt-4 max-w-2xl mx-auto">
-                        Automated, intelligent advertising solutions that seamlessly integrate into Discord conversations, delivering authentic engagement at scale.
+                        {serviceGroups.ads.description}
                       </p>
                     </motion.div>
                     <div className="service-brackets">
@@ -908,10 +957,10 @@ export default function Home() {
                       className="text-center mb-8"
                     >
                       <h3 className="text-3xl font-bold text-cyber-blue">
-                        Managed Campaigns
+                        {serviceGroups.campaigns.name}
                       </h3>
                       <p className="text-lg text-gray-300 mt-4 max-w-2xl mx-auto">
-                        End-to-end campaign management with strategic community selection, creative development, and comprehensive execution for maximum impact.
+                        {serviceGroups.campaigns.description}
                       </p>
                     </motion.div>
                     <div className="service-brackets service-brackets-purple space-y-8">
@@ -999,10 +1048,10 @@ export default function Home() {
                       className="text-center mb-8"
                     >
                       <h3 className="text-3xl font-bold text-cyber-blue">
-                        Premium Builds
+                        {serviceGroups.builds.name}
                       </h3>
                       <p className="text-lg text-gray-300 mt-4 max-w-2xl mx-auto">
-                        Custom server development and management solutions designed for long-term brand presence and community engagement.
+                        {serviceGroups.builds.description}
                       </p>
                     </motion.div>
                     <div className="service-brackets">

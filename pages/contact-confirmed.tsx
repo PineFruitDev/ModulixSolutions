@@ -9,7 +9,7 @@ export default function ContactConfirmed() {
     <StatusPage
       pageTitle="Message Sent Successfully | Modulix Solutions"
       metaDescription="Thank you for contacting Modulix Solutions. Your message has been sent successfully and we'll get back to you within 24 hours."
-      canonical="https://modulixsolutions.com/contact-confirmed/"
+      path="/contact-confirmed/"
       icon={CheckCircle}
       heading="We'll Contact You Soon!"
       actions={
