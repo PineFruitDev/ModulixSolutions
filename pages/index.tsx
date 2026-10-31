@@ -422,7 +422,7 @@ export default function Home() {
                   <Container className="py-20">
                 <div className="text-center flex flex-col items-center justify-center min-h-screen">
                   <p className="text-lg md:text-xl text-gray-300 font-medium mb-4">
-                    Congratulations! You've just stumbled upon...
+                    Congratulations! You&apos;ve just stumbled upon...
                   </p>
 
                   <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
@@ -449,7 +449,7 @@ export default function Home() {
                   </div>
 
                   <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
-                    Craft authentic, scalable engagements that transform fleeting interactions into enduring brand loyalty empowering gaming studios and brands to own the conversation in the heart of gaming's digital universe.
+                    Craft authentic, scalable engagements that transform fleeting interactions into enduring brand loyalty empowering gaming studios and brands to own the conversation in the heart of gaming&apos;s digital universe.
                   </p>
 
                   <Button onClick={scrollToContact} size="lg" className="text-lg px-10 py-5">
@@ -487,7 +487,7 @@ export default function Home() {
                           viewport={{ once: true }}
                           className="text-xl text-gray-300 mb-6 leading-relaxed"
                         >
-                          At Modulix, we're the pioneers revolutionizing how major corporations connect with vibrant gaming communities. For over a decade, we've partnered with Fortune 500 giants, AAA game studios launching blockbuster titles, and innovative indie developers cultivating dedicated followings. From global brands entering the metaverse to underground creators just starting out, our expertise in Discord integrations, UEFN (Unreal Engine Fortnite Network), and UGC (User-Generated Content) games sets the standard—making outdated advertising methods feel archaic.
+                          At Modulix, we&apos;re the pioneers revolutionizing how major corporations connect with vibrant gaming communities. For over a decade, we&apos;ve partnered with Fortune 500 giants, AAA game studios launching blockbuster titles, and innovative indie developers cultivating dedicated followings. From global brands entering the metaverse to underground creators just starting out, our expertise in Discord integrations, UEFN (Unreal Engine Fortnite Network), and UGC (User-Generated Content) games sets the standard—making outdated advertising methods feel archaic.
                         </motion.p>
 
                         <motion.p
@@ -497,7 +497,7 @@ export default function Home() {
                           viewport={{ once: true }}
                           className="text-lg text-gray-300 mb-6 leading-relaxed"
                         >
-                          As confident, forward-thinking developers, we take community building to the next level. While competitors tinker with basic bots, we've engineered comprehensive ecosystems that integrate seamlessly and feel inherently organic. Our modular framework allows us to scale from targeted server enhancements to full-scale enterprise community management, always delivering that precise mix of technical innovation and genuine human connection that drives real engagement and loyalty.
+                          As confident, forward-thinking developers, we take community building to the next level. While competitors tinker with basic bots, we&apos;ve engineered comprehensive ecosystems that integrate seamlessly and feel inherently organic. Our modular framework allows us to scale from targeted server enhancements to full-scale enterprise community management, always delivering that precise mix of technical innovation and genuine human connection that drives real engagement and loyalty.
                         </motion.p>
 
                         <motion.p
@@ -507,7 +507,7 @@ export default function Home() {
                           viewport={{ once: true }}
                           className="text-lg text-gray-300 leading-relaxed"
                         >
-                          Whether you're a corporation aiming to market products through immersive Discord experiences or leverage UEFN/UGC for viral community growth, Modulix delivers results that not only meet but exceed expectations. Join the ranks of industry leaders who've trusted us to turn communities into powerful marketing assets.
+                          Whether you&apos;re a corporation aiming to market products through immersive Discord experiences or leverage UEFN/UGC for viral community growth, Modulix delivers results that not only meet but exceed expectations. Join the ranks of industry leaders who&apos;ve trusted us to turn communities into powerful marketing assets.
                         </motion.p>
                       </div>
                     </div>
@@ -620,7 +620,7 @@ export default function Home() {
                               <br /><br />
                               A fully modular framework where you only pay for what you use, with <span className="text-cyber-blue font-semibold">infinite customization</span> and a powerful web dashboard.
                               <br /><br />
-                              Build communities that don't just grow, they dominate. Dive into a <span className="text-cyber-blue font-semibold">revolutionary ecosystem</span> powered by event-driven architecture, AI-enhanced security, addictive leveling, and seamless integrations that turn your server into an unstoppable force.
+                              Build communities that don&apos;t just grow, they dominate. Dive into a <span className="text-cyber-blue font-semibold">revolutionary ecosystem</span> powered by event-driven architecture, AI-enhanced security, addictive leveling, and seamless integrations that turn your server into an unstoppable force.
                               <br /><br />
                               Prepare to <span className="text-cyber-blue font-semibold">redefine engagement</span>. Modulix is on the way.
                             </p>
@@ -1045,7 +1045,7 @@ export default function Home() {
                         Why Discord Drives Superior ROI
                       </h3>
                       <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-                        Beyond fleeting impressions to owned universes—where your brand lives indefinitely, builds lasting relationships, and delivers measurable results that traditional platforms can't match
+                        Beyond fleeting impressions to owned universes—where your brand lives indefinitely, builds lasting relationships, and delivers measurable results that traditional platforms can&apos;t match
                       </p>
                       <div className="w-full h-0.5 bg-gradient-to-r from-cyber-blue to-neon-purple mb-8"></div>
                     </motion.div>
@@ -1268,7 +1268,7 @@ export default function Home() {
                     Ready to Make a Splash?
                   </h2>
                   <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                    Let's build something extraordinary together
+                    Let&apos;s build something extraordinary together
                   </p>
                 </motion.div>
 
@@ -1287,7 +1287,7 @@ export default function Home() {
                         Brands Ready to Dominate
                       </h3>
                       <p className="text-gray-300 mb-6">
-                        Whether you're launching in Fortnite, building massive Discord communities, or creating the next viral gaming experience, we specialize in turning bold ideas into reality.
+                        Whether you&apos;re launching in Fortnite, building massive Discord communities, or creating the next viral gaming experience, we specialize in turning bold ideas into reality.
                       </p>
                     </div>
 
@@ -1317,10 +1317,10 @@ export default function Home() {
 
                     <div>
                       <h4 className="text-lg font-semibold mb-3 text-white">
-                        Let's Connect
+                        Let&apos;s Connect
                       </h4>
                       <p className="text-gray-300 mb-4">
-                        Drop us a line through the form or reach out on social media. We're always up for discussing game-changing ideas.
+                        Drop us a line through the form or reach out on social media. We&apos;re always up for discussing game-changing ideas.
                       </p>
                       <div className="flex flex-wrap gap-4">
                         <a
