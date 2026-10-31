@@ -1,101 +1,34 @@
 import React from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Home, AlertTriangle } from 'lucide-react';
+import { Compass, Home, MessageCircle, Sparkles } from 'lucide-react';
 
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ParticleBackground from '../components/ParticleBackground';
-import Container from '../components/Container';
+import StatusPage from '../components/states/StatusPage';
 import Button from '../components/Button';
 
 export default function Custom404() {
   return (
-    <>
-      <Head>
-        <meta name="robots" content="noindex, follow" />
-        <meta property="og:type" content="website" />
-        <title>404 Error - Page Not Found | Modulix Solutions</title>
-        <meta name="description" content="Sorry, the page you're looking for doesn't exist. Return to Modulix Solutions for Discord community management and engagement solutions." />
-        <meta property="og:title" content="404 Error - Page Not Found | Modulix Solutions" />
-        <meta property="og:description" content="Sorry, the page you're looking for doesn't exist. Return to Modulix Solutions for Discord community management and engagement solutions." />
-        <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="404 Error - Page Not Found | Modulix Solutions" />
-        <meta name="twitter:description" content="Sorry, the page you're looking for doesn't exist. Return to Modulix Solutions for Discord community management and engagement solutions." />
-        <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
-      </Head>
-
-      <div className="h-screen bg-darkest-navy relative overflow-hidden flex flex-col">
-        <div className="absolute inset-0">
-          <ParticleBackground />
-        </div>
-        <div className="hex-overlay" aria-hidden="true"></div>
-
-        <div className="relative z-10 flex flex-col h-full">
-          <Header simple={true} />
-
-        <main id="main" className="relative z-10 flex-1 flex items-center justify-center px-4">
-          <Container className="w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center max-w-4xl mx-auto"
-            >
-              {/* 404 Icon */}
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 100 }}
-                className="mb-8"
-              >
-                <div className="w-32 h-32 mx-auto bg-gradient-to-br from-cyber-blue to-neon-purple rounded-full flex items-center justify-center shadow-2xl shadow-cyber-blue/30">
-                  <AlertTriangle className="w-16 h-16 text-white" aria-hidden="true" />
-                </div>
-              </motion.div>
-
-              {/* Main Heading */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-4xl md:text-6xl font-bold mb-6"
-              >
-                404 Error - Page Not Found!
-              </motion.h1>
-
-              {/* Flavor Text */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto"
-              >
-                Looks like you've ventured into uncharted digital territory. This page seems to have gone the way of dial-up internet—lost in the void of cyberspace.
-              </motion.p>
-
-              {/* CTA Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                <Link href="/" passHref>
-                  <Button size="lg" className="text-lg px-10 py-5">
-                    <Home className="w-5 h-5 mr-2" />
-                    Return to Homepage
-                  </Button>
-                </Link>
-              </motion.div>
-            </motion.div>
-          </Container>
-        </main>
-
-          <Footer />
-        </div>
-      </div>
-    </>
+    <StatusPage
+      pageTitle="404 Error - Page Not Found | Modulix Solutions"
+      metaDescription="That page does not exist. Head back to Modulix Solutions for community growth, creator programmes and brand activations across user-generated content platforms."
+      icon={Compass}
+      heading="404 Error - Page Not Found"
+      actions={
+        <>
+          <Button href="/" size="lg" icon={<Home className="w-5 h-5" />}>
+            Return to Homepage
+          </Button>
+          <Button href="/#services" variant="outline" size="lg" icon={<Sparkles className="w-5 h-5" />}>
+            Browse services
+          </Button>
+          <Button href="/#contact" variant="ghost" size="lg" icon={<MessageCircle className="w-5 h-5" />}>
+            Get in touch
+          </Button>
+        </>
+      }
+    >
+      <p>
+        The link may be out of date, or the page may have moved. Nothing is lost: everything we build
+        for online communities and creator platforms is still a click away.
+      </p>
+    </StatusPage>
   );
 }

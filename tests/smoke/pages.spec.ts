@@ -34,11 +34,40 @@ test('valid inquiry submits once and reaches confirmation', async ({ page }) => 
   expect(submissions).toBe(1);
 });
 
-for (const [path, heading] of [['/contact-confirmed/', "We'll Contact You Soon"], ['/404.html', '404 Error - Page Not Found']]) {
+// 404 is checked at the flat path because that is the only one GitHub Pages
+// serves for a missing route. trailingSlash exports every other page, 500
+// included, as a directory index.
+const statusPages = [
+  ['/contact-confirmed/', "We'll Contact You Soon"],
+  ['/404.html', '404 Error - Page Not Found'],
+  ['/500/', 'Something Went Wrong'],
+];
+
+for (const [path, heading] of statusPages) {
   test(`${path} renders and returns home`, async ({ page }) => {
     await page.goto(path);
     await expect(page.getByRole('heading', { level: 1 })).toContainText(heading);
-    await page.getByRole('button', { name: 'Return to Homepage' }).click();
+    // An anchor, not a button nested inside one: crawlable and keyboard-operable.
+    await page.getByRole('link', { name: /Return to Homepage/ }).click();
     await expect(page).toHaveURL('/');
   });
+
+  test(`${path} stays out of the index`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      'content',
+      /noindex/
+    );
+  });
 }
+
+test('the exported 404 links back into the site, not just to the homepage', async ({ page }) => {
+  await page.goto('/404.html');
+  await expect(page.getByRole('link', { name: /Browse services/ })).toHaveAttribute(
+    'href',
+    '/#services'
+  );
+  await page.getByRole('link', { name: /Get in touch/ }).click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.locator('#contact')).toBeAttached();
+});

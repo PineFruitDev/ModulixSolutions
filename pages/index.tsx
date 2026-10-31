@@ -12,6 +12,8 @@ import Button from '../components/Button';
 import Card, { SectionContainer } from '../components/Card';
 import ContactForm from '../components/ContactForm';
 import ParticleBackground from '../components/ParticleBackground';
+import CompanyLogo from '../components/CompanyLogo';
+import StateMessage from '../components/states/StateMessage';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 // Page copy is static, so it lives outside the component: the tagline interval
@@ -295,18 +297,24 @@ const structuredData = {
         "@id": "https://modulixsolutions.com/#organization"
       }
     },
-    {
-      "@type": "FAQPage",
-      "@id": "https://modulixsolutions.com/#faq",
-      "mainEntity": faqs.map((faq) => ({
-        "@type": "Question",
-        "name": faq.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": faq.answer
-        }
-      }))
-    }
+    // A FAQPage with an empty mainEntity is invalid structured data, so the
+    // node is dropped rather than published empty.
+    ...(faqs.length > 0
+      ? [
+          {
+            "@type": "FAQPage",
+            "@id": "https://modulixsolutions.com/#faq",
+            "mainEntity": faqs.map((faq) => ({
+              "@type": "Question",
+              "name": faq.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.answer
+              }
+            }))
+          }
+        ]
+      : [])
   ]
 };
 
@@ -333,7 +341,8 @@ export default function Home() {
   const botFeaturesRotating = !prefersReducedMotion && !botFeaturesPaused && !isBotFeatureHovered;
 
   useEffect(() => {
-    if (!taglinesRotating) return;
+    // Modulo by zero yields NaN, which would index past the end of the list.
+    if (!taglinesRotating || taglines.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentTagline((prev) => (prev + 1) % taglines.length);
@@ -343,7 +352,7 @@ export default function Home() {
   }, [taglinesRotating]);
 
   useEffect(() => {
-    if (!botFeaturesRotating) return;
+    if (!botFeaturesRotating || botFeatures.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentBotFeature((prev) => (prev + 1) % botFeatures.length);
@@ -1166,7 +1175,18 @@ export default function Home() {
                   </p>
                 </motion.div>
 
-                {/* Company Logo Carousel */}
+                {/* Company Logo Carousel. With no companies the marquee is a
+                    360px-tall empty strip animating a zero-width track, so the
+                    section shows a plain message instead. */}
+                {companies.length === 0 ? (
+                  <StateMessage
+                    variant="block"
+                    tone="empty"
+                    title="No client logos to show yet"
+                    description="We're still collecting permission to name the communities and brands we work with. Get in touch and we'll walk you through the work directly."
+                    className="max-w-2xl mx-auto"
+                  />
+                ) : (
                 <div className="relative overflow-hidden py-8" style={{ height: '360px' }}>
                   {/* Fade masks on edges */}
                   <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0B18] to-transparent z-10 pointer-events-none" />
@@ -1212,32 +1232,10 @@ export default function Home() {
                             glowColor={cardColor}
                       >
                         <div className="flex items-center justify-center" style={{ height: '220px' }}>
-                          {company.logoUrl ? (
-                            <img
-                              src={company.logoUrl}
-                              alt=""
-                              width={256}
-                              height={256}
-                              className="w-full h-full object-contain transition-all duration-300 rounded-2xl"
-                              loading="lazy"
-                              decoding="async"
-                              onError={(e) => {
-                                const target = e.currentTarget as HTMLImageElement;
-                                const container = target.parentElement;
-                                if (container) {
-                                  target.style.display = 'none';
-                                  const fallback = document.createElement('div');
-                                  fallback.className = 'text-6xl font-bold transition-colors duration-300 text-gray-300';
-                                  fallback.textContent = company.displayName.charAt(0);
-                                  container.appendChild(fallback);
-                                }
-                              }}
-                            />
-                          ) : (
-                            <div className="text-6xl font-bold transition-colors duration-300 text-gray-300 group-hover:text-white">
-                              {company.displayName.charAt(0)}
-                            </div>
-                          )}
+                          <CompanyLogo
+                            logoUrl={company.logoUrl}
+                            displayName={company.displayName}
+                          />
                         </div>
 
                         <div className="flex items-center justify-center transition-all duration-300 p-4">
@@ -1252,6 +1250,7 @@ export default function Home() {
                     })}
                   </motion.div>
                 </div>
+                )}
               </Container>
             </SectionWrapper>
 
@@ -1393,6 +1392,14 @@ export default function Home() {
                 </motion.div>
 
                 <div className="max-w-3xl mx-auto space-y-4">
+                  {faqs.length === 0 && (
+                    <StateMessage
+                      variant="block"
+                      tone="empty"
+                      title="No questions published yet"
+                      description="We're writing these up. In the meantime, ask us anything through the contact form and we'll answer directly."
+                    />
+                  )}
                   {faqs.map((faq, index) => {
                     const isOpen = openFaqs.has(index);
                     const isBlue = index % 2 === 0;
