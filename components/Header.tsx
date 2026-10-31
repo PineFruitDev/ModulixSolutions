@@ -130,7 +130,11 @@ export default function Header({ simple = false }: HeaderProps) {
         const animation = (currentTime: number) => {
           if (startTime === null) startTime = currentTime;
           const timeElapsed = currentTime - startTime;
-          const progress = Math.min(timeElapsed / duration, 1);
+          // A click on the section the page already rests on gives a distance,
+          // and so a duration, of zero. Dividing by it yields NaN, which the
+          // browser normalises to a scroll offset of 0 and throws the reader
+          // back to the top of the page. Treat it as already arrived.
+          const progress = duration > 0 ? Math.min(timeElapsed / duration, 1) : 1;
 
           const easeProgress = easeInOutCubic(progress);
           const currentPosition = startPosition + (distance * easeProgress);

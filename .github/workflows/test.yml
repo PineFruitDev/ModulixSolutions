@@ -19,6 +19,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run type-check
-      - run: npm test
+      # Runs the same suite as `npm test` and additionally enforces the
+      # coverage thresholds in jest.config.js.
+      - run: npm run test:coverage
       - run: npx playwright install --with-deps chromium
       - run: npm run test:smoke
