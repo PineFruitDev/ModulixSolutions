@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
-import { Bot, Network, Users, Target, Palette, TrendingUp, Shield, Settings, MessageCircle, Gamepad2 } from 'lucide-react';
+import { Bot, Network, Users, Target, Palette, TrendingUp, Shield, Settings, MessageCircle, Gamepad2, Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import Container from '../components/Container';
 import RowContainer from '../components/RowContainer';
@@ -12,323 +12,349 @@ import Button from '../components/Button';
 import Card, { SectionContainer } from '../components/Card';
 import ContactForm from '../components/ContactForm';
 import ParticleBackground from '../components/ParticleBackground';
+import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
+
+// Page copy is static, so it lives outside the component: the tagline interval
+// re-renders Home every 3.5s and would otherwise rebuild every array, every
+// feature icon element, and the JSON-LD string on each tick.
+const botFeatures = [
+  {
+    title: 'Infinite Customization',
+    bullets: [
+      'Tailor modules, commands, & UI to your brand.',
+      'Build drag-drop automations for custom workflows.',
+      'Toggle kid-friendly or 18+ features during setup.'
+    ],
+    icon: <Palette className="w-12 h-12 text-white" />,
+    color: 'blue'
+  },
+  {
+    title: 'Event-Driven Core',
+    bullets: [
+      'Seamless module communication via event bus.',
+      'Add/remove modules without downtime.',
+      'Scalable & future-proof for growth.'
+    ],
+    icon: <Network className="w-12 h-12 text-white" />,
+    color: 'purple'
+  },
+  {
+    title: 'Hybrid Profile System',
+    bullets: [
+      'Global stats (karma) + guild data (XP, badges).',
+      'Modules add custom fields like game wins.',
+      'Unlock cosmetics for engaging user views.'
+    ],
+    icon: <Users className="w-12 h-12 text-white" />,
+    color: 'blue'
+  },
+  {
+    title: 'Modular Monetization',
+    bullets: [
+      'Pay per module with bundle discounts.',
+      'Free core features; premium unlocks advanced.',
+      'Seamless dashboard upgrades via Stripe.'
+    ],
+    icon: <Settings className="w-12 h-12 text-white" />,
+    color: 'purple'
+  },
+  {
+    title: 'AI-Powered Security',
+    bullets: [
+      'Global alt detection with action tracking.',
+      'Auto-lock mods on rapid deletes; interactive alerts.',
+      'NLP spam ban & configurable blacklists.'
+    ],
+    icon: <Shield className="w-12 h-12 text-white" />,
+    color: 'blue'
+  },
+  {
+    title: 'Engaging Leveling System',
+    bullets: [
+      'XP from chats, voice, games, & more.',
+      'Custom formulas, streaks, & challenges.',
+      'Seasonal leaderboards with karma perks.'
+    ],
+    icon: <TrendingUp className="w-12 h-12 text-white" />,
+    color: 'purple'
+  },
+  {
+    title: 'RNG & Casino Games',
+    bullets: [
+      'Kid-safe/18+ with odds, bets, & cooldowns.',
+      'Rewards like XP/items; integrate economy.',
+      'Streaks & leaderboards for fun competition.'
+    ],
+    icon: <Gamepad2 className="w-12 h-12 text-white" />,
+    color: 'blue'
+  },
+  {
+    title: 'Interactive Ticket System',
+    bullets: [
+      'Private threads with AI tagging/responses.',
+      'Auto-appeals from bans with analytics.',
+      'Custom categories & satisfaction tracking.'
+    ],
+    icon: <MessageCircle className="w-12 h-12 text-white" />,
+    color: 'purple'
+  },
+  {
+    title: 'Powerful Automations',
+    bullets: [
+      'Visual WHEN/IF/THEN logic builder.',
+      'Trigger on events/commands across modules.',
+      'Extensible with module-specific actions.'
+    ],
+    icon: <Bot className="w-12 h-12 text-white" />,
+    color: 'blue'
+  },
+  {
+    title: 'Advanced Embed Builder',
+    bullets: [
+      'V1/V2 toggle with components & multi-embeds.',
+      'Dynamic variables like {user.mention}.',
+      'Save/duplicate templates with live previews.'
+    ],
+    icon: <Palette className="w-12 h-12 text-white" />,
+    color: 'purple'
+  }
+];
+
+const taglines = [
+  'Build Authentic Discord Communities',
+  'Scale Your Gaming Brand Presence',
+  'Create Lasting Player Relationships',
+  'Transform Servers into Revenue Engines',
+  'Dominate Fortnite & Gaming Ecosystems',
+  'Elevate Community Engagement',
+  'Turn Discord into Brand Loyalty',
+  'Master Gaming Community Growth',
+  'Build the Ultimate Gaming Experience',
+  'Lead Your Industry Through Discord',
+];
+
+const TAGLINE_INTERVAL_MS = 3500;
+const BOT_FEATURE_INTERVAL_MS = 7500;
+
+const scrollToContact = () => {
+  const element = document.querySelector('#contact');
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+const companies = [
+  {
+    id: 'readyup',
+    name: 'ReadyUp',
+    displayName: 'READYUP',
+    link: 'https://getreadyup.com',
+    accentColor: 'white',
+    logoUrl: '/companies/readyup-logo.png',
+  },
+  {
+    id: 'chartis',
+    name: 'Chartis',
+    displayName: 'CHARTIS',
+    link: 'https://chartis.gg',
+    accentColor: 'blue',
+    logoUrl: '/companies/chartis-logo.png',
+  },
+  {
+    id: 'foad',
+    name: 'FOAD',
+    displayName: 'FOAD',
+    link: 'https://www.foad.gg/',
+    accentColor: 'green',
+    logoUrl: '/companies/foad-logo.png',
+  },
+  {
+    id: 'thirdmade',
+    name: 'ThirdMade',
+    displayName: 'THIRDMADE',
+    link: 'https://discord.gg/thirdmade',
+    accentColor: 'purple',
+    logoUrl: '/companies/thirdmade-logo.png',
+  },
+  {
+    id: 'uefntool',
+    name: 'UEFN Tool',
+    displayName: 'UEFN TOOL',
+    link: 'https://discord.gg/uefntool',
+    accentColor: 'blue',
+    logoUrl: '/companies/uefntool-logo.png',
+  },
+  {
+    id: 'fnsg',
+    name: 'FNSG',
+    displayName: 'FNSG',
+    link: 'https://discord.gg/fnsg',
+    accentColor: 'orange',
+    logoUrl: '/companies/fnsg-logo.png',
+  },
+  {
+    id: 'vlo',
+    name: 'VLO Studios',
+    displayName: 'VLO STUDIOS',
+    link: 'https://discord.gg/w5Rg9yhte',
+    accentColor: 'cyan',
+    logoUrl: '/companies/vlo-logo.png',
+  },
+  {
+    id: 'solrise',
+    name: 'Solrise Interactive',
+    displayName: 'SOLRISE',
+    link: 'https://discord.gg/solrise',
+    accentColor: 'yellow',
+    logoUrl: '/companies/solrise-logo.png',
+  },
+  {
+    id: 'drying',
+    name: 'Drying Games',
+    displayName: 'DRYING',
+    link: 'https://discord.gg/drying',
+    accentColor: 'cyan',
+    logoUrl: '/companies/drying-logo.png',
+  },
+  {
+    id: 'casuallegends',
+    name: 'Casual Legends',
+    displayName: 'CASUAL LEGENDS',
+    link: 'https://discord.gg/casuallegends',
+    accentColor: 'pink',
+    logoUrl: '/companies/casuallegends-logo.png',
+  },
+  {
+    id: 'getshot',
+    name: 'Getshot',
+    displayName: 'GETSHOT',
+    link: 'https://discord.gg/getshot',
+    accentColor: 'red',
+    logoUrl: '/companies/getshot-logo.png',
+  },
+];
+
+const faqs = [
+  { question: 'How do you ensure the right community fit for our brand?', answer: 'We map servers using interest profiles, location data, and cultural alignment, drawing from admin insights and content analysis to predict resonance and avoid mismatches.' },
+  { question: 'What makes your ad formats stand out in gaming spaces?', answer: 'Beyond static posts, we specialize in interactive spectacles like tournament sponsorships, live giveaways, and UEFN-linked Activities: formats that ignite participation and feel like community events.' },
+  { question: 'Can you handle full campaign orchestration?', answer: 'Absolutely: our team translates your brief into a phased strategy: ideation, creative dev, execution, and insights reporting, with real-time adjustments for peak performance.' },
+  { question: 'How do you measure and optimize success?', answer: 'Layered metrics from engagements and conversions to sentiment uplift; we provide dashboards and A/B insights to refine future orbits, ensuring every dollar drives loyalty.' },
+  { question: 'What safeguards protect our brand in these communities?', answer: 'Multi-tiered: Pre-vet servers for tone and activity, leverage Discord\'s AI tools, and station mods/staff for proactive monitoring, upholding authenticity without stifling fun.' },
+  { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re gaming natives: Modular, UEFN-savvy solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up.' },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://modulixsolutions.com/#organization",
+      "name": "Modulix",
+      "legalName": "Modulix Solutions, LLC",
+      "alternateName": ["Modulix Solutions", "Modulix GG"],
+      "url": "https://modulixsolutions.com/",
+      "logo": "https://modulixsolutions.com/modulix-icon.png",
+      "image": "https://modulixsolutions.com/og-image.jpg",
+      "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
+      "sameAs": [
+        "https://modulix.gg",
+        "https://discord.gg/modulix",
+        "https://x.com/ModulixSolution",
+        "https://www.linkedin.com/company/modulixsolution"
+      ],
+      "owns": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "VerifyUGC",
+          "url": "https://verifyugc.dev"
+        },
+        {
+          "@type": "WebApplication",
+          "name": "UGC Market",
+          "url": "https://ugcmarket.dev"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "UGCAdaptr",
+          "url": "https://ugcadaptr.com"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "UGCPouch",
+          "url": "https://ugcpouch.com"
+        }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://modulixsolutions.com/#website",
+      "name": "Modulix Solutions",
+      "url": "https://modulixsolutions.com/",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://modulixsolutions.com/#organization"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://modulixsolutions.com/#faq",
+      "mainEntity": faqs.map((faq) => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    }
+  ]
+};
+
+// Serialized once at module load rather than on every render.
+const structuredDataJson = JSON.stringify(structuredData);
 
 export default function Home() {
   const [currentTagline, setCurrentTagline] = useState(0);
   const [currentBotFeature, setCurrentBotFeature] = useState(0);
-  const [isHoveringBotFeature, setIsHoveringBotFeature] = useState(false);
+  const [taglinesPaused, setTaglinesPaused] = useState(false);
+  const [botFeaturesPaused, setBotFeaturesPaused] = useState(false);
+  const [isBotFeatureHovered, setIsBotFeatureHovered] = useState(false);
+  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set());
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const botFeatures = [
-    {
-      title: 'Infinite Customization',
-      bullets: [
-        'Tailor modules, commands, & UI to your brand.',
-        'Build drag-drop automations for custom workflows.',
-        'Toggle kid-friendly or 18+ features during setup.'
-      ],
-      icon: <Palette className="w-12 h-12 text-white" />,
-      color: 'blue'
-    },
-    {
-      title: 'Event-Driven Core',
-      bullets: [
-        'Seamless module communication via event bus.',
-        'Add/remove modules without downtime.',
-        'Scalable & future-proof for growth.'
-      ],
-      icon: <Network className="w-12 h-12 text-white" />,
-      color: 'purple'
-    },
-    {
-      title: 'Hybrid Profile System',
-      bullets: [
-        'Global stats (karma) + guild data (XP, badges).',
-        'Modules add custom fields like game wins.',
-        'Unlock cosmetics for engaging user views.'
-      ],
-      icon: <Users className="w-12 h-12 text-white" />,
-      color: 'blue'
-    },
-    {
-      title: 'Modular Monetization',
-      bullets: [
-        'Pay per module with bundle discounts.',
-        'Free core features; premium unlocks advanced.',
-        'Seamless dashboard upgrades via Stripe.'
-      ],
-      icon: <Settings className="w-12 h-12 text-white" />,
-      color: 'purple'
-    },
-    {
-      title: 'AI-Powered Security',
-      bullets: [
-        'Global alt detection with action tracking.',
-        'Auto-lock mods on rapid deletes; interactive alerts.',
-        'NLP spam ban & configurable blacklists.'
-      ],
-      icon: <Shield className="w-12 h-12 text-white" />,
-      color: 'blue'
-    },
-    {
-      title: 'Engaging Leveling System',
-      bullets: [
-        'XP from chats, voice, games, & more.',
-        'Custom formulas, streaks, & challenges.',
-        'Seasonal leaderboards with karma perks.'
-      ],
-      icon: <TrendingUp className="w-12 h-12 text-white" />,
-      color: 'purple'
-    },
-    {
-      title: 'RNG & Casino Games',
-      bullets: [
-        'Kid-safe/18+ with odds, bets, & cooldowns.',
-        'Rewards like XP/items; integrate economy.',
-        'Streaks & leaderboards for fun competition.'
-      ],
-      icon: <Gamepad2 className="w-12 h-12 text-white" />,
-      color: 'blue'
-    },
-    {
-      title: 'Interactive Ticket System',
-      bullets: [
-        'Private threads with AI tagging/responses.',
-        'Auto-appeals from bans with analytics.',
-        'Custom categories & satisfaction tracking.'
-      ],
-      icon: <MessageCircle className="w-12 h-12 text-white" />,
-      color: 'purple'
-    },
-    {
-      title: 'Powerful Automations',
-      bullets: [
-        'Visual WHEN/IF/THEN logic builder.',
-        'Trigger on events/commands across modules.',
-        'Extensible with module-specific actions.'
-      ],
-      icon: <Bot className="w-12 h-12 text-white" />,
-      color: 'blue'
-    },
-    {
-      title: 'Advanced Embed Builder',
-      bullets: [
-        'V1/V2 toggle with components & multi-embeds.',
-        'Dynamic variables like {user.mention}.',
-        'Save/duplicate templates with live previews.'
-      ],
-      icon: <Palette className="w-12 h-12 text-white" />,
-      color: 'purple'
-    }
-  ];
+  // WCAG 2.2.2: both rotators run indefinitely, so they stop for a reduced-motion
+  // preference and expose a pause control. MotionConfig only covers the
+  // framer-motion transitions, not these intervals.
+  //
+  // The taglines need no manual stepper: each is a standalone slogan, so landing
+  // on one loses nothing. The bot features are ten distinct cards, so they get
+  // Previous/Next to stay reachable once rotation stops.
+  const taglinesRotating = !prefersReducedMotion && !taglinesPaused;
+  const botFeaturesRotating = !prefersReducedMotion && !botFeaturesPaused && !isBotFeatureHovered;
 
-  const taglines = [
-    'Build Authentic Discord Communities',
-    'Scale Your Gaming Brand Presence',
-    'Create Lasting Player Relationships',
-    'Transform Servers into Revenue Engines',
-    'Dominate Fortnite & Gaming Ecosystems',
-    'Elevate Community Engagement',
-    'Turn Discord into Brand Loyalty',
-    'Master Gaming Community Growth',
-    'Build the Ultimate Gaming Experience',
-    'Lead Your Industry Through Discord',
-  ];
-
-  // Auto-rotate taglines like PineFruitDev
   useEffect(() => {
+    if (!taglinesRotating) return;
+
     const interval = setInterval(() => {
       setCurrentTagline((prev) => (prev + 1) % taglines.length);
-    }, 3500);
+    }, TAGLINE_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [taglines.length]);
+  }, [taglinesRotating]);
 
-  // Auto-rotate bot features every 7.5 seconds (pause when hovering)
   useEffect(() => {
-    if (isHoveringBotFeature) return;
+    if (!botFeaturesRotating) return;
 
     const interval = setInterval(() => {
       setCurrentBotFeature((prev) => (prev + 1) % botFeatures.length);
-    }, 7500);
+    }, BOT_FEATURE_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [botFeatures.length, isHoveringBotFeature]);
+  }, [botFeaturesRotating]);
 
-  const scrollToContact = () => {
-    const element = document.querySelector('#contact');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const companies = [
-    {
-      id: 'readyup',
-      name: 'ReadyUp',
-      displayName: 'READYUP',
-      link: 'https://getreadyup.com',
-      accentColor: 'white',
-      logoUrl: '/companies/readyup-logo.png',
-    },
-    {
-      id: 'chartis',
-      name: 'Chartis',
-      displayName: 'CHARTIS',
-      link: 'https://chartis.gg',
-      accentColor: 'blue',
-      logoUrl: '/companies/chartis-logo.png',
-    },
-    {
-      id: 'foad',
-      name: 'FOAD',
-      displayName: 'FOAD',
-      link: 'https://www.foad.gg/',
-      accentColor: 'green',
-      logoUrl: '/companies/foad-logo.png',
-    },
-    {
-      id: 'thirdmade',
-      name: 'ThirdMade',
-      displayName: 'THIRDMADE',
-      link: 'https://discord.gg/thirdmade',
-      accentColor: 'purple',
-      logoUrl: '/companies/thirdmade-logo.png',
-    },
-    {
-      id: 'uefntool',
-      name: 'UEFN Tool',
-      displayName: 'UEFN TOOL',
-      link: 'https://discord.gg/uefntool',
-      accentColor: 'blue',
-      logoUrl: '/companies/uefntool-logo.png',
-    },
-    {
-      id: 'fnsg',
-      name: 'FNSG',
-      displayName: 'FNSG',
-      link: 'https://discord.gg/fnsg',
-      accentColor: 'orange',
-      logoUrl: '/companies/fnsg-logo.png',
-    },
-    {
-      id: 'vlo',
-      name: 'VLO Studios',
-      displayName: 'VLO STUDIOS',
-      link: 'https://discord.gg/w5Rg9yhte',
-      accentColor: 'cyan',
-      logoUrl: '/companies/vlo-logo.png',
-    },
-    {
-      id: 'solrise',
-      name: 'Solrise Interactive',
-      displayName: 'SOLRISE',
-      link: 'https://discord.gg/solrise',
-      accentColor: 'yellow',
-      logoUrl: '/companies/solrise-logo.png',
-    },
-    {
-      id: 'drying',
-      name: 'Drying Games',
-      displayName: 'DRYING',
-      link: 'https://discord.gg/drying',
-      accentColor: 'cyan',
-      logoUrl: '/companies/drying-logo.png',
-    },
-    {
-      id: 'casuallegends',
-      name: 'Casual Legends',
-      displayName: 'CASUAL LEGENDS',
-      link: 'https://discord.gg/casuallegends',
-      accentColor: 'pink',
-      logoUrl: '/companies/casuallegends-logo.png',
-    },
-    {
-      id: 'getshot',
-      name: 'Getshot',
-      displayName: 'GETSHOT',
-      link: 'https://discord.gg/getshot',
-      accentColor: 'red',
-      logoUrl: '/companies/getshot-logo.png',
-    },
-  ];
-
-  const faqs = [
-    { question: 'How do you ensure the right community fit for our brand?', answer: 'We map servers using interest profiles, location data, and cultural alignment—drawing from admin insights and content analysis to predict resonance and avoid mismatches.' },
-    { question: 'What makes your ad formats stand out in gaming spaces?', answer: 'Beyond static posts, we specialize in interactive spectacles like tournament sponsorships, live giveaways, and UEFN-linked Activities—formats that ignite participation and feel like community events.' },
-    { question: 'Can you handle full campaign orchestration?', answer: 'Absolutely—our team translates your brief into a phased strategy: ideation, creative dev, execution, and insights reporting, with real-time adjustments for peak performance.' },
-    { question: 'How do you measure and optimize success?', answer: 'Layered metrics from engagements and conversions to sentiment uplift; we provide dashboards and A/B insights to refine future orbits, ensuring every dollar drives loyalty.' },
-    { question: 'What safeguards protect our brand in these communities?', answer: 'Multi-tiered: Pre-vet servers for tone and activity, leverage Discord\'s AI tools, and station mods/staff for proactive monitoring—upholding authenticity without stifling fun.' },
-    { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re gaming natives: Modular, UEFN-savvy solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up.' },
-  ];
-
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": "https://modulixsolutions.com/#organization",
-        "name": "Modulix",
-        "legalName": "Modulix Solutions, LLC",
-        "alternateName": ["Modulix Solutions", "Modulix GG"],
-        "url": "https://modulixsolutions.com/",
-        "logo": "https://modulixsolutions.com/modulix-icon.png",
-        "image": "https://modulixsolutions.com/og-image.jpg",
-        "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
-        "sameAs": [
-          "https://modulix.gg",
-          "https://discord.gg/modulix",
-          "https://x.com/ModulixSolution",
-          "https://www.linkedin.com/company/modulixsolution"
-        ],
-        "owns": [
-          {
-            "@type": "SoftwareApplication",
-            "name": "VerifyUGC",
-            "url": "https://verifyugc.dev"
-          },
-          {
-            "@type": "WebApplication",
-            "name": "UGC Market",
-            "url": "https://ugcmarket.dev"
-          },
-          {
-            "@type": "SoftwareApplication",
-            "name": "UGCAdaptr",
-            "url": "https://ugcadaptr.com"
-          },
-          {
-            "@type": "SoftwareApplication",
-            "name": "UGCPouch",
-            "url": "https://ugcpouch.com"
-          }
-        ]
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://modulixsolutions.com/#website",
-        "name": "Modulix Solutions",
-        "url": "https://modulixsolutions.com/",
-        "inLanguage": "en",
-        "publisher": {
-          "@id": "https://modulixsolutions.com/#organization"
-        }
-      },
-      {
-        "@type": "FAQPage",
-        "@id": "https://modulixsolutions.com/#faq",
-        "mainEntity": faqs.map((faq) => ({
-          "@type": "Question",
-          "name": faq.question,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": faq.answer
-          }
-        }))
-      }
-    ]
-  };
-
-  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set());
+  // shrink-0 keeps these round and keeps the tap target at 36px when the
+  // neighbouring tagline is long enough to compete for the row.
+  const rotationControlClass = 'inline-flex shrink-0 items-center justify-center w-9 h-9 rounded-full border border-cyber-blue/40 bg-dark-navy/70 text-gray-300 hover:text-white hover:border-cyber-blue transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue';
 
   return (
     <>
@@ -368,7 +394,7 @@ export default function Home() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData)
+            __html: structuredDataJson
           }}
         />
       </Head>
@@ -395,10 +421,22 @@ export default function Home() {
                     <span className="text-white">SOLUTIONS</span>
                   </h1>
 
-                  <div className="h-16 md:h-20 flex items-center justify-center mb-6">
+                  <div className="h-16 md:h-20 flex items-center justify-center gap-4 mb-6">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-white">
                       {taglines[currentTagline]}
                     </h2>
+                    {!prefersReducedMotion && (
+                      <button
+                        type="button"
+                        onClick={() => setTaglinesPaused((paused) => !paused)}
+                        aria-label={taglinesPaused ? 'Resume rotating taglines' : 'Pause rotating taglines'}
+                        className={rotationControlClass}
+                      >
+                        {taglinesPaused
+                          ? <Play className="w-4 h-4" aria-hidden="true" />
+                          : <Pause className="w-4 h-4" aria-hidden="true" />}
+                      </button>
+                    )}
                   </div>
 
                   <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
@@ -581,12 +619,15 @@ export default function Home() {
                         </div>
 
                         {/* Right Column - Cards */}
-                        <div className="flex items-center justify-center">
+                        <div className="flex flex-col items-center justify-center gap-4">
                           {/* Rotating Feature Tile */}
                           <div
                             className="relative h-[380px] flex items-center justify-center w-full max-w-lg"
-                            onMouseEnter={() => setIsHoveringBotFeature(true)}
-                            onMouseLeave={() => setIsHoveringBotFeature(false)}
+                            role="group"
+                            aria-roledescription="carousel"
+                            aria-label="Modulix Bot features"
+                            onMouseEnter={() => setIsBotFeatureHovered(true)}
+                            onMouseLeave={() => setIsBotFeatureHovered(false)}
                           >
                             {botFeatures.map((feature, index) => {
                               const isVisible = currentBotFeature === index;
@@ -595,6 +636,10 @@ export default function Home() {
                               return (
                   <motion.div
                                   key={feature.title}
+                                  role="group"
+                                  aria-roledescription="slide"
+                                  aria-label={`${index + 1} of ${botFeatures.length}: ${feature.title}`}
+                                  aria-hidden={!isVisible}
                                   initial={{ opacity: 0, x: 100, scale: 0.95 }}
                                   animate={{
                                     opacity: isVisible ? 1 : 0,
@@ -642,6 +687,7 @@ export default function Home() {
                                       {feature.bullets.map((bullet, bulletIndex) => (
                                         <li key={bulletIndex} className="flex items-start">
                                           <span
+                                            aria-hidden="true"
                                             className="text-2xl mr-3 flex-shrink-0 mt-[-2px]"
                                             style={{ color: feature.color === 'blue' ? '#00D4FF' : '#C084FC' }}
                                           >
@@ -657,6 +703,57 @@ export default function Home() {
                   </motion.div>
                               );
                             })}
+                          </div>
+
+                          {/*
+                            Previous/Next render unconditionally: rotation stops
+                            under a reduced-motion preference, so manual controls
+                            are the only way the other nine features stay
+                            reachable. Pause/Play only appears when there is
+                            motion to pause.
+
+                            relative z-10: the slides are absolutely positioned,
+                            and a card taller than the 380px track spills over
+                            this row on narrow viewports, where it would
+                            otherwise swallow taps on these controls.
+                          */}
+                          <div className="relative z-10 flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setCurrentBotFeature((current) => (current - 1 + botFeatures.length) % botFeatures.length)}
+                              aria-label="Previous feature"
+                              className={rotationControlClass}
+                            >
+                              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+                            </button>
+                            {/*
+                              Deliberately not a live region: automatic rotation
+                              would announce every 7.5s. The active slide's own
+                              label already carries "N of 10".
+                            */}
+                            <p className="text-sm text-gray-300">
+                              {`Feature ${currentBotFeature + 1} of ${botFeatures.length}`}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => setCurrentBotFeature((current) => (current + 1) % botFeatures.length)}
+                              aria-label="Next feature"
+                              className={rotationControlClass}
+                            >
+                              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                            </button>
+                            {!prefersReducedMotion && (
+                              <button
+                                type="button"
+                                onClick={() => setBotFeaturesPaused((paused) => !paused)}
+                                aria-label={botFeaturesPaused ? 'Resume feature rotation' : 'Pause feature rotation'}
+                                className={rotationControlClass}
+                              >
+                                {botFeaturesPaused
+                                  ? <Play className="w-4 h-4" aria-hidden="true" />
+                                  : <Pause className="w-4 h-4" aria-hidden="true" />}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1233,7 +1330,7 @@ export default function Home() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0789.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0789-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0067.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0408.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9758 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
                           </svg>
                           Discord
@@ -1244,7 +1341,7 @@ export default function Home() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
-                          <svg width="16" height="16" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
+                          <svg width="16" height="16" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" aria-hidden="true">
                             <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="currentColor"/>
                           </svg>
                           X
@@ -1255,7 +1352,7 @@ export default function Home() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                           </svg>
                           LinkedIn
