@@ -1,13 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Button from './Button';
+import Spinner from './states/Spinner';
+import StateMessage from './states/StateMessage';
+
+type FormStatus =
+  | { kind: 'idle' }
+  | { kind: 'submitting' }
+  | { kind: 'error'; message: string; token: number }
+  | { kind: 'success'; message: string };
+
+const ERROR_VISIBLE_MS = 5000;
+const REDIRECT_DELAY_MS = 1500;
 
 export default function ContactForm() {
-  const [result, setResult] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<FormStatus>({ kind: 'idle' });
+  const isSubmitting = status.kind === 'submitting';
   const [fieldValidity, setFieldValidity] = useState({
     name: false,
     email: false,
@@ -43,6 +54,29 @@ export default function ContactForm() {
     }));
   };
 
+  // Errors retire themselves after five seconds; a success stays on screen
+  // until the redirect lands. Each error carries a token so that a timer only
+  // ever clears the error it was armed for: re-submitting and failing the same
+  // way twice must not let the first timer cut the second message short.
+  const errorToken = useRef(0);
+
+  const showError = (message: string) => {
+    const token = ++errorToken.current;
+    setStatus({ kind: 'error', message, token });
+    setTimeout(() => {
+      setStatus(prev => (prev.kind === 'error' && prev.token === token ? { kind: 'idle' } : prev));
+    }, ERROR_VISIBLE_MS);
+  };
+
+  const confirmSubmission = (form: HTMLFormElement) => {
+    setStatus({ kind: 'success', message: 'Message sent successfully! Redirecting...' });
+    form.reset();
+    setFieldValidity({ name: false, email: false, discord: false, message: false });
+    setTimeout(() => {
+      window.location.href = '/contact-confirmed';
+    }, REDIRECT_DELAY_MS);
+  };
+
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -61,13 +95,11 @@ export default function ContactForm() {
     const isMessageValid = validateField('message', currentValues.message);
 
     if (!isNameValid || !isEmailValid || !isDiscordValid || !isMessageValid) {
-      setResult('Please fill out all required fields correctly.');
-      setTimeout(() => setResult(''), 5000);
+      showError('Please fill out all required fields correctly.');
       return;
     }
 
-    setIsSubmitting(true);
-    setResult('Sending...');
+    setStatus({ kind: 'submitting' });
 
     const formData = new FormData(form);
 
@@ -82,60 +114,29 @@ export default function ContactForm() {
         // Remove manual headers - let browser set them automatically for FormData
       });
 
-      // Check if response is ok before trying to parse
-      if (response.ok) {
-        try {
-          const data = await response.json();
-          console.log('Web3Forms Response:', data);
+      if (!response.ok) {
+        showError(`Failed to send message (${response.status}). Please try again.`);
+        return;
+      }
 
-          if (data.success) {
-            setResult('Message sent successfully! Redirecting...');
-            form.reset();
-            // Clear validation states on success
-            setFieldValidity({ name: false, email: false, discord: false, message: false });
+      try {
+        const data = await response.json();
 
-            // Redirect after showing success message briefly
-            setTimeout(() => {
-              window.location.href = '/contact-confirmed';
-            }, 1500);
-          } else {
-            console.log('Web3Forms Error:', data);
-            setResult(data.message || 'Failed to send message. Please try again.');
-          }
-        } catch (parseError) {
-          // If JSON parsing fails but response is ok, assume success
-          console.log('Parse error but response OK, assuming success:', parseError);
-          setResult('Message sent successfully! Redirecting...');
-          form.reset();
-          setFieldValidity({ name: false, email: false, discord: false, message: false });
-
-          setTimeout(() => {
-            window.location.href = '/contact-confirmed';
-          }, 1500);
+        if (data.success) {
+          confirmSubmission(form);
+        } else {
+          showError(data.message || 'Failed to send message. Please try again.');
         }
-      } else {
-        // Response not ok
-        console.log('HTTP Error:', response.status, response.statusText);
-        setResult(`Failed to send message (${response.status}). Please try again.`);
+      } catch {
+        // A 2xx with an unreadable body still means the submission landed.
+        confirmSubmission(form);
       }
     } catch (error) {
-      console.log('Network Error:', error);
-      // Web3Forms may block fetch due to CORS, but form still submits successfully
-      // Since emails are being sent, assume success and redirect
-      setResult('Message sent successfully! Redirecting...');
-      form.reset();
-      setFieldValidity({ name: false, email: false, discord: false, message: false });
-
-      setTimeout(() => {
-        window.location.href = '/contact-confirmed';
-      }, 1500);
-    } finally {
-      setIsSubmitting(false);
-      setTimeout(() => {
-        if (!result.includes('successfully')) {
-          setResult('');
-        }
-      }, 5000);
+      // Web3Forms can reject the fetch on CORS while still delivering the mail,
+      // so this path stays optimistic on purpose: treating it as a failure
+      // would tell people their inquiry was lost when it was not.
+      console.warn('Contact form network error, assuming delivery:', error);
+      confirmSubmission(form);
     }
   };
 
@@ -247,21 +248,24 @@ export default function ContactForm() {
           type="submit"
           disabled={isSubmitting || !fieldValidity.name || !fieldValidity.email || !fieldValidity.message}
           className="w-full md:w-auto"
+          icon={isSubmitting ? <Spinner size="sm" /> : undefined}
         >
           {isSubmitting ? 'Sending...' : 'Send Message'}
         </Button>
       </div>
 
-      {result && (
-        <div role="status" aria-live="polite" className={`text-center mt-4 p-3 rounded-lg ${
-          result.includes('successfully')
-            ? 'bg-green-900/20 text-green-400 border border-green-500/30'
-            : result === 'Sending...'
-            ? 'bg-blue-900/20 text-blue-400 border border-blue-500/30'
-            : 'bg-red-900/20 text-red-400 border border-red-500/30'
-        }`}>
-          {result}
-        </div>
+      {status.kind !== 'idle' && (
+        <StateMessage
+          className="mt-4"
+          tone={
+            status.kind === 'submitting'
+              ? 'loading'
+              : status.kind === 'success'
+              ? 'success'
+              : 'error'
+          }
+          title={status.kind === 'submitting' ? 'Sending...' : status.message}
+        />
       )}
 
       </form>
