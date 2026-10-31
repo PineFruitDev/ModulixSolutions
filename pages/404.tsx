@@ -9,6 +9,7 @@ export default function Custom404() {
     <StatusPage
       pageTitle="404 Error - Page Not Found | Modulix Solutions"
       metaDescription="That page does not exist. Head back to Modulix Solutions for community growth, creator programmes and brand activations across user-generated content platforms."
+      path="/404.html"
       icon={Compass}
       heading="404 Error - Page Not Found"
       actions={

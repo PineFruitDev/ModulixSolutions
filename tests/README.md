@@ -18,6 +18,16 @@ missing-route fallback, so 404 is requested at `/404.html` directly; that is
 also the only status page GitHub Pages serves for a missing route. These tests
 do not establish delivery by the form provider or device acceptance.
 
+`tests/unit/seo.test.tsx` covers the metadata layer in `lib/seo`: canonical URLs
+keeping their exported trailing slash, `og:url` matching the canonical, titles
+and descriptions matching their Open Graph and Twitter copies, card image size
+and alt text, the default indexable robots value against a utility page's
+`noindex`, and no tag being emitted twice. It also checks `public/sitemap.xml`
+is byte-identical to what the route manifest generates, that noindex routes stay
+out of it, that every listed route has a page behind it, and that `og-image.jpg`
+really is 1200x630. `next/head` renders nothing under jsdom, which is why the
+tag set is built by a pure function and asserted there rather than in the DOM.
+
 `tests/unit/states.test.tsx` covers the shared state components: which tones
 interrupt with `role="alert"` versus announce politely, the busy flag on the
 loading tone, error-boundary containment and recovery, the company logo

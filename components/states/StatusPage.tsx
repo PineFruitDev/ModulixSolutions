@@ -1,5 +1,4 @@
 import React from 'react';
-import Head from 'next/head';
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
@@ -7,12 +6,14 @@ import Header from '../Header';
 import Footer from '../Footer';
 import ParticleBackground from '../ParticleBackground';
 import Container from '../Container';
+import Seo from '../Seo';
 
 interface StatusPageProps {
   /** Document title and the basis for the social card title. */
   pageTitle: string;
   metaDescription: string;
-  canonical?: string;
+  /** Exported path of this page, used for its canonical URL and og:url. */
+  path: string;
   robots?: string;
   icon: LucideIcon;
   heading: string;
@@ -30,7 +31,7 @@ interface StatusPageProps {
 export default function StatusPage({
   pageTitle,
   metaDescription,
-  canonical,
+  path,
   robots = 'noindex, follow',
   icon: Icon,
   heading,
@@ -39,22 +40,15 @@ export default function StatusPage({
 }: StatusPageProps) {
   return (
     <>
-      <Head>
-        <title>{pageTitle}</title>
-        <meta name="description" content={metaDescription} />
-        <meta name="robots" content={robots} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {canonical && <link rel="canonical" href={canonical} />}
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
-        {canonical && <meta property="og:url" content={canonical} />}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={metaDescription} />
-        <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
-      </Head>
+      {/* noindex keeps these out of search results; the self-referencing
+          canonical is inert alongside it and gives the social card a complete
+          URL, which these pages previously shipped without. */}
+      <Seo
+        title={pageTitle}
+        description={metaDescription}
+        path={path}
+        robots={robots}
+      />
 
       {/* min-h-screen rather than h-screen: the content grows with the longest
           translation, the largest default font size and the extra links. */}
