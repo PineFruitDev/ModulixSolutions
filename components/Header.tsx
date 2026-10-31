@@ -98,15 +98,19 @@ export default function Header({ simple = false }: HeaderProps) {
             <nav className="hidden md:flex space-x-8">
               {navItems.map((item) => (
                 item.href.startsWith('#') ? (
-                  <motion.button
+                  <motion.a
+                    href={item.href}
                     key={item.name}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => handleNavClick(item.href)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      handleNavClick(item.href);
+                    }}
                     className={`text-white hover:text-cyber-blue transition-colors duration-300 ${item.name === 'Testimonials' ? 'hidden lg:block' : ''}`}
                   >
                     {item.name}
-                  </motion.button>
+                  </motion.a>
                 ) : (
                   <Link key={item.name} href={item.href}>
                     <motion.div
@@ -170,15 +174,19 @@ export default function Header({ simple = false }: HeaderProps) {
             <div className="flex-1 flex flex-col justify-center px-8 space-y-6">
               {navItems.map((item) => (
                 item.href.startsWith('#') && item.name !== 'Testimonials' ? (
-                  <motion.button
+                  <motion.a
+                    href={item.href}
                     key={item.name}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => handleNavClick(item.href)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      handleNavClick(item.href);
+                    }}
                     className="text-left text-xl text-white hover:text-cyber-blue transition-colors duration-300"
                   >
                     {item.name}
-                  </motion.button>
+                  </motion.a>
                 ) : (
                   <Link key={item.name} href={item.href}>
                     <motion.div

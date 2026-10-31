@@ -356,17 +356,14 @@ export default function Home() {
         "name": "Modulix",
         "legalName": "Modulix Solutions, LLC",
         "alternateName": ["Modulix Solutions", "Modulix GG"],
-        "url": "https://modulixsolutions.com",
+        "url": "https://modulixsolutions.com/",
         "logo": "https://modulixsolutions.com/modulix-icon.png",
         "image": "https://modulixsolutions.com/og-image.jpg",
         "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
         "sameAs": [
           "https://modulix.gg",
-          "https://pinefruit.dev",
-          "https://verifyugc.dev",
-          "https://ugcmarket.dev",
           "https://discord.gg/modulix",
-          "https://twitter.com/modulixsolutions",
+          "https://x.com/ModulixSolution",
           "https://www.linkedin.com/company/modulixsolution"
         ],
         "owns": [
@@ -396,7 +393,8 @@ export default function Home() {
         "@type": "WebSite",
         "@id": "https://modulixsolutions.com/#website",
         "name": "Modulix Solutions",
-        "url": "https://modulixsolutions.com",
+        "url": "https://modulixsolutions.com/",
+        "inLanguage": "en",
         "publisher": {
           "@id": "https://modulixsolutions.com/#organization"
         }
@@ -457,22 +455,25 @@ export default function Home() {
         <meta name="revisit-after" content="7 days" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="canonical" href="https://modulixsolutions.com" />
+        <link rel="canonical" href="https://modulixsolutions.com/" />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://modulixsolutions.com" />
-        <meta property="og:title" content="Modulix Solutions - Discord Community Management & Gaming Brand Advertising" />
+        <meta property="og:url" content="https://modulixsolutions.com/" />
+        <meta property="og:title" content="Modulix Solutions - Discord Community Management" />
         <meta property="og:description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
         <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:image:alt" content="Modulix Solutions" />
+        <meta name="twitter:image:alt" content="Modulix Solutions" />
         <meta property="og:site_name" content="Modulix Solutions" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://modulixsolutions.com" />
-        <meta name="twitter:title" content="Modulix Solutions - Discord Community Management & Gaming Brand Advertising" />
+        <meta name="twitter:url" content="https://modulixsolutions.com/" />
+        <meta name="twitter:title" content="Modulix Solutions - Discord Community Management" />
         <meta name="twitter:description" content="Transform Discord into revenue-generating communities with authentic gaming brand advertising, UEFN integrations, and community management for studios and brands." />
         <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
 

@@ -14,15 +14,17 @@ export default function Custom404() {
   return (
     <>
       <Head>
+        <meta name="robots" content="noindex, follow" />
+        <meta property="og:type" content="website" />
         <title>404 Error - Page Not Found | Modulix Solutions</title>
         <meta name="description" content="Sorry, the page you're looking for doesn't exist. Return to Modulix Solutions for Discord community management and engagement solutions." />
         <meta property="og:title" content="404 Error - Page Not Found | Modulix Solutions" />
         <meta property="og:description" content="Sorry, the page you're looking for doesn't exist. Return to Modulix Solutions for Discord community management and engagement solutions." />
-        <meta property="og:image" content="/og-image.jpg" />
+        <meta property="og:image" content="https://modulixsolutions.com/og-image.jpg" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="404 Error - Page Not Found | Modulix Solutions" />
         <meta name="twitter:description" content="Sorry, the page you're looking for doesn't exist. Return to Modulix Solutions for Discord community management and engagement solutions." />
-        <meta name="twitter:image" content="/og-image.jpg" />
+        <meta name="twitter:image" content="https://modulixsolutions.com/og-image.jpg" />
       </Head>
 
       <div className="h-screen bg-darkest-navy relative overflow-hidden flex flex-col">
