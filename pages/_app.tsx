@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import { Inter, Lato } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
+import ErrorBoundary from '../components/ErrorBoundary';
 import '../styles/globals.css';
 
 const inter = Inter({
@@ -25,7 +26,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <MotionConfig reducedMotion="user">
       <div className={`${inter.variable} ${lato.variable} ${inter.className}`}>
         <a className="skip-link" href="#main">Skip to content</a>
-        <Component {...pageProps} />
+        {/* Inside the font wrapper so the fallback keeps the site's typography,
+            and inside the skip link so that target survives a render error. */}
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>
       </div>
     </MotionConfig>
   );

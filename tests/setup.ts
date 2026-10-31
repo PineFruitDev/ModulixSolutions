@@ -5,3 +5,9 @@ global.IntersectionObserver = class {
   unobserve() {}
   disconnect() {}
 } as unknown as typeof IntersectionObserver;
+
+// jsdom implements no 2D context. The particle background already bails out
+// when getContext returns null, so this only silences the warning that every
+// page render would otherwise emit.
+HTMLCanvasElement.prototype.getContext = (() =>
+  null) as unknown as typeof HTMLCanvasElement.prototype.getContext;
