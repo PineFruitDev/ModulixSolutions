@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import Container from './Container';
@@ -7,8 +7,13 @@ interface HeaderProps {
   simple?: boolean;
 }
 
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default function Header({ simple = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const drawerRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
 
   const fullNavItems = [
     { name: 'Home', href: '#hero' },
@@ -25,13 +30,81 @@ export default function Header({ simple = false }: HeaderProps) {
 
   const navItems = simple ? simpleNavItems : fullNavItems;
 
+  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+
+  // The drawer, the overlay and both close affordances are all md:hidden, so a
+  // resize past the breakpoint would otherwise strand the menu open and leave
+  // the scroll lock applied with no way to release it (phone rotated to
+  // landscape, no Escape key).
+  useEffect(() => {
+    if (!isMenuOpen || typeof window.matchMedia !== 'function') return;
+
+    const query = window.matchMedia('(min-width: 768px)');
+    if (query.matches) {
+      setIsMenuOpen(false);
+      return;
+    }
+
+    const onChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setIsMenuOpen(false);
+    };
+
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', onChange);
+      return () => query.removeEventListener('change', onChange);
+    }
+
+    query.addListener(onChange);
+    return () => query.removeListener(onChange);
+  }, [isMenuOpen]);
+
+  // The drawer covers the page, so keyboard focus has to be moved into it,
+  // held there while it is open, and handed back to the toggle on close.
   useEffect(() => {
     if (!isMenuOpen) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsMenuOpen(false);
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const drawer = drawerRef.current;
+      if (!drawer) return;
+
+      const focusable = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && (active === first || !drawer.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !drawer.contains(active))) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = overflow;
+      // Returning focus to the toggle keeps the tab order where the user left it.
+      const target = toggleRef.current ?? previouslyFocused;
+      target?.focus();
+    };
   }, [isMenuOpen]);
 
   const handleNavClick = (href: string) => {
@@ -114,12 +187,20 @@ export default function Header({ simple = false }: HeaderProps) {
         </Container>
       </div>
 
+      {/*
+        While the drawer is open it is modal and covers this toggle, so the
+        toggle leaves the accessibility tree rather than duplicating the
+        drawer's own "Close menu" control.
+      */}
       <button
         type="button"
+        ref={toggleRef}
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isMenuOpen}
         aria-controls={isMenuOpen ? 'mobile-nav' : undefined}
+        aria-hidden={isMenuOpen || undefined}
+        tabIndex={isMenuOpen ? -1 : undefined}
         className="fixed top-4 right-4 z-40 md:hidden w-12 h-12 bg-dark-navy/90 backdrop-blur-md border border-cyber-blue/30 rounded-full flex items-center justify-center text-white hover:text-cyber-blue transition-colors duration-300 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
       >
         {isMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
@@ -129,19 +210,23 @@ export default function Header({ simple = false }: HeaderProps) {
         <>
           <div
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={closeMenu}
             aria-hidden="true"
           />
 
-          <nav
+          <div
             id="mobile-nav"
-            aria-label="Primary"
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
             className="fixed top-0 right-0 bottom-0 w-80 max-w-[90vw] bg-dark-navy border-l border-cyber-blue/30 z-50 md:hidden flex flex-col"
           >
             <div className="flex justify-end p-4">
               <button
                 type="button"
-                onClick={() => setIsMenuOpen(false)}
+                ref={closeButtonRef}
+                onClick={closeMenu}
                 aria-label="Close menu"
                 className="text-white hover:text-cyber-blue transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue rounded-sm"
               >
@@ -149,7 +234,7 @@ export default function Header({ simple = false }: HeaderProps) {
               </button>
             </div>
 
-            <div className="flex-1 flex flex-col justify-center px-8 space-y-6">
+            <nav aria-label="Mobile" className="flex-1 flex flex-col justify-center px-8 space-y-6">
               {navItems.map((item) => (
                 item.href.startsWith('#') ? (
                   <a
@@ -167,15 +252,15 @@ export default function Header({ simple = false }: HeaderProps) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={closeMenu}
                     className={`text-left text-xl ${linkClass}`}
                   >
                     {item.name}
                   </Link>
                 )
               ))}
-            </div>
-          </nav>
+            </nav>
+          </div>
         </>
       )}
     </header>
