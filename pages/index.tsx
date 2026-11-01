@@ -363,7 +363,18 @@ export default function Home() {
           <main id="main">
             {/* Hero Section */}
             <SectionWrapper id="hero" labelledBy="hero-heading" reveal={false} className="min-h-screen flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-black/20 z-0"></div>
+              {/*
+                Decorative tint, and it has to stay out of hit testing. It is
+                positioned while the hero content beside it is in normal flow,
+                and a positioned element paints over a static sibling whatever
+                its z-index says, so this overlay was swallowing pointer events
+                across the whole hero. The tagline pause control sits in that
+                flow and became unclickable by mouse and touch, which fails
+                WCAG 2.2.2: the mechanism to stop the rotation was present and
+                keyboard-reachable but not operable by pointer. jsdom does no
+                hit testing, so only the browser suite can catch this.
+              */}
+              <div className="absolute inset-0 bg-black/20 z-0 pointer-events-none" aria-hidden="true"></div>
                 <div className="min-h-screen flex items-center justify-center">
                   <Container className="py-20">
                 <div className="text-center flex flex-col items-center justify-center min-h-screen">

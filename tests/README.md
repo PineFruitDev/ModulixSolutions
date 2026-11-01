@@ -155,5 +155,78 @@ components and their variant branches, and `tests/unit/homepage.test.tsx` covers
 the hero call to action, hover-to-pause on the feature carousel, and the FAQ
 disclosures opening independently rather than as an accordion.
 
+## Accessibility
+
+WCAG 2.2 AA is pinned across three files, split by what each one can honestly
+prove rather than by subject matter.
+
+`tests/unit/axe.test.tsx` runs `jest-axe` over the homepage (at rest and with
+every FAQ expanded), the header closed and with the drawer open and modal, the
+simple header, the footer, all three status pages, the inquiry form at rest,
+validated and showing its error, and every tone and variant of the shared state
+message, button and card. The important caveat is what jsdom removes: with no
+layout engine and no canvas, axe silently drops every rule needing a rendered
+box or pixel, and `color-contrast` is the casualty. It is not reported there as
+a pass or a violation, it is never run, so a green unit suite says nothing about
+contrast. Each assertion therefore also requires that some rule applied, since
+"0 violations" is equally what a harness that ran nothing reports, and a final
+case feeds axe deliberately broken markup and asserts the exact three
+violations it must return. Without that, every other assertion in the file would
+still pass if `jest-axe` stopped reporting. The file also pins 1.3.5 Identify
+Input Purpose by asserting the `autocomplete` token on each field that collects
+the visitor's own details, because axe's `autocomplete-valid` rule only checks
+tokens that are present and treats a field with no attribute at all as
+inapplicable.
+
+`tests/unit/contrast.test.tsx` closes half of the contrast gap without a
+browser. Ratios are computed from `tailwind.config.js` and Tailwind's own
+palette, so editing a brand colour, or an upgrade that shifts `gray-400`, fails
+in milliseconds. Translucent surfaces are flattened onto what sits behind them
+first, because the colour text actually sits on inside a `bg-deeper-blue/50`
+card is the blend and not either token. Two assertions exist to stop the file
+drifting into a claim it does not check: the maths is held against the two
+ratios WCAG fixes by definition (21:1 and 1:1), and the token names are
+asserted to still resolve, since a rename would otherwise compare `undefined`
+against `undefined` and quietly stop testing anything. `neon-purple` is pinned
+as a large-text and non-text colour specifically, because at 4.31:1 on
+`deeper-blue` it is the one token that does not clear the 4.5:1 body-text floor
+everywhere, which is a deliberate choice only as long as something records it.
+The focus ring is a single hard-coded cyber-blue site-wide, which is safe only
+because every surface is dark (it is 1.77:1 on white), so the file asserts that
+premise directly: no unsuffixed light background utility may appear in
+`components`, `pages` or `styles`. Opacity-suffixed ones like `bg-white/5`
+composite onto the dark page and are allowed.
+
+`tests/smoke/a11y.spec.ts` is the only place the real `color-contrast` rule
+runs, against the compiled stylesheet in Chromium, and the only place the
+document-scoped rules a detached jsdom container cannot satisfy are checked:
+`html-has-lang`, `document-title`, `region`, `landmark-one-main`,
+`page-has-heading-one` and `skip-link`. It scans every route in the manifest,
+the expanded FAQ, the open mobile drawer, the form's error surface (red-300 on
+`red-950/50`, a pairing that appears nowhere on the page at rest) and the
+homepage under an emulated reduced-motion preference, which is a genuinely
+different tree because the pause controls drop out of it. It also asserts a
+visible outline survives `forced-colors`, where the ring utilities compile to
+`box-shadow` and are dropped wholesale.
+
+Two cases in that file are geometric and have no axe rule behind them, because
+neither is automatable from the DOM alone. The first is 2.4.11 Focus Not
+Obscured, which the fixed desktop header makes a live risk: it walks the tab
+order and hit-tests each stop. Comparing rectangles cannot answer this, as the
+skip link overlaps the header's box but paints above it at `z-index: 10000` and
+is perfectly visible, so only `elementFromPoint` knows what a user can see.
+
+The second is 2.2.2 Pause, Stop, Hide, and it is in the suite because it found a
+real failure. The hero's decorative tint is absolutely positioned while the hero
+content beside it is in normal flow, and a positioned element paints above a
+static sibling whatever its `z-index` says. That overlay covered the whole hero
+and swallowed every pointer event aimed at the tagline pause control, which was
+keyboard-operable but completely unclickable by mouse or touch. The axe scans
+pass with the bug present, and jsdom does no hit testing, so neither the unit
+suite nor the rule set could see it; the assertion that catches it checks that
+the control is the topmost element at its own centre and then clicks it without
+`force`. Both geometric cases were confirmed to fail against the unfixed
+overlay.
+
 The Tests workflow runs on PRs and main/test branch pushes with read-only repository
 permissions and no deployment steps. Existing deployment configuration is unchanged.
