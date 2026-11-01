@@ -18,6 +18,7 @@ import CompanyLogo from '../components/CompanyLogo';
 import StateMessage from '../components/states/StateMessage';
 import Seo from '../components/Seo';
 import { OG_IMAGE, SITE_URL, absoluteUrl } from '../lib/seo/site';
+import { PLATFORM_EXAMPLES, TAGLINES } from '../lib/copy/positioning';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 // Page copy is static, so it lives outside the component: the tagline interval
@@ -126,19 +127,8 @@ const botFeatures = [
   }
 ];
 
-const taglines = [
-  'Build Authentic Discord Communities',
-  'Scale Your Gaming Brand Presence',
-  'Create Lasting Player Relationships',
-  'Transform Servers into Revenue Engines',
-  'Dominate Fortnite & Gaming Ecosystems',
-  'Elevate Community Engagement',
-  'Turn Discord into Brand Loyalty',
-  'Master Gaming Community Growth',
-  'Build the Ultimate Gaming Experience',
-  'Lead Your Industry Through Discord',
-];
-
+// The rotating taglines come from lib/copy/positioning.ts, where a guard test
+// holds them to describing the UGC space rather than any one platform.
 const TAGLINE_INTERVAL_MS = 3500;
 const BOT_FEATURE_INTERVAL_MS = 7500;
 
@@ -255,6 +245,13 @@ const companiesMarquee = [...companies, ...companies];
  * platform or any single game. Discord stays named because it is the site's
  * established search term and still the largest of those surfaces; dropping it
  * outright would give up that ranking for no gain.
+ *
+ * Left alone by this branch on purpose. PR #13 moves page metadata into the
+ * route manifest and rewords the title there, so changing it here as well
+ * would be the same decision made twice, in two places, with a conflict in
+ * between. The guard in tests/unit/positioning.test.tsx therefore covers the
+ * visible headline copy only; extending it to the manifest's titles is a short
+ * follow-up once #13 lands.
  */
 const HOME_TITLE = 'Modulix Solutions | Discord, Creator and UGC Growth Systems';
 const HOME_DESCRIPTION =
@@ -268,7 +265,7 @@ const HOME_DESCRIPTION =
 const serviceGroups = {
   ads: {
     name: 'Scalable Ad Services',
-    description: 'Automated, intelligent advertising solutions that seamlessly integrate into Discord conversations, delivering authentic engagement at scale.',
+    description: 'Automated, intelligent advertising solutions that seamlessly integrate into the conversations communities are already having, delivering authentic engagement at scale.',
   },
   campaigns: {
     name: 'Managed Campaigns',
@@ -276,17 +273,17 @@ const serviceGroups = {
   },
   builds: {
     name: 'Premium Builds',
-    description: 'Custom server development and management solutions designed for long-term brand presence and community engagement.',
+    description: 'Custom community development and management solutions designed for long-term brand presence and engagement.',
   },
 } as const;
 
 const faqs = [
-  { question: 'How do you ensure the right community fit for our brand?', answer: 'We map servers using interest profiles, location data, and cultural alignment, drawing from admin insights and content analysis to predict resonance and avoid mismatches.' },
-  { question: 'What makes your ad formats stand out in gaming spaces?', answer: 'Beyond static posts, we specialize in interactive spectacles like tournament sponsorships, live giveaways, and UEFN-linked Activities: formats that ignite participation and feel like community events.' },
+  { question: 'How do you ensure the right community fit for our brand?', answer: 'We map communities using interest profiles, location data, and cultural alignment, drawing from admin insights and content analysis to predict resonance and avoid mismatches.' },
+  { question: 'What makes your ad formats stand out in gaming spaces?', answer: `Beyond static posts, we specialize in interactive spectacles like tournament sponsorships, live giveaways, and playable activations built inside the games themselves (${PLATFORM_EXAMPLES.games}): formats that ignite participation and feel like community events.` },
   { question: 'Can you handle full campaign orchestration?', answer: 'Absolutely: our team translates your brief into a phased strategy: ideation, creative dev, execution, and insights reporting, with real-time adjustments for peak performance.' },
   { question: 'How do you measure and optimize success?', answer: 'Layered metrics from engagements and conversions to sentiment uplift; we provide dashboards and A/B insights to refine future orbits, ensuring every dollar drives loyalty.' },
-  { question: 'What safeguards protect our brand in these communities?', answer: 'Multi-tiered: Pre-vet servers for tone and activity, leverage Discord\'s AI tools, and station mods/staff for proactive monitoring, upholding authenticity without stifling fun.' },
-  { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re gaming natives: Modular, UEFN-savvy solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up.' },
+  { question: 'What safeguards protect our brand in these communities?', answer: 'Multi-tiered: Pre-vet communities for tone and activity, leverage each platform\'s own safety and AI tooling, and station mods/staff for proactive monitoring, upholding authenticity without stifling fun.' },
+  { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re natives of the space: modular, platform-fluent solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up. When a new creation platform takes off, we are already working in it.' },
 ];
 
 // Node ids are referenced from several places in the graph, so they are named
@@ -307,6 +304,8 @@ const structuredData = {
       "url": absoluteUrl('/'),
       "logo": absoluteUrl('/modulix-icon.png'),
       "image": absoluteUrl(OG_IMAGE.path),
+      // Reworded by PR #13, which moves this whole graph into
+      // lib/seo/structuredData.ts, so it is left alone here.
       "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
       "sameAs": [
         "https://modulix.gg",
@@ -433,10 +432,10 @@ export default function Home() {
 
   useEffect(() => {
     // Modulo by zero yields NaN, which would index past the end of the list.
-    if (!taglinesRotating || taglines.length === 0) return;
+    if (!taglinesRotating || TAGLINES.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentTagline((prev) => (prev + 1) % taglines.length);
+      setCurrentTagline((prev) => (prev + 1) % TAGLINES.length);
     }, TAGLINE_INTERVAL_MS);
 
     return () => clearInterval(interval);
@@ -493,7 +492,7 @@ export default function Home() {
 
                   <div className="h-16 md:h-20 flex items-center justify-center gap-4 mb-6">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-white">
-                      {taglines[currentTagline]}
+                      {TAGLINES[currentTagline]}
                     </h2>
                     {!prefersReducedMotion && (
                       <button
@@ -510,7 +509,7 @@ export default function Home() {
                   </div>
 
                   <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
-                    Craft authentic, scalable engagements that transform fleeting interactions into enduring brand loyalty empowering gaming studios and brands to own the conversation in the heart of gaming&apos;s digital universe.
+                    Craft authentic, scalable engagements that transform fleeting interactions into enduring brand loyalty empowering studios, creators and brands to own the conversation across the user-generated content platforms their audiences already build and play in.
                   </p>
 
                   <Button onClick={scrollToContact} size="lg" className="text-lg px-10 py-5">
@@ -548,7 +547,7 @@ export default function Home() {
                           viewport={{ once: true }}
                           className="text-xl text-gray-300 mb-6 leading-relaxed"
                         >
-                          At Modulix, we&apos;re the pioneers revolutionizing how major corporations connect with vibrant gaming communities. For over a decade, we&apos;ve partnered with Fortune 500 giants, AAA game studios launching blockbuster titles, and innovative indie developers cultivating dedicated followings. From global brands entering the metaverse to underground creators just starting out, our expertise in Discord integrations, UEFN (Unreal Engine Fortnite Network), and UGC (User-Generated Content) games sets the standard—making outdated advertising methods feel archaic.
+                          At Modulix, we&apos;re the pioneers revolutionizing how major corporations connect with vibrant player communities. For over a decade, we&apos;ve partnered with Fortune 500 giants, AAA game studios launching blockbuster titles, and innovative indie developers cultivating dedicated followings. From global brands entering the metaverse to underground creators just starting out, our expertise covers the whole user-generated content space: the communities around the games, the creator economies inside them, and the platforms themselves ({PLATFORM_EXAMPLES.games}, and whatever launches next). That breadth is what makes outdated advertising methods feel archaic.
                         </motion.p>
 
                         <motion.p
@@ -558,7 +557,7 @@ export default function Home() {
                           viewport={{ once: true }}
                           className="text-lg text-gray-300 mb-6 leading-relaxed"
                         >
-                          As confident, forward-thinking developers, we take community building to the next level. While competitors tinker with basic bots, we&apos;ve engineered comprehensive ecosystems that integrate seamlessly and feel inherently organic. Our modular framework allows us to scale from targeted server enhancements to full-scale enterprise community management, always delivering that precise mix of technical innovation and genuine human connection that drives real engagement and loyalty.
+                          As confident, forward-thinking developers, we take community building to the next level. While competitors tinker with basic bots, we&apos;ve engineered comprehensive ecosystems that integrate seamlessly and feel inherently organic. Our modular framework allows us to scale from a single targeted enhancement to full-scale enterprise community management, and to move with the space as new platforms arrive, always delivering that precise mix of technical innovation and genuine human connection that drives real engagement and loyalty.
                         </motion.p>
 
                         <motion.p
@@ -568,7 +567,7 @@ export default function Home() {
                           viewport={{ once: true }}
                           className="text-lg text-gray-300 leading-relaxed"
                         >
-                          Whether you&apos;re a corporation aiming to market products through immersive Discord experiences or leverage UEFN/UGC for viral community growth, Modulix delivers results that not only meet but exceed expectations. Join the ranks of industry leaders who&apos;ve trusted us to turn communities into powerful marketing assets.
+                          Whether you&apos;re a corporation aiming to market products through immersive community experiences or leaning on user-generated content for viral growth, Modulix delivers results that not only meet but exceed expectations. Join the ranks of industry leaders who&apos;ve trusted us to turn communities into powerful marketing assets.
                         </motion.p>
                       </div>
                     </div>
@@ -954,7 +953,7 @@ export default function Home() {
                             </h4>
                           </div>
                           <p className="text-gray-300 leading-relaxed">
-                            Tap into curated Discord networks for targeted, incentive-aligned visibility; we handle placements, ensuring genuine interactions while sharing success with community owners.
+                            Tap into curated community networks ({PLATFORM_EXAMPLES.social}) for targeted, incentive-aligned visibility; we handle placements, ensuring genuine interactions while sharing success with community owners.
                           </p>
                         </Card>
                       </RowContainer>
@@ -1077,7 +1076,7 @@ export default function Home() {
                             </h4>
                           </div>
                           <p className="text-gray-300 leading-relaxed">
-                            Design and launch branded servers as loyalty engines—modular channels, bots, and launch events; opt for full management or trained handover.
+                            Design and launch branded communities as loyalty engines: modular channels, bots, and launch events; opt for full management or trained handover.
                           </p>
                         </Card>
                         <Card className="flex-1 hover:shadow-neon-blue-glow transition-all duration-300" glowColor="blue">
@@ -1088,14 +1087,14 @@ export default function Home() {
                             </h4>
                           </div>
                           <p className="text-gray-300 leading-relaxed">
-                            24/7 engagement fueling with events and content; specialize in UEFN tie-ins, weaving brands into interactive game worlds for immersive retention.
+                            24/7 engagement fueling with events and content; specialize in in-game tie-ins ({PLATFORM_EXAMPLES.games}), weaving brands into interactive game worlds for immersive retention.
                           </p>
                         </Card>
                       </RowContainer>
                     </div>
                   </SectionContainer>
 
-                  {/* Why Discord Drives Superior ROI */}
+                  {/* Why Owned Communities Drive Superior ROI */}
                   <SectionContainer className="mb-16">
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
@@ -1104,10 +1103,10 @@ export default function Home() {
                       className="text-center"
                     >
                       <h3 className="text-2xl font-bold mb-4 text-cyber-blue">
-                        Why Discord Drives Superior ROI
+                        Why Owned Communities Drive Superior ROI
                       </h3>
                       <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-                        Beyond fleeting impressions to owned universes—where your brand lives indefinitely, builds lasting relationships, and delivers measurable results that traditional platforms can&apos;t match
+                        Beyond fleeting impressions to owned universes, where your brand lives indefinitely, builds lasting relationships, and delivers measurable results that rented ad inventory can&apos;t match
                       </p>
                       <div className="w-full h-0.5 bg-gradient-to-r from-cyber-blue to-neon-purple mb-8"></div>
                     </motion.div>
@@ -1131,7 +1130,7 @@ export default function Home() {
                         </h3>
                         <div className="w-full h-0.5 bg-gradient-to-r from-cyber-blue to-neon-purple mb-4"></div>
                         <p className="text-gray-300 leading-relaxed text-sm">
-                          Ditch ephemeral views—build Discord hubs where your brand lives indefinitely, owning data, rules, and relationships for sustained growth.
+                          Ditch ephemeral views: build hubs where your brand lives indefinitely, owning data, rules, and relationships for sustained growth.
                         </p>
                       </Card>
                     </motion.div>
@@ -1177,7 +1176,7 @@ export default function Home() {
                         </h3>
                         <div className="w-full h-0.5 bg-gradient-to-r from-cyber-blue to-neon-purple mb-4"></div>
                         <p className="text-gray-300 leading-relaxed text-sm">
-                          Where traditional platforms chase seconds of attention, Discord delivers loops of interaction—higher participation, deeper loyalty.
+                          Where ad platforms chase seconds of attention, an owned community delivers loops of interaction: higher participation, deeper loyalty.
                         </p>
                       </Card>
                     </motion.div>
@@ -1200,7 +1199,7 @@ export default function Home() {
                         </h3>
                         <div className="w-full h-0.5 bg-gradient-to-r from-neon-purple to-cyber-blue mb-4"></div>
                         <p className="text-gray-300 leading-relaxed text-sm">
-                          Tailored for studios: Integrate UEFN experiences seamlessly, making your brand a playable force in gaming communities.
+                          Tailored for studios: integrate playable experiences ({PLATFORM_EXAMPLES.games}) seamlessly, making your brand a playable force in gaming communities.
                         </p>
                       </Card>
                     </motion.div>
@@ -1349,7 +1348,7 @@ export default function Home() {
                         Brands Ready to Dominate
                       </h3>
                       <p className="text-gray-300 mb-6">
-                        Whether you&apos;re launching in Fortnite, building massive Discord communities, or creating the next viral gaming experience, we specialize in turning bold ideas into reality.
+                        Whether you&apos;re launching a playable experience, building a community that outlasts the campaign, or creating the next viral moment, we specialize in turning bold ideas into reality.
                       </p>
                     </div>
 
@@ -1360,7 +1359,7 @@ export default function Home() {
                       <ul className="space-y-2 text-gray-300">
                         <li className="flex items-center">
                           <span className="w-2 h-2 bg-cyber-blue rounded-full mr-3 flex-shrink-0"></span>
-                          Fortnite brands looking to launch epic events
+                          Brands launching in-game events ({PLATFORM_EXAMPLES.games})
                         </li>
                         <li className="flex items-center">
                           <span className="w-2 h-2 bg-cyber-blue rounded-full mr-3 flex-shrink-0"></span>
@@ -1368,7 +1367,7 @@ export default function Home() {
                         </li>
                         <li className="flex items-center">
                           <span className="w-2 h-2 bg-cyber-blue rounded-full mr-3 flex-shrink-0"></span>
-                          Startups ready to disrupt the gaming space
+                          Creators and startups ready to disrupt the UGC space
                         </li>
                         <li className="flex items-center">
                           <span className="w-2 h-2 bg-cyber-blue rounded-full mr-3 flex-shrink-0"></span>
@@ -1449,7 +1448,7 @@ export default function Home() {
                     Frequently Asked Questions
                   </h2>
                   <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                    Everything you need to know about transforming your Discord community
+                    Everything you need to know about growing your community wherever your audience already is
                   </p>
                 </motion.div>
 
