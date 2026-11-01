@@ -98,3 +98,39 @@ test('fonts and section backgrounds are not render-blocking third-party requests
   expect(app).toContain('Skip to content');
   expect(app).toContain("display: 'swap'");
 });
+
+test('section navigation moves focus to its destination after closing the dialog', () => {
+  render(<><Header /><section id="contact">Contact destination</section></>);
+  fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
+  const dialog = screen.getByRole('dialog');
+  fireEvent.click(dialog.querySelector('a[href="#contact"]')!);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(document.getElementById('contact')).toHaveFocus();
+  expect(document.getElementById('contact')).toHaveAttribute('tabindex', '-1');
+});
+
+test('dialog wraps focus in both directions and Escape restores the opener', () => {
+  render(<Header />);
+  const opener = screen.getByRole('button', { name: 'Open menu' });
+  fireEvent.click(opener);
+  const close = screen.getByRole('button', { name: 'Close menu' });
+  const last = screen.getByRole('dialog').querySelector('a[href="#faq"]')!;
+  expect(close).toHaveFocus();
+  fireEvent.keyDown(close, { key: 'Tab', shiftKey: true });
+  expect(last).toHaveFocus();
+  fireEvent.keyDown(last, { key: 'Tab' });
+  expect(close).toHaveFocus();
+  fireEvent.keyDown(close, { key: 'Escape' });
+  expect(opener).toHaveFocus();
+});
+
+test('modal isolates background and restores its previous inert state on close', () => {
+  render(<><Header /><main>Page</main><aside>Already inert</aside></>);
+  screen.getByText('Already inert').setAttribute('inert', '');
+  const main = screen.getByRole('main');
+  fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
+  expect(main).toHaveAttribute('inert');
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(main).not.toHaveAttribute('inert');
+  expect(screen.getByText('Already inert')).toHaveAttribute('inert');
+});

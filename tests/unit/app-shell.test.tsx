@@ -93,3 +93,10 @@ test('both recovery paths are offered, and retrying does not navigate', () => {
 
   consoleError.mockRestore();
 });
+
+test('activating skip moves keyboard focus to main without adding a tab stop', () => {
+  render(<App {...appProps(Page)} />);
+  fireEvent.click(screen.getByRole('link', { name: 'Skip to content' }));
+  expect(screen.getByRole('main')).toHaveFocus();
+  expect(screen.getByRole('main')).toHaveAttribute('tabindex', '-1');
+});

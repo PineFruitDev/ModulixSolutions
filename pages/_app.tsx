@@ -37,7 +37,13 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <div className={`${inter.variable} ${lato.variable} ${inter.className}`}>
-        <a className="skip-link" href="#main">Skip to content</a>
+        <a className="skip-link" href="#main" onClick={() => {
+          const main = document.getElementById('main');
+          if (main) {
+            main.tabIndex = -1;
+            main.focus({ preventScroll: true });
+          }
+        }}>Skip to content</a>
         {/* Inside the font wrapper so the fallback keeps the site's typography,
             and inside the skip link so that target survives a render error. */}
         <ErrorBoundary>

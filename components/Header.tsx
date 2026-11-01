@@ -11,6 +11,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
 
 export default function Header({ simple = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const destinationRef = useRef<HTMLElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
@@ -63,6 +64,7 @@ export default function Header({ simple = false }: HeaderProps) {
   useEffect(() => {
     if (!isMenuOpen) return;
 
+    const toggle = toggleRef.current;
     const previouslyFocused = document.activeElement as HTMLElement | null;
     closeButtonRef.current?.focus();
 
@@ -95,22 +97,48 @@ export default function Header({ simple = false }: HeaderProps) {
 
     document.addEventListener('keydown', onKey);
 
+    // Isolate every sibling along the drawer's ancestor chain, including the
+    // skip link, page and footer. Preserve any pre-existing inert state.
+    const isolated: Array<[Element, boolean]> = [];
+    let branch: Element | null = drawerRef.current;
+    while (branch?.parentElement) {
+      for (const sibling of Array.from(branch.parentElement.children)) {
+        if (sibling !== branch && !sibling.hasAttribute('data-menu-overlay')) {
+          isolated.push([sibling, sibling.hasAttribute('inert')]);
+          sibling.setAttribute('inert', '');
+        }
+      }
+      branch = branch.parentElement;
+      if (branch === document.body) break;
+    }
+
+
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = overflow;
+      for (const [element, wasInert] of isolated) {
+        if (!wasInert) element.removeAttribute('inert');
+      }
       // Returning focus to the toggle keeps the tab order where the user left it.
-      const target = toggleRef.current ?? previouslyFocused;
-      target?.focus();
+      const desktop = window.matchMedia?.('(min-width: 768px)').matches;
+      const target = destinationRef.current ?? (desktop
+        ? document.querySelector<HTMLElement>('.site-header a')
+        : toggle ?? previouslyFocused);
+      destinationRef.current = null;
+      target?.focus({ preventScroll: true });
     };
   }, [isMenuOpen]);
 
   const handleNavClick = (href: string) => {
     if (href.startsWith('#')) {
-      const element = document.querySelector(href);
+      const element = document.querySelector<HTMLElement>(href);
       if (element) {
+        if (!element.hasAttribute('tabindex')) element.tabIndex = -1;
+        if (isMenuOpen) destinationRef.current = element;
+        else element.focus({ preventScroll: true });
         const isDesktop = window.innerWidth >= 768;
         const headerElement = document.querySelector('.site-header');
         const headerOffset = isDesktop && headerElement instanceof HTMLElement ? headerElement.offsetHeight : 0;
@@ -213,6 +241,7 @@ export default function Header({ simple = false }: HeaderProps) {
       {isMenuOpen && (
         <>
           <div
+            data-menu-overlay=""
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden"
             onClick={closeMenu}
             aria-hidden="true"
