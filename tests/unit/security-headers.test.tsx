@@ -31,8 +31,10 @@ describe('the headers file', () => {
   // compared against the route manifest. Editing the file by hand and leaving
   // lib/security-headers.ts behind fails here instead of shipping a policy
   // nothing in the codebase describes.
-  test('public/_headers is exactly what the module generates', () => {
-    expect(read('public/_headers')).toBe(buildHeadersFile());
+  test('public/_headers security block is exactly what the module generates', () => {
+    // Cache rules follow the generated security block as separate path sections.
+    const securityBlock = read('public/_headers').split('\n\n')[0] + '\n';
+    expect(securityBlock).toBe(buildHeadersFile());
   });
 
   test('the policy is attached to every path, not just the document', () => {
