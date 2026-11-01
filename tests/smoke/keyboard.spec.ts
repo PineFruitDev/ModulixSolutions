@@ -16,6 +16,44 @@ test('the skip link is the first tab stop and jumps to main', async ({ page }) =
   await expect(page).toHaveURL(/#main$/);
 });
 
+test.describe('desktop in-page navigation', () => {
+  // The primary nav is hidden below md, so pin a desktop viewport for both
+  // projects rather than relying on the one each happens to use.
+  test.use({ viewport: { width: 1280, height: 720 } });
+
+  /**
+   * Distance between the top of the section and the bottom of the fixed bar.
+   * Zero once the hand-written animation has settled.
+   */
+  const clearance = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => {
+      const bar = document.querySelector('.site-header') as HTMLElement;
+      const section = document.querySelector('#services') as HTMLElement;
+      return Math.round(
+        Math.abs(section.getBoundingClientRect().top - bar.getBoundingClientRect().bottom)
+      );
+    });
+
+  // The animation advances on requestAnimationFrame, which a headless browser
+  // throttles hard (frames hundreds of milliseconds apart), so this polls for
+  // the settled state rather than guessing a duration. It settles at 24 rather
+  // than 0 because the section's reveal keeps a 24px vertical transform that
+  // getBoundingClientRect reports but layout does not.
+  const SETTLED_PX = 30;
+
+  test('a nav item scrolls its section clear of the sticky header', async ({ page }) => {
+    await page.goto('/');
+    await page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link', { name: 'Services' })
+      .click();
+
+    // The fixed bar must not be left covering the section it scrolled to.
+    await expect.poll(() => clearance(page), { timeout: 15000 }).toBeLessThanOrEqual(SETTLED_PX);
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  });
+});
+
 test.describe('mobile drawer', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
