@@ -20,8 +20,10 @@ Unit tests also cover landmarks, named controls, image dimensions, FAQ buttons,
 and the absence of render-blocking font CSS. Smoke tests cover desktop and mobile Chromium viewports, homepage sections,
 contact submission with a synthetic response, confirmation, and the exported
 status pages (404, 500, confirmation): their headings, their `noindex` robots
-tag, and the links back into the site. They block external requests by default
-and never submit a real inquiry. Tracing is disabled to avoid retaining form
+tag, and the links back into the site. They also cover the end-to-end journeys
+across those pieces: every primary nav target, fragment entry, the links out of
+a dead end, and the inquiry's failure, retry and double-submit paths. They block
+external requests by default and never submit a real inquiry. Tracing is disabled to avoid retaining form
 request data. The local static server does not emulate hosting-specific
 missing-route fallback, so 404 is requested at `/404.html` directly; that is
 also the only status page GitHub Pages serves for a missing route. These tests
@@ -73,6 +75,47 @@ the inverse: an injected inline script must not run and must be reported, so a
 policy accidentally relaxed to `'unsafe-inline'` cannot pass the rest of the
 file. Both that case and the unit suite were confirmed to fail against a
 deliberately relaxed `script-src`.
+
+`tests/smoke/journeys.spec.ts` covers the ways a visitor reaches a section:
+every in-page item in the primary nav rather than one of them, a `Home` click
+from a scrolled page, a shared link that already carries the fragment, the two
+links off the 404, and the footer logo back to the homepage from a status page.
+The nav cases assert that the section comes to rest clear of the fixed bar,
+polling because the hand-written animation advances on `requestAnimationFrame`
+and a headless browser throttles it hard. The helper allows the same 24px that
+`keyboard.spec.ts` does, for the vertical transform a revealed section keeps,
+and has one escape hatch: the last section on the page cannot be pulled up to
+the bar because the document runs out of scroll first, so being at maximum
+scroll with the section on screen also counts as arrived. That hatch was
+checked against a deliberately zeroed header offset, which fails all five
+sections including `#faq` with the measured clearance in the message, so it is
+not quietly rescuing a real regression. `#modulix-bot` is the reason the nav
+cases are a loop: its id is the only one that does not match its label. The
+fragment cases assert only that the right section is in view, because the
+browser's native jump aligns it with the top of the viewport and leaves the bar
+overlapping its heading; that is current behaviour and is noted rather than
+asserted as clearance. `#hero` is excluded from the clearance invariant
+entirely, being full-bleed under the translucent bar by design.
+
+`tests/smoke/contact-flow.spec.ts` covers the inquiry past the happy path that
+`pages.spec.ts` owns. The status machine itself is unit-tested with a stubbed
+fetch and fake timers and is not repeated; what is left for a browser is a
+failure leaving the visitor on the page with every field still filled and a
+retry that then reaches the confirmation, a double-click producing one
+submission rather than two, an unusable optional Discord username stopping the
+inquiry before it is sent, and the whole path on a phone viewport from the
+drawer to the confirmation. The double-click case holds the response open so
+the second click lands while the first request is genuinely in flight, which is
+a race fake timers cannot present; its in-flight assertion is soft so that a
+regression reports both the enabled control and the duplicate request count,
+and removing `isSubmitting` from the button's disabled rule was confirmed to
+POST twice. The Discord case pins that nothing is sent and nothing typed is
+lost; it is the one place the form invites a submission it then refuses, since
+Discord is left out of the rule that disables Send, and the error it refuses
+with talks about required fields when the field is optional. That copy is worth
+tightening separately and the test deliberately does not assert it is right.
+The form's status region is addressed within `#contact` because Next's route
+announcer is also `role="alert"` and a page-wide query matches both.
 
 `tests/unit/states.test.tsx` covers the shared state components: which tones
 interrupt with `role="alert"` versus announce politely, the busy flag on the
