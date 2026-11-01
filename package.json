@@ -1,7 +1,7 @@
 {
   "name": "modulix-solutions",
   "version": "1.0.0",
-  "description": "Modulix Solutions LLC - Discord community solutions for brands with gaming/UEFN integrations",
+  "description": "Modulix Solutions LLC: community, creator and brand-activation infrastructure for the user-generated content space",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -17,10 +17,12 @@
     "test:smoke": "npm run build && playwright test"
   },
   "keywords": [
-    "discord",
-    "gaming",
+    "ugc",
+    "creator-economy",
     "community",
+    "gaming",
     "marketing",
+    "discord",
     "uefn",
     "pinefruit",
     "modulix"

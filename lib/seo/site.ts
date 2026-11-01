@@ -25,6 +25,18 @@ export const OG_IMAGE = {
 } as const;
 
 /**
+ * The organization logo. Declared with its dimensions because the structured
+ * data publishes it as an ImageObject, and a crawler should not have to fetch
+ * the file to learn how big it is. A unit test reads the PNG header and fails
+ * if the file stops matching these.
+ */
+export const LOGO = {
+  path: '/modulix-icon.png',
+  width: 1551,
+  height: 1549,
+} as const;
+
+/**
  * Joins a site-relative path onto the canonical origin. Paths carry their own
  * trailing slash because next.config.js exports with trailingSlash: true, and
  * a canonical URL that redirects is a canonical URL search engines discard.

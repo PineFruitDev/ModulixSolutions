@@ -7,8 +7,6 @@ import Button from '../components/Button';
 export default function ContactConfirmed() {
   return (
     <StatusPage
-      pageTitle="Message Sent Successfully | Modulix Solutions"
-      metaDescription="Thank you for contacting Modulix Solutions. Your message has been sent successfully and we'll get back to you within 24 hours."
       path="/contact-confirmed/"
       icon={CheckCircle}
       heading="We'll Contact You Soon!"
