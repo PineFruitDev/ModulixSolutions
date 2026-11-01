@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { buildPageMeta, type MetaTag } from '../../lib/seo/meta';
-import { SITE_ROUTES, buildSitemapXml, getRoute, routeMeta } from '../../lib/seo/routes';
+import { SITE_ROUTES, buildSitemapXml, getRoute } from '../../lib/seo/routes';
 import { OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl } from '../../lib/seo/site';
 
 const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
@@ -164,13 +164,13 @@ describe('every route ships a usable title and description', () => {
     expect(new Set(descriptions).size).toBe(descriptions.length);
   });
 
-  test('the robots directive follows from indexability rather than being set twice', () => {
-    for (const route of SITE_ROUTES) {
-      expect(routeMeta(route.path).robots).toBe(
-        route.indexable ? 'index, follow' : 'noindex, follow'
-      );
-    }
-  });
+  // There is deliberately no test here that routeMeta's robots value equals
+  // `indexable ? 'index, follow' : 'noindex, follow'`. That restates the
+  // function body and cannot fail for any manifest content. The property
+  // worth holding is that indexability and what ships agree, and that is
+  // covered where it can actually break: the byte-exact sitemap diff below
+  // fails if a route's indexable flag changes, and the browser suite reads
+  // the robots tag out of each built page.
 
   test('asking for a path that is not in the manifest fails loudly', () => {
     // A page passing an unlisted path would otherwise render an empty title and
