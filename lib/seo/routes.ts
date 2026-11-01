@@ -1,6 +1,6 @@
 import { absoluteUrl } from './site';
 
-export interface SiteRoute {
+interface SiteRoute {
   /** Path as exported, matching this page's canonical URL exactly. */
   path: string;
   /** Indexable routes belong in the sitemap; the rest send noindex instead. */

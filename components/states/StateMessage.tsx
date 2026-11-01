@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle, Inbox, Info } from 'lucide-react';
 
 import Spinner from './Spinner';
 
-export type StateTone = 'loading' | 'error' | 'empty' | 'success' | 'info';
+type StateTone = 'loading' | 'error' | 'empty' | 'success' | 'info';
 
 const tones = {
   loading: {

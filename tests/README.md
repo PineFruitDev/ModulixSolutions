@@ -120,10 +120,5 @@ components and their variant branches, and `tests/unit/homepage.test.tsx` covers
 the hero call to action, hover-to-pause on the feature carousel, and the FAQ
 disclosures opening independently rather than as an accordion.
 
-`components/TypingEffect.tsx` and `components/LoadingScreen.tsx` have no import
-site anywhere in the app and so sit at 0%. Tests against them would raise the
-coverage number without testing anything that ships; they are left reported as
-dead code instead.
-
 The Tests workflow runs on PRs and main/test branch pushes with read-only repository
 permissions and no deployment steps. Existing deployment configuration is unchanged.
