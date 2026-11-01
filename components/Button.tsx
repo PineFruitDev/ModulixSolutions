@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 
@@ -59,7 +59,7 @@ const Button: React.FC<NeonButtonProps> = ({
   const buttonContent = (
     <>
       {/* Animated background gradient */}
-      <motion.div
+      <m.div
         className="absolute inset-0 opacity-0 bg-gradient-to-r from-purple-600 to-blue-600"
         whileHover={{ opacity: 0.2 }}
         transition={{ duration: 0.3 }}
@@ -81,7 +81,7 @@ const Button: React.FC<NeonButtonProps> = ({
       </span>
 
       {/* Shine effect */}
-      <motion.div
+      <m.div
         className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
         whileHover={{
           translateX: '200%',
@@ -94,7 +94,7 @@ const Button: React.FC<NeonButtonProps> = ({
   if (href) {
     if (external) {
       return (
-        <motion.a
+        <m.a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
@@ -104,26 +104,26 @@ const Button: React.FC<NeonButtonProps> = ({
           {...props}
         >
           {buttonContent}
-        </motion.a>
+        </m.a>
       );
     }
 
     return (
       <Link href={href} passHref legacyBehavior>
-        <motion.a
+        <m.a
           className={buttonClasses}
           whileHover={{ scale: disabled ? 1 : 1.05 }}
           whileTap={{ scale: disabled ? 1 : 0.95 }}
           {...props}
         >
           {buttonContent}
-        </motion.a>
+        </m.a>
       </Link>
     );
   }
 
   return (
-    <motion.button
+    <m.button
       className={buttonClasses}
       onClick={onClick}
       disabled={disabled}
@@ -133,7 +133,7 @@ const Button: React.FC<NeonButtonProps> = ({
       {...props}
     >
       {buttonContent}
-    </motion.button>
+    </m.button>
   );
 };
 

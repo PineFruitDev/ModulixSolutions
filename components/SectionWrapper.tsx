@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface SectionWrapperProps {
   children: React.ReactNode;
@@ -34,7 +34,7 @@ export default function SectionWrapper({
   }
 
   return (
-    <motion.section
+    <m.section
       id={id}
       aria-labelledby={labelledBy}
       initial={{ opacity: 0, y: 24 }}
@@ -44,6 +44,6 @@ export default function SectionWrapper({
       className={`relative ${className}`}
     >
       {children}
-    </motion.section>
+    </m.section>
   );
 }

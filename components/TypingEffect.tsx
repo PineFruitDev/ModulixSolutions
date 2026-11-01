@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface TypingEffectProps {
   text: string;
@@ -32,7 +32,7 @@ export default function TypingEffect({ text, speed = 100, className = '' }: Typi
     <span className={className}>
       {displayedText}
       {!isComplete && (
-        <motion.span
+        <m.span
           animate={{ opacity: [1, 0] }}
           transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
           className="inline-block w-0.5 h-6 bg-cyber-blue ml-1"

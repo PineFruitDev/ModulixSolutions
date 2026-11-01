@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface CardProps {
   children: React.ReactNode;
@@ -38,7 +38,7 @@ export default function Card({
   };
 
   return (
-    <motion.div
+    <m.div
       whileHover={hover ? { y: -5, scale: 1.02 } : {}}
       transition={{ duration: 0.3 }}
       onClick={onClick}
@@ -52,7 +52,7 @@ export default function Card({
       `}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 

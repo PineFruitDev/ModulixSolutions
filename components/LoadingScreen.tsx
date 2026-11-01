@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface LoadingScreenProps {
   isLoading: boolean;
@@ -35,7 +35,7 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
   const hexagons = Array.from({ length: 24 }, (_, i) => i);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 1 }}
       animate={{ opacity: isLoading ? 1 : 0 }}
       exit={{ opacity: 0 }}
@@ -43,23 +43,23 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
       className="loading-screen"
     >
       <div className="text-center">
-        <motion.h1
+        <m.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="text-4xl font-bold logo-font text-cyber-blue mb-8"
         >
           MODULIX
-        </motion.h1>
+        </m.h1>
 
-        <motion.div
+        <m.div
           variants={container}
           initial="hidden"
           animate="show"
           className="loading-grid"
         >
           {hexagons.map((index) => (
-            <motion.div
+            <m.div
               key={index}
               variants={item}
               className="w-4 h-4 bg-gradient-to-r from-cyber-blue to-neon-purple rounded-sm opacity-60"
@@ -68,17 +68,17 @@ export default function LoadingScreen({ isLoading }: LoadingScreenProps) {
               }}
             />
           ))}
-        </motion.div>
+        </m.div>
 
-        <motion.p
+        <m.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
           className="mt-8 text-gray-400 text-sm"
         >
           Loading experience...
-        </motion.p>
+        </m.p>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
