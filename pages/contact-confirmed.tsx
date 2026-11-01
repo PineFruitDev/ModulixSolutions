@@ -3,6 +3,7 @@ import { CheckCircle, Home, Sparkles } from 'lucide-react';
 
 import StatusPage from '../components/states/StatusPage';
 import Button from '../components/Button';
+import { PLATFORM_EXAMPLES } from '../lib/copy/positioning';
 
 export default function ContactConfirmed() {
   return (
@@ -30,8 +31,9 @@ export default function ContactConfirmed() {
     >
       <p>
         Your message is with our team and we&apos;ll get back to you within 24 hours. We&apos;re keen to hear
-        how you want your community to grow, whether that is on Discord, inside a game like Fortnite,
-        or wherever else your audience already gathers.
+        how you want your community to grow, whether that is inside a game ({PLATFORM_EXAMPLES.games}),
+        on the platforms around it ({PLATFORM_EXAMPLES.social}), or wherever else your audience already
+        gathers.
       </p>
     </StatusPage>
   );

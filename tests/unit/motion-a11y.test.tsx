@@ -2,6 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import Header from '../../components/Header';
 import Home from '../../pages/index';
+// Read from the copy module rather than repeated verbatim: this test is about
+// the rotation, so a reworded tagline should not fail it.
+import { TAGLINES } from '../../lib/copy/positioning';
 
 const TAGLINE_INTERVAL_MS = 3500;
 const BOT_FEATURE_INTERVAL_MS = 7500;
@@ -33,19 +36,19 @@ afterEach(() => {
 describe('auto-rotating content can be paused (WCAG 2.2.2)', () => {
   test('taglines rotate on an interval and the pause control stops them', () => {
     render(<Home />);
-    const first = screen.getByRole('heading', { level: 2, name: 'Build Authentic Discord Communities' });
+    const first = screen.getByRole('heading', { level: 2, name: TAGLINES[0] });
     expect(first).toBeInTheDocument();
 
     act(() => { jest.advanceTimersByTime(TAGLINE_INTERVAL_MS); });
-    expect(screen.getByRole('heading', { level: 2, name: 'Scale Your Gaming Brand Presence' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: TAGLINES[1] })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Pause rotating taglines' }));
     act(() => { jest.advanceTimersByTime(TAGLINE_INTERVAL_MS * 3); });
-    expect(screen.getByRole('heading', { level: 2, name: 'Scale Your Gaming Brand Presence' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: TAGLINES[1] })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Resume rotating taglines' }));
     act(() => { jest.advanceTimersByTime(TAGLINE_INTERVAL_MS); });
-    expect(screen.getByRole('heading', { level: 2, name: 'Create Lasting Player Relationships' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: TAGLINES[2] })).toBeInTheDocument();
   });
 
   test('the feature carousel reports position and its pause control holds the slide', () => {
@@ -81,7 +84,7 @@ describe('auto-rotating content can be paused (WCAG 2.2.2)', () => {
     render(<Home />);
 
     act(() => { jest.advanceTimersByTime(TAGLINE_INTERVAL_MS * 4); });
-    expect(screen.getByRole('heading', { level: 2, name: 'Build Authentic Discord Communities' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: TAGLINES[0] })).toBeInTheDocument();
 
     act(() => { jest.advanceTimersByTime(BOT_FEATURE_INTERVAL_MS * 4); });
     expect(screen.getByText('Feature 1 of 10')).toBeInTheDocument();
