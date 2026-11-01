@@ -1,3 +1,4 @@
+import { logEvent } from '../lib/logger';
 import React from 'react';
 
 import Button from './Button';
@@ -24,9 +25,8 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // A static export has no telemetry sink, so the console is where this goes.
-    console.error('Unhandled rendering error:', error, info.componentStack);
+  componentDidCatch() {
+    logEvent('render_error');
   }
 
   private handleRetry = () => {

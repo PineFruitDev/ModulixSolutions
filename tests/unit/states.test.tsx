@@ -189,7 +189,7 @@ describe('contact form status', () => {
     });
   }
 
-  test('a transient error retires itself after five seconds', async () => {
+  test('an error remains visible until another submission', async () => {
     (fetch as jest.Mock).mockResolvedValue({ ok: false, status: 503, statusText: 'Unavailable' });
     render(<ContactForm />);
     fillForm();
@@ -202,7 +202,7 @@ describe('contact form status', () => {
     await act(async () => {
       jest.advanceTimersByTime(5000);
     });
-    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
   test('a success stays on screen through the redirect timer', async () => {
@@ -230,10 +230,7 @@ describe('contact form status', () => {
     consoleError.mockRestore();
   });
 
-  // Both branches below deliberately report success without proof of delivery,
-  // because the provider can reject the fetch on CORS while still sending the
-  // mail. They are pinned so the behaviour cannot change by accident.
-  test('an unreadable body on a 2xx is still treated as delivered', async () => {
+  test('an unreadable body preserves the inquiry with uncertain delivery', async () => {
     (fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => {
@@ -244,19 +241,21 @@ describe('contact form status', () => {
     fillForm();
     fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
 
-    expect(await screen.findByText('Message sent successfully! Redirecting...')).toBeInTheDocument();
-    expect(screen.queryByRole('alert')).toBeNull();
+    expect(await screen.findByRole('alert')).toHaveTextContent('We could not confirm delivery');
+    expect(screen.getByLabelText('Name *')).toHaveValue('Test User');
+    expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
-  test('a rejected fetch is still treated as delivered', async () => {
+  test('a rejected fetch preserves the inquiry with uncertain delivery', async () => {
     (fetch as jest.Mock).mockRejectedValue(new TypeError('Failed to fetch'));
     const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     render(<ContactForm />);
     fillForm();
     fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
 
-    expect(await screen.findByText('Message sent successfully! Redirecting...')).toBeInTheDocument();
-    expect(screen.queryByRole('alert')).toBeNull();
+    expect(await screen.findByRole('alert')).toHaveTextContent('We could not confirm delivery');
+    expect(screen.getByLabelText('Name *')).toHaveValue('Test User');
+    expect(screen.getByRole('alert')).toBeInTheDocument();
     consoleWarn.mockRestore();
   });
 
@@ -290,7 +289,7 @@ describe('contact form status', () => {
     fillForm();
     fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Spam detected.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Please review your details');
     expect(screen.getByRole('button', { name: 'Send Message' })).toBeEnabled();
   });
 });

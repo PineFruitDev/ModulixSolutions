@@ -1,6 +1,7 @@
+import { logEvent } from '../lib/logger';
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Button from './Button';
@@ -10,10 +11,9 @@ import StateMessage from './states/StateMessage';
 type FormStatus =
   | { kind: 'idle' }
   | { kind: 'submitting' }
-  | { kind: 'error'; message: string; token: number }
+  | { kind: 'error'; message: string }
   | { kind: 'success'; message: string };
 
-const ERROR_VISIBLE_MS = 5000;
 const REDIRECT_DELAY_MS = 1500;
 
 export default function ContactForm() {
@@ -54,18 +54,8 @@ export default function ContactForm() {
     }));
   };
 
-  // Errors retire themselves after five seconds; a success stays on screen
-  // until the redirect lands. Each error carries a token so that a timer only
-  // ever clears the error it was armed for: re-submitting and failing the same
-  // way twice must not let the first timer cut the second message short.
-  const errorToken = useRef(0);
-
   const showError = (message: string) => {
-    const token = ++errorToken.current;
-    setStatus({ kind: 'error', message, token });
-    setTimeout(() => {
-      setStatus(prev => (prev.kind === 'error' && prev.token === token ? { kind: 'idle' } : prev));
-    }, ERROR_VISIBLE_MS);
+    setStatus({ kind: 'error', message });
   };
 
   const confirmSubmission = (form: HTMLFormElement) => {
@@ -115,6 +105,7 @@ export default function ContactForm() {
       });
 
       if (!response.ok) {
+        logEvent('contact_http_error', response.status);
         showError(`Failed to send message (${response.status}). Please try again.`);
         return;
       }
@@ -122,22 +113,21 @@ export default function ContactForm() {
       try {
         const data = await response.json();
 
-        if (data.success) {
+        if (data?.success === true) {
           confirmSubmission(form);
         } else {
-          showError(data.message || 'Failed to send message. Please try again.');
+          logEvent('contact_rejected');
+          showError('Failed to send message. Please review your details and try again.');
         }
       } catch {
-        // A 2xx with an unreadable body still means the submission landed.
-        confirmSubmission(form);
+        logEvent('contact_invalid_response');
+        showError('We could not confirm delivery. Your details are preserved. Retrying may send a duplicate.');
       }
-    } catch (error) {
-      // Web3Forms can reject the fetch on CORS while still delivering the mail,
-      // so this path stays optimistic on purpose: treating it as a failure
-      // would tell people their inquiry was lost when it was not.
-      console.warn('Contact form network error, assuming delivery:', error);
-      confirmSubmission(form);
+    } catch {
+      logEvent('contact_network_error');
+      showError('We could not confirm delivery. Your details are preserved. Retrying may send a duplicate.');
     }
+
   };
 
   return (
