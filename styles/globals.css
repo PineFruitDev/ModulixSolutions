@@ -130,13 +130,36 @@ body {
   z-index: 0;
 }
 
-/* Form styles */
+/* Form styles.
+
+   The border sits at /60 rather than /30 for contrast: a control's boundary is
+   a non-text UI component, so WCAG 2.2 1.4.11 wants 3:1 against what surrounds
+   it. The border is #00D4FF composited over the #1A1A2E field; at /30 that
+   blend measures 2.21:1 against the #0F0F23 page and the field edge is
+   guesswork in bright light. /60 measures 4.71:1 against the page and 4.26:1
+   against the field fill, so it clears 3:1 on either reading. */
 .form-input {
-  @apply bg-deeper-blue border border-cyber-blue/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyber-blue/60 focus:border-cyber-blue;
+  @apply bg-deeper-blue border border-cyber-blue/60 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyber-blue/60 focus:border-cyber-blue;
 }
 
 .form-textarea {
-  @apply bg-deeper-blue border border-cyber-blue/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyber-blue/60 focus:border-cyber-blue resize-none;
+  @apply bg-deeper-blue border border-cyber-blue/60 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyber-blue/60 focus:border-cyber-blue resize-none;
+}
+
+/* Focus throughout the site is drawn with ring utilities, which compile to
+   box-shadow. Forced-colors modes drop box-shadow entirely, so without this
+   every focused control in Windows High Contrast has no visible focus at all
+   (WCAG 2.2 2.4.7). An outline is one of the few things that survives. */
+@media (forced-colors: active) {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
 }
 
 /* Button hover effects */
@@ -252,5 +275,33 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Reduced motion, deliberately the last block in this file.
+ *
+ * MotionConfig in _app handles framer-motion, but it has no reach into plain
+ * CSS, and the lift on .card-hover is a real translation that kept running.
+ * Order matters more than it looks: these selectors are no more specific than
+ * the rules they are neutralising, so placed any higher up the file they would
+ * lose on source order and silently do nothing.
+ *
+ * The blanket rule is the backstop for anything added later. 0.01ms rather
+ * than 0s is deliberate, because 0s suppresses transitionend and animationend
+ * altogether and that would strand any future code waiting on them.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .card-hover,
+  .card-hover:hover {
+    transition: none;
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

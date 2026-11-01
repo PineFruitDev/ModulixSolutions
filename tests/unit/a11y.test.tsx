@@ -52,6 +52,44 @@ test('homepage paints the title, sizes logos, and toggles FAQ from the keyboard'
   expect(question).toHaveAttribute('aria-expanded', 'true');
 });
 
+test('every page section is a named region landmark', () => {
+  render(<Home />);
+
+  // A <section> only reaches the accessibility tree as a region once it has an
+  // accessible name, so these assertions are what stops the sections silently
+  // dropping out of the landmark list again.
+  const expected = [
+    'MODULIX SOLUTIONS',
+    'About Modulix',
+    'Introducing the Modulix Bot',
+    'Our Service Ecosystem',
+    'Companies Who Trust Us',
+    'Ready to Make a Splash?',
+    'Frequently Asked Questions',
+  ];
+
+  for (const name of expected) {
+    expect(screen.getByRole('region', { name })).toBeInTheDocument();
+  }
+
+  // Deliberately no assertion on the total number of regions. The collapsed FAQ
+  // panels are also role=region and are only absent from the tree because each
+  // one starts aria-hidden, so a count here would break the day a FAQ defaults
+  // to open, and would break for a reason that has nothing to do with sections.
+});
+
+test('required contact fields describe their constraint programmatically', () => {
+  render(<Home />);
+
+  // The asterisk is aria-hidden decoration, so the constraint has to reach
+  // assistive technology some other way.
+  for (const label of [/^Name/, /^Email/, /^Message/]) {
+    const field = screen.getByLabelText(label);
+    expect(field).toBeRequired();
+    expect(field).toHaveAccessibleDescription();
+  }
+});
+
 test('fonts and section backgrounds are not render-blocking third-party requests', () => {
   const css = fs.readFileSync(path.join(process.cwd(), 'styles/globals.css'), 'utf8');
   const app = fs.readFileSync(path.join(process.cwd(), 'pages/_app.tsx'), 'utf8');

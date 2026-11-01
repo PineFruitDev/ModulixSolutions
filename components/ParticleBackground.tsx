@@ -2,6 +2,10 @@
 
 import React, { useEffect, useRef } from 'react';
 
+/** Particles closer than this get a connecting line drawn between them. */
+const LINK_DISTANCE = 150;
+const LINK_DISTANCE_SQUARED = LINK_DISTANCE * LINK_DISTANCE;
+
 interface Particle {
   x: number;
   y: number;
@@ -37,6 +41,11 @@ export default function ParticleBackground() {
       canvas.height = window.innerHeight;
     };
 
+    // Handled synchronously on purpose. Deferring this into requestAnimationFrame
+    // to "coalesce" it was tried and reverted: resize already fires at most once
+    // per rendering update, and the animation callback is registered first, so a
+    // queued resize ran after the frame had been drawn and cleared it, blanking
+    // the canvas for the length of a window drag.
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
@@ -67,7 +76,13 @@ export default function ParticleBackground() {
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((particle, index) => {
+      // Indexed loops rather than forEach/slice. The old inner pass called
+      // particles.slice(index + 1), which allocated a fresh array for every
+      // particle on every frame: 50 throwaway arrays per frame, ~3000 a second,
+      // all of it garbage for the collector to walk.
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i];
+
         particle.x += particle.vx;
         particle.y += particle.vy;
 
@@ -79,23 +94,35 @@ export default function ParticleBackground() {
         context.fillStyle = particle.color;
         context.globalAlpha = 0.6;
         context.fill();
+      }
 
-        particles.slice(index + 1).forEach(otherParticle => {
+      // Links are a second pass so the fill style is set once rather than
+      // being swapped back and forth between dots and lines.
+      context.strokeStyle = '#00D4FF';
+      context.lineWidth = 1;
+
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i];
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const otherParticle = particles[j];
           const dx = particle.x - otherParticle.x;
           const dy = particle.y - otherParticle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSquared = dx * dx + dy * dy;
 
-          if (distance < 150) {
-            context.beginPath();
-            context.moveTo(particle.x, particle.y);
-            context.lineTo(otherParticle.x, otherParticle.y);
-            context.strokeStyle = '#00D4FF';
-            context.globalAlpha = (150 - distance) / 150 * 0.2;
-            context.lineWidth = 1;
-            context.stroke();
-          }
-        });
-      });
+          // Compared squared, so the ~1200 pairs a frame skip Math.sqrt
+          // entirely; the root is only needed for the ones that actually draw.
+          if (distanceSquared >= LINK_DISTANCE_SQUARED) continue;
+
+          const distance = Math.sqrt(distanceSquared);
+
+          context.beginPath();
+          context.moveTo(particle.x, particle.y);
+          context.lineTo(otherParticle.x, otherParticle.y);
+          context.globalAlpha = (LINK_DISTANCE - distance) / LINK_DISTANCE * 0.2;
+          context.stroke();
+        }
+      }
 
       frame = requestAnimationFrame(animate);
     };

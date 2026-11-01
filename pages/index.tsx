@@ -10,6 +10,9 @@ import Footer from '../components/Footer';
 import Button from '../components/Button';
 import Card, { SectionContainer } from '../components/Card';
 import ContactForm from '../components/ContactForm';
+// Static import on purpose. Deferring this decorative canvas with next/dynamic
+// was tried and measured: it moved 1.7 kB into a lazy chunk but pulled the
+// next/dynamic runtime into the shared bundle, a net 2 kB worse on first load.
 import ParticleBackground from '../components/ParticleBackground';
 import CompanyLogo from '../components/CompanyLogo';
 import StateMessage from '../components/states/StateMessage';
@@ -236,6 +239,15 @@ const companies = [
     logoUrl: '/companies/getshot-logo.png',
   },
 ];
+
+/**
+ * The marquee renders two back-to-back copies so the loop seams invisibly.
+ * Built once here rather than spread inline in the render, which rebuilt the
+ * array on every tagline tick. A small saving: the .map below still creates
+ * its elements each render, so this drops one array allocation per tick, not
+ * the reconciliation.
+ */
+const companiesMarquee = [...companies, ...companies];
 
 /**
  * Page metadata. Broadened from "Discord Community Management" to cover the
@@ -465,7 +477,7 @@ export default function Home() {
 
           <main id="main">
             {/* Hero Section */}
-            <SectionWrapper id="hero" reveal={false} className="min-h-screen flex items-center justify-center relative overflow-hidden">
+            <SectionWrapper id="hero" labelledBy="hero-heading" reveal={false} className="min-h-screen flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-black/20 z-0"></div>
                 <div className="min-h-screen flex items-center justify-center">
                   <Container className="py-20">
@@ -474,7 +486,7 @@ export default function Home() {
                     Congratulations! You&apos;ve just stumbled upon...
                   </p>
 
-                  <h1 className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
+                  <h1 id="hero-heading" className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
                     <span className="gradient-text text-glow">MODULIX</span>{' '}
                     <span className="text-white">SOLUTIONS</span>
                   </h1>
@@ -510,7 +522,7 @@ export default function Home() {
             </SectionWrapper>
 
             {/* About & Value Propositions Section */}
-            <SectionWrapper id="about" className="py-16 bg-deeper-blue/60 relative">
+            <SectionWrapper id="about" labelledBy="about-heading" className="py-16 bg-deeper-blue/60 relative">
               <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
                 {/* About Us Section */}
@@ -525,7 +537,7 @@ export default function Home() {
                     <div className="flex flex-col lg:flex-row items-start gap-8">
                       {/* Text Section */}
                       <div className="flex-1">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                        <h2 id="about-heading" className="text-3xl md:text-4xl font-bold mb-6">
                           About Modulix
                         </h2>
 
@@ -568,7 +580,7 @@ export default function Home() {
             </SectionWrapper>
 
             {/* Modulix Bot Teaser Section */}
-            <SectionWrapper id="modulix-bot" className="relative overflow-hidden">
+            <SectionWrapper id="modulix-bot" labelledBy="modulix-bot-heading" className="relative overflow-hidden">
               <div className="hex-overlay" aria-hidden="true"></div>
               <div className="pt-20 pb-20 relative">
                 <div className="absolute inset-0 bg-gradient-to-b from-cyber-blue/20 via-neon-purple/10 to-transparent"></div>
@@ -633,6 +645,7 @@ export default function Home() {
 
                       {/* Main headline with better gradient */}
                   <motion.h2
+                    id="modulix-bot-heading"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -886,7 +899,7 @@ export default function Home() {
             </SectionWrapper>
 
             {/* Services Section */}
-            <SectionWrapper id="services" className="py-20 bg-deeper-blue/60 relative">
+            <SectionWrapper id="services" labelledBy="services-heading" className="py-20 bg-deeper-blue/60 relative">
               <div className="hex-overlay" aria-hidden="true"></div>
               <div className="py-0">
                 <Container className="relative z-[10]">
@@ -896,7 +909,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="text-center mb-16"
                 >
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  <h2 id="services-heading" className="text-3xl md:text-4xl font-bold mb-4">
                     Our Service Ecosystem
                   </h2>
                   <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -1200,7 +1213,7 @@ export default function Home() {
 
 
             {/* Testimonials Section */}
-            <SectionWrapper id="testimonials" className="hidden md:block py-20 relative">
+            <SectionWrapper id="testimonials" labelledBy="testimonials-heading" className="hidden md:block py-20 relative">
               <div className="absolute inset-0 bg-black/30 z-0"></div>
               <Container className="relative z-10">
                 {/* Hidden: Trusted by Industry Leaders heading and description */}
@@ -1216,7 +1229,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="text-center mb-8"
                 >
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  <h2 id="testimonials-heading" className="text-3xl md:text-4xl font-bold mb-4">
                     Companies Who Trust Us
                   </h2>
                   <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -1253,7 +1266,7 @@ export default function Home() {
                     style={{ width: `${(220 + 32) * companies.length * 2}px` }} // Width for 2 sets
                   >
                     {/* Create seamless infinite loop */}
-                    {[...companies, ...companies].map((company, index) => {
+                    {companiesMarquee.map((company, index) => {
                       const cardColor = index % 2 === 0 ? 'blue' : 'purple';
                       const glowClass = cardColor === 'purple' ? 'hover:shadow-neon-purple-glow' : 'hover:shadow-neon-blue-glow';
                       const isClone = index >= companies.length;
@@ -1304,7 +1317,7 @@ export default function Home() {
             </SectionWrapper>
 
             {/* CTA/Contact Section */}
-            <SectionWrapper id="contact" className="py-20 relative">
+            <SectionWrapper id="contact" labelledBy="contact-heading" className="py-20 relative">
               <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
                 <motion.div
@@ -1313,7 +1326,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="text-center mb-16"
                 >
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  <h2 id="contact-heading" className="text-3xl md:text-4xl font-bold mb-4">
                     Ready to Make a Splash?
                   </h2>
                   <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -1423,7 +1436,7 @@ export default function Home() {
             </SectionWrapper>
 
             {/* FAQ Section */}
-            <SectionWrapper id="faq" className="py-20 bg-deeper-blue/60 relative">
+            <SectionWrapper id="faq" labelledBy="faq-heading" className="py-20 bg-deeper-blue/60 relative">
               <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
                 <motion.div
@@ -1432,7 +1445,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="text-center mb-16"
                 >
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  <h2 id="faq-heading" className="text-3xl md:text-4xl font-bold mb-4">
                     Frequently Asked Questions
                   </h2>
                   <p className="text-xl text-gray-300 max-w-3xl mx-auto">
