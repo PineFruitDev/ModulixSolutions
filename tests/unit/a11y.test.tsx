@@ -41,7 +41,7 @@ test('homepage paints the title, sizes logos, and toggles FAQ from the keyboard'
   expect(screen.getByRole('heading', { level: 1, name: /MODULIX SOLUTIONS/ })).toBeInTheDocument();
   expect(container.innerHTML).not.toContain('unsplash');
   expect(container.innerHTML).not.toContain('background-attachment');
-  const logo = container.querySelector('img[src="/companies/readyup-logo.png"]') as HTMLImageElement;
+  const logo = container.querySelector('img[src="/companies/readyup-logo.webp"]') as HTMLImageElement;
   expect(logo).toHaveAttribute('width', '256');
   expect(logo).toHaveAttribute('height', '256');
   expect(screen.getByRole('link', { name: 'ReadyUp' })).toHaveAttribute('href', 'https://getreadyup.com');

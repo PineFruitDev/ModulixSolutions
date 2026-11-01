@@ -156,7 +156,7 @@ const companies = [
     displayName: 'READYUP',
     link: 'https://getreadyup.com',
     accentColor: 'white',
-    logoUrl: '/companies/readyup-logo.png',
+    logoUrl: '/companies/readyup-logo.webp',
   },
   {
     id: 'chartis',
@@ -164,7 +164,7 @@ const companies = [
     displayName: 'CHARTIS',
     link: 'https://chartis.gg',
     accentColor: 'blue',
-    logoUrl: '/companies/chartis-logo.png',
+    logoUrl: '/companies/chartis-logo.webp',
   },
   {
     id: 'foad',
@@ -172,7 +172,7 @@ const companies = [
     displayName: 'FOAD',
     link: 'https://www.foad.gg/',
     accentColor: 'green',
-    logoUrl: '/companies/foad-logo.png',
+    logoUrl: '/companies/foad-logo.webp',
   },
   {
     id: 'thirdmade',
@@ -180,7 +180,7 @@ const companies = [
     displayName: 'THIRDMADE',
     link: 'https://discord.gg/thirdmade',
     accentColor: 'purple',
-    logoUrl: '/companies/thirdmade-logo.png',
+    logoUrl: '/companies/thirdmade-logo.webp',
   },
   {
     id: 'uefntool',
@@ -188,7 +188,7 @@ const companies = [
     displayName: 'UEFN TOOL',
     link: 'https://discord.gg/uefntool',
     accentColor: 'blue',
-    logoUrl: '/companies/uefntool-logo.png',
+    logoUrl: '/companies/uefntool-logo.webp',
   },
   {
     id: 'fnsg',
@@ -196,7 +196,7 @@ const companies = [
     displayName: 'FNSG',
     link: 'https://discord.gg/fnsg',
     accentColor: 'orange',
-    logoUrl: '/companies/fnsg-logo.png',
+    logoUrl: '/companies/fnsg-logo.webp',
   },
   {
     id: 'vlo',
@@ -204,7 +204,7 @@ const companies = [
     displayName: 'VLO STUDIOS',
     link: 'https://discord.gg/w5Rg9yhte',
     accentColor: 'cyan',
-    logoUrl: '/companies/vlo-logo.png',
+    logoUrl: '/companies/vlo-logo.webp',
   },
   {
     id: 'solrise',
@@ -212,7 +212,7 @@ const companies = [
     displayName: 'SOLRISE',
     link: 'https://discord.gg/solrise',
     accentColor: 'yellow',
-    logoUrl: '/companies/solrise-logo.png',
+    logoUrl: '/companies/solrise-logo.webp',
   },
   {
     id: 'drying',
@@ -220,7 +220,7 @@ const companies = [
     displayName: 'DRYING',
     link: 'https://discord.gg/drying',
     accentColor: 'cyan',
-    logoUrl: '/companies/drying-logo.png',
+    logoUrl: '/companies/drying-logo.webp',
   },
   {
     id: 'casuallegends',
@@ -228,7 +228,7 @@ const companies = [
     displayName: 'CASUAL LEGENDS',
     link: 'https://discord.gg/casuallegends',
     accentColor: 'pink',
-    logoUrl: '/companies/casuallegends-logo.png',
+    logoUrl: '/companies/casuallegends-logo.webp',
   },
   {
     id: 'getshot',
@@ -236,7 +236,7 @@ const companies = [
     displayName: 'GETSHOT',
     link: 'https://discord.gg/getshot',
     accentColor: 'red',
-    logoUrl: '/companies/getshot-logo.png',
+    logoUrl: '/companies/getshot-logo.webp',
   },
 ];
 
