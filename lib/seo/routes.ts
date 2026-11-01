@@ -24,12 +24,17 @@ export interface SiteRoute {
  * and uniqueness checks possible without rendering anything.
  */
 export const SITE_ROUTES: readonly SiteRoute[] = [
+  // The title names the category rather than a platform: the work spans the
+  // user-generated content space and is not tied to any one surface or game.
+  // Discord stays in the description as the largest current example, which
+  // keeps the site's established search term without letting it define the
+  // company.
   {
     path: '/',
     indexable: true,
-    title: 'Modulix Solutions | Discord, Creator and UGC Growth Systems',
+    title: 'Modulix Solutions | UGC Community and Creator Growth',
     description:
-      'Modulix builds community infrastructure, creator programmes and brand activations across Discord and the wider user-generated content space.',
+      'Modulix builds community infrastructure, creator programmes and brand activations across the user-generated content space, from Discord to in-game worlds.',
   },
   {
     path: '/contact-confirmed/',

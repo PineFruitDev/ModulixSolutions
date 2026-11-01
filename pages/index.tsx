@@ -302,7 +302,9 @@ const structuredData = {
       "url": absoluteUrl('/'),
       "logo": absoluteUrl('/modulix-icon.png'),
       "image": absoluteUrl(OG_IMAGE.path),
-      "description": "Modulix Solutions, LLC builds deployed AI and agent systems, Discord community and gaming growth infrastructure, Fortnite UEFN and Roblox studio operations, and the owned UGC Suite of creator tools.",
+      // Ordered so the category leads and the platforms read as the examples
+      // they are: the same positioning as the page title and llms.txt.
+      "description": "Modulix Solutions, LLC builds community, creator and brand-activation infrastructure for the user-generated content space, alongside deployed AI and agent systems and the owned UGC Suite of creator tools. Platform work includes Discord, Fortnite UEFN and Roblox.",
       "sameAs": [
         "https://modulix.gg",
         "https://discord.gg/modulix",

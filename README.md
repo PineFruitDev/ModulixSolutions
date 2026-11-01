@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-modulixsolutions.com-blue)](https://modulixsolutions.com)
 [![License: All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red)](#license)
 
-A modern, immersive website for Modulix Solutions LLC - Discord community solutions company specializing in authentic engagements and gaming integrations.
+A modern, immersive website for Modulix Solutions LLC, a studio building community, creator and brand-activation infrastructure for the user-generated content space. Discord, Fortnite/UEFN and Roblox are the surfaces the work most often runs on.
 
 ---
 
