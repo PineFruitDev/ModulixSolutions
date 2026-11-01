@@ -5,9 +5,19 @@ import { MotionConfig } from 'framer-motion';
 import ErrorBoundary from '../components/ErrorBoundary';
 import '../styles/globals.css';
 
+/**
+ * No `weight` on purpose. Inter ships from Google as a variable font covering
+ * the whole 100-900 axis in one file, so naming the four weights the design
+ * uses (400/500/600/700) did not fetch four files: it emitted the same seven
+ * subset files four times over, 28 `@font-face` rules where 7 do the job, all
+ * of it parsed in the render-blocking stylesheet before the first paint.
+ *
+ * Lato keeps its explicit weight because it has no variable version on Google
+ * Fonts, so '700' there really does pick one static file. It is only used for
+ * the wordmark (`.logo-font`), which is above the fold, hence the preload.
+ */
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
   display: 'swap',
   adjustFontFallback: true,
   variable: '--font-inter',
