@@ -105,7 +105,7 @@ describe('ErrorBoundary', () => {
 
 describe('CompanyLogo', () => {
   test('a logo that fails to load degrades to exactly one monogram', () => {
-    const props = { displayName: 'CHARTIS', logoUrl: '/companies/chartis-logo.png' };
+    const props = { displayName: 'CHARTIS', logoUrl: '/companies/chartis-logo.webp' };
     const { container, rerender } = render(<CompanyLogo {...props} />);
 
     const img = container.querySelector('img');

@@ -12,6 +12,15 @@ import '../styles/globals.css';
  * subset files four times over, 28 `@font-face` rules where 7 do the job, all
  * of it parsed in the render-blocking stylesheet before the first paint.
  *
+ * Rendered weights are unchanged: the design asks for 400, 500, 600 and 700,
+ * all inside the variable font's 100-900 axis, and Google's static instances
+ * are cut from the same source. The one case that could differ is Tailwind
+ * preflight's `b, strong { font-weight: bolder }`, where `bolder` inside a
+ * 600 block computes to 900: that used to snap to the nearest static face at
+ * 700 and would now render a true 900. The site has no `<b>` or `<strong>`
+ * anywhere, so it is unreachable today, but it is the thing to look at if
+ * emphasised copy ever appears and looks heavier than expected.
+ *
  * Lato keeps its explicit weight because it has no variable version on Google
  * Fonts, so '700' there really does pick one static file. It is only used for
  * the wordmark (`.logo-font`), which is above the fold, hence the preload.

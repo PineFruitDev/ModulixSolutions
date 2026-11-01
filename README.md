@@ -57,7 +57,11 @@ read straight off `.next/` and `out/`: First Load JS per route, render-blocking
 CSS and `@font-face` count, preloaded font bytes, parser-blocking scripts,
 image weight split by eager versus lazy, images missing `width`/`height`, and
 any asset published but referenced by no built page. `npm run perf -- --json`
-emits the same data for a budget check.
+emits the same data for a script to read.
+
+It reports; it does not gate. The command always exits 0 and CI does not run
+it, so a regression shows up when someone looks. Wiring a budget threshold
+into the Tests workflow would be the obvious next step and has not been done.
 
 It is deliberately not a Lighthouse run. Lighthouse scores move by several
 points between runs on identical bytes, so they cannot tell a regression from
@@ -75,9 +79,9 @@ The decisions it is measuring:
   PNGs that cost three times as much for the same pixels. They are `lazy` and
   `decoding="async"`; the header wordmark is deliberately eager, being the only
   image above the fold.
-- **Scripts.** Next already emits every bundle with `defer`, so there is
-  nothing parser-blocking to fix. The report asserts that rather than assuming
-  it.
+- **Scripts.** Next already emits every bundle with `defer`, so there was
+  nothing parser-blocking to fix. The report counts them so the claim can be
+  rechecked rather than assumed, and currently prints zero on every page.
 - **Bundle.** Components animate with framer-motion's `m` plus an explicit
   `domAnimation` feature set in `pages/_app.tsx`. Importing `motion` registers
   every feature eagerly, including the layout projection engine, which nothing

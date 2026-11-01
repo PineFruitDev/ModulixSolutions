@@ -32,6 +32,21 @@ const sourceFiles = (dir: string): string[] =>
 
 const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
+/**
+ * Intrinsic size of a lossless WebP, straight out of the VP8L header: a 0x2f
+ * signature byte at offset 20, then width-1 and height-1 as 14-bit fields.
+ * Throws on any other variant rather than guessing, so a mark re-encoded as
+ * lossy VP8 or extended VP8X fails loudly instead of reporting 1x1.
+ */
+function webpSize(buffer: Buffer): { width: number; height: number } {
+  const format = buffer.toString('ascii', 12, 16);
+  if (buffer.toString('ascii', 0, 4) !== 'RIFF' || format !== 'VP8L' || buffer[20] !== 0x2f) {
+    throw new Error(`expected a lossless VP8L WebP, got ${format}`);
+  }
+  const bits = buffer.readUInt32LE(21);
+  return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+}
+
 describe('framer-motion stays on the minimal feature set', () => {
   // `motion` is a proxy that registers every feature eagerly, including the
   // layout projection engine, which is the single largest part of the library
@@ -53,9 +68,11 @@ describe('framer-motion stays on the minimal feature set', () => {
     expect(app).not.toContain('domMax');
   });
 
-  test('every animated element is reachable through a LazyMotion provider', () => {
-    // Without this wrapper the `m` elements render but never animate, so the
-    // sections that open at opacity 0 would stay invisible.
+  test('_app still has a LazyMotion wrapper at all', () => {
+    // Only that it is present. Whether it actually encloses the page (rather
+    // than, say, just <Head>) is not something reading the source proves, and
+    // a provider around the wrong subtree leaves the page blank without
+    // throwing. tests/smoke/motion-features.spec.ts is what covers that.
     expect(read('pages/_app.tsx')).toContain('<LazyMotion');
   });
 });
@@ -121,15 +138,23 @@ describe('images', () => {
     inFooter.forEach(image => expect(image).toHaveAttribute('loading', 'lazy'));
   });
 
-  test('no logo file is larger than the box it renders into needs', () => {
-    // The carousel draws each mark in a 220px square, so 2x is 440px. Anything
-    // much past that is bytes the browser downloads and throws away.
+  test('no mark is bigger in pixels or bytes than its 220px box needs', () => {
+    // The carousel draws each mark in a 220px square, so 440px covers a 2x
+    // display and anything past that is pixels the browser decodes and throws
+    // away. Both limits are needed: a flat two-colour logo at 2000x2000
+    // compresses to a few kB, so a byte budget alone would wave it through,
+    // and a photographic 256px mark can be large in bytes while correctly
+    // sized. 40 kB is roughly double the heaviest mark today.
     const dir = path.join(process.cwd(), 'public/companies');
-    const oversized = fs
+    const offenders = fs
       .readdirSync(dir)
       .filter(file => file.endsWith('.webp'))
-      .map(file => ({ file, bytes: fs.statSync(path.join(dir, file)).size }))
-      .filter(entry => entry.bytes > 40 * 1024);
-    expect(oversized).toEqual([]);
+      .map(file => {
+        const bytes = fs.readFileSync(path.join(dir, file));
+        const { width, height } = webpSize(bytes);
+        return { file, bytes: bytes.length, width, height };
+      })
+      .filter(mark => mark.bytes > 40 * 1024 || mark.width > 440 || mark.height > 440);
+    expect(offenders).toEqual([]);
   });
 });

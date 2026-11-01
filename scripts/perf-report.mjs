@@ -14,8 +14,12 @@
  * between runs on the same bytes, which makes them useless as a regression
  * gate. These are the inputs Lighthouse measures, counted exactly.
  *
+ * Reports only. Always exits 0, and nothing in CI runs it, so this is a thing
+ * to read rather than a gate. Source-level guards that do fail a build live in
+ * `tests/unit/perf-budget.test.tsx`.
+ *
  * Usage: npm run build && npm run perf
- *        npm run perf -- --json     (machine-readable, for a CI budget check)
+ *        npm run perf -- --json     (machine-readable)
  */
 
 import { gzipSync } from 'node:zlib';
@@ -51,10 +55,13 @@ function kb(bytes) {
 
 /**
  * First Load JS: every chunk the browser must fetch and run before a route
- * hydrates. This is `build-manifest.json`'s shared `pages/_app` entry unioned
- * with the route's own entry, deduplicated, which is the same set `next build`
- * prints. Recomputing it here rather than scraping the build log keeps the
- * report runnable against an existing `.next/` without a rebuild.
+ * hydrates. Per route that is `build-manifest.json`'s `pages/_app` entry
+ * unioned with the route's own, deduplicated, which is the same set
+ * `next build` prints. Recomputing it here rather than scraping the build log
+ * keeps the report runnable against an existing `.next/` without a rebuild.
+ *
+ * The summary row is the intersection across routes, which is not the same as
+ * `/_app`'s list; see the comment on `common` below.
  */
 function firstLoadByRoute() {
   const manifestPath = join(NEXT_DIR, 'build-manifest.json');
@@ -67,47 +74,63 @@ function firstLoadByRoute() {
   // belongs in a JavaScript total; the CSS is reported on its own below.
   const isJs = (chunk) => chunk.endsWith('.js');
   // `/_app` ships with every route; `/_error` is not a navigable page here.
-  const shared = new Set((pages['/_app'] ?? []).filter(isJs));
+  const appChunks = new Set((pages['/_app'] ?? []).filter(isJs));
 
-  const routes = Object.keys(pages)
+  const navigable = Object.keys(pages)
     .filter((route) => route !== '/_app' && route !== '/_error')
-    .sort()
-    .map((route) => {
-      const chunks = [...new Set([...shared, ...(pages[route] ?? []).filter(isJs)])];
-      const measured = chunks
-        .map((chunk) => join(NEXT_DIR, chunk))
-        .filter(existsSync)
-        .map(sizes);
-      return {
-        route,
-        chunks: chunks.length,
-        raw: sum(measured, 'raw'),
-        gzip: sum(measured, 'gzip'),
-      };
-    });
+    .sort();
 
-  const sharedMeasured = [...shared]
-    .map((chunk) => join(NEXT_DIR, chunk))
-    .filter(existsSync)
-    .map(sizes);
+  const perRoute = navigable.map((route) => ({
+    route,
+    chunks: [...new Set([...appChunks, ...(pages[route] ?? []).filter(isJs)])],
+  }));
+
+  const measure = (chunks) => {
+    const measured = chunks
+      .map((chunk) => join(NEXT_DIR, chunk))
+      .filter(existsSync)
+      .map(sizes);
+    return {
+      chunks: chunks.length,
+      raw: sum(measured, 'raw'),
+      gzip: sum(measured, 'gzip'),
+    };
+  };
+
+  // The real intersection, not just `/_app`'s list. Webpack can hoist a chunk
+  // into every page without it appearing under `/_app` (the shared vendor
+  // chunk does exactly that), and calling `/_app`'s set "shared by all" would
+  // leave those bytes out of the row while still counting them per route.
+  const common = perRoute.length
+    ? perRoute
+        .map((entry) => entry.chunks)
+        .reduce((intersection, chunks) => intersection.filter((chunk) => chunks.includes(chunk)))
+    : [];
 
   return {
-    routes,
-    shared: {
-      chunks: shared.size,
-      raw: sum(sharedMeasured, 'raw'),
-      gzip: sum(sharedMeasured, 'gzip'),
-    },
+    routes: perRoute.map((entry) => ({ route: entry.route, ...measure(entry.chunks) })),
+    shared: measure(common),
   };
 }
 
 /**
- * Anything in the document head that blocks the first paint, plus any script
- * that blocks the parser. A `<script>` with neither `defer` nor `async` nor
- * `type="module"` halts parsing where it sits; inline JSON-LD and
- * `application/json` payloads do not execute and so are not counted.
+ * Render-blocking stylesheets and preloaded fonts from the head, plus every
+ * parser-blocking script in the document. Scripts are counted over the whole
+ * file, not just the head: Next emits its bundles at the end of `<body>`, and
+ * one of those without `defer` would block the parser exactly as a head script
+ * would.
+ *
+ * A script is treated as parser-blocking unless it carries `defer`, `async` or
+ * `type="module"` (all three of which the browser defers), or it is a
+ * non-executable JSON payload such as `__NEXT_DATA__` or a JSON-LD block.
  */
 function blockingByPage() {
+  // Matched as attribute names rather than with \b, which would also fire on
+  // the value: a chunk legitimately named `async-boundary.js` contains "async"
+  // inside its src and would otherwise be scored as deferred.
+  const hasAttribute = (attrs, name) =>
+    new RegExp(`(^|\\s)${name}(\\s|=|$)`).test(attrs);
+
   return walk(OUT_DIR)
     .filter((file) => extname(file) === '.html')
     .sort()
@@ -122,10 +145,15 @@ function blockingByPage() {
 
       const blockingScripts = [...html.matchAll(/<script\b([^>]*)>/g)]
         .map((match) => match[1])
-        .filter((attrs) => !/\bdefer\b|\basync\b/.test(attrs))
+        .filter(
+          (attrs) =>
+            !hasAttribute(attrs, 'defer') &&
+            !hasAttribute(attrs, 'async') &&
+            !/type="module"/.test(attrs),
+        )
         .filter((attrs) => !/type="(application\/(ld\+)?json)"/.test(attrs))
         // A bare `<script>` with no src and no type is inline executable code.
-        .filter((attrs) => /\bsrc=/.test(attrs) || !/type=/.test(attrs));
+        .filter((attrs) => hasAttribute(attrs, 'src') || !/type=/.test(attrs));
 
       const preloadedFonts = [...head.matchAll(/<link\b[^>]*rel="preload"[^>]*>/g)]
         .map((match) => match[0])
@@ -185,8 +213,7 @@ function imageWeight() {
       const abs = join(OUT_DIR, src.replace(/^\//, ''));
       if (!existsSync(abs)) continue;
 
-      const bucket = /loading="lazy"/.test(tag) ? lazy : eager;
-      bucket.set(src, statSync(abs).size);
+      (/loading="lazy"/.test(tag) ? lazy : eager).set(src, statSync(abs).size);
 
       // Without both dimensions the box has no aspect ratio until the bytes
       // land, which is a layout shift the moment the image decodes.
@@ -195,6 +222,12 @@ function imageWeight() {
       }
     }
   }
+
+  // The same file can be eager on one page and lazy on another, as the icon is
+  // (eager in the header, lazy in the footer). Counting it in both totals
+  // would overstate the deferred bytes by however much it weighs, so eager
+  // wins: if any page fetches it up front, it is not deferred weight.
+  for (const src of eager.keys()) lazy.delete(src);
 
   const total = (map) => [...map.values()].reduce((a, b) => a + b, 0);
   return {
@@ -210,17 +243,32 @@ function imageWeight() {
  * Files published to the host that no built page references. They cost nothing
  * on first paint but are still uploaded on every deploy, and an unreferenced
  * megabyte is usually an asset someone forgot to delete.
+ *
+ * A hint, not a verdict. The search is textual, so it cannot see a path built
+ * at runtime from fragments, and it only recognises root-relative references
+ * (`/companies/x.webp`), which is the form this codebase uses everywhere. A
+ * relative `url(companies/x.webp)` in CSS would be missed and the asset would
+ * be listed here while being perfectly live. Confirm with a grep before
+ * deleting anything on the strength of this list.
  */
 function unreferencedAssets() {
-  const htmlAndCss = walk(OUT_DIR)
+  const referencingText = walk(OUT_DIR)
     .filter((file) => ['.html', '.css', '.js', '.json', '.xml', '.txt'].includes(extname(file)))
     .map((file) => readFileSync(file, 'utf8'))
     .join('\n');
 
+  // The reference has to be delimited, so `/logo.png` is not counted as
+  // referenced merely because `/companies/logo.png` appears somewhere. The
+  // character before it must not be another path character.
+  const isReferenced = (assetPath) =>
+    new RegExp(`(^|[^\\w./-])${assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(
+      referencingText,
+    );
+
   return walk(OUT_DIR)
     .filter((file) => ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.avif'].includes(extname(file)))
     .map((file) => ({ path: `/${relative(OUT_DIR, file)}`, bytes: statSync(file).size }))
-    .filter((asset) => !htmlAndCss.includes(asset.path))
+    .filter((asset) => !isReferenced(asset.path))
     .sort((a, b) => b.bytes - a.bytes);
 }
 
@@ -252,11 +300,11 @@ function report(data) {
       row('  ', pad(route.route, 24), padStart(kb(route.gzip), 12), padStart(kb(route.raw), 12), padStart(route.chunks, 9));
     }
     const { shared } = data.firstLoad;
-    row('  ', pad('(shared by all)', 24), padStart(kb(shared.gzip), 12), padStart(kb(shared.raw), 12), padStart(shared.chunks, 9));
+    row('  ', pad('(common to every route)', 24), padStart(kb(shared.gzip), 12), padStart(kb(shared.raw), 12), padStart(shared.chunks, 9));
   }
 
   row('');
-  row('Render-blocking head, per exported page');
+  row('Render-blocking CSS and fonts in the head, and parser-blocking scripts anywhere');
   row('  ', pad('page', 30), padStart('css gzip', 11), padStart('blocking js', 13), padStart('font preload', 14), padStart('@font-face', 12));
   for (const page of data.pages) {
     row(
