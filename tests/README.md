@@ -37,6 +37,43 @@ out of it, that every listed route has a page behind it, and that `og-image.jpg`
 really is 1200x630. `next/head` renders nothing under jsdom, which is why the
 tag set is built by a pure function and asserted there rather than in the DOM.
 
+`tests/unit/security-headers.test.tsx` covers the policy in
+`lib/security-headers.ts`: `public/_headers` byte-compared against
+`buildHeadersFile()` the same way the sitemap is compared against its route
+manifest, the required headers being present, HSTS being long enough to
+preload, every permissions-policy feature being denied to everyone, and the
+CSP's own shape. The shape assertions are the ones with teeth: `default-src`
+falling back closed, the directives that do not inherit from it (`base-uri`,
+`form-action`, `frame-ancestors`, `object-src`) being pinned shut, no `eval`
+and no inline script, no wildcard or `http:` source, and the meta copy
+dropping only `frame-ancestors`, which markup cannot express. Two guards exist
+to catch drift rather than a bad value: `connect-src` is checked against the
+endpoint `components/ContactForm.tsx` actually fetches, because a policy of
+`'self'` alone blocks the inquiry and that is the state this work replaced, and
+every external origin in the policy must be that same endpoint, so an
+allowance outliving its caller fails. `pages/_document.tsx` is checked by
+source, not by render, because `next/head` renders nothing under jsdom.
+
+`tests/smoke/security-headers.spec.ts` is what proves the policy is survivable
+rather than merely configured. It loads the export in Chromium with the meta
+policy enforced, collecting `securitypolicyviolation` events from an init
+script so a violation raised during the initial parse is still caught, and
+asserts none occur on the homepage or any status page. The homepage case
+asserts the things a too-strict directive would break: a FAQ disclosure
+opening, which cannot happen unless the bundles executed and hydrated, so a
+blocked script fails here instead of passing against prerendered HTML; the
+stylesheet being applied rather than only fetched; `document.fonts` reporting a
+loaded face, since `next/font` self-hosts Inter and Lato; and both image source
+kinds decoding. The images are requested from script rather than asserted
+against the carousel's own `img` elements, which are `loading="lazy"` and
+render at 0x0 on the mobile project, where their `naturalWidth` stays 0 whatever
+the policy says. A synthetic inquiry covers `connect-src`, since a CSP block
+aborts the fetch before Playwright's route handler is reached. The last case is
+the inverse: an injected inline script must not run and must be reported, so a
+policy accidentally relaxed to `'unsafe-inline'` cannot pass the rest of the
+file. Both that case and the unit suite were confirmed to fail against a
+deliberately relaxed `script-src`.
+
 `tests/unit/states.test.tsx` covers the shared state components: which tones
 interrupt with `role="alert"` versus announce politely, the busy flag on the
 loading tone, error-boundary containment and recovery, the company logo
