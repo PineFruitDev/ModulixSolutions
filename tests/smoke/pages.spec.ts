@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+import { SITE_ROUTES } from '../../lib/seo/routes';
+
 test.beforeEach(async ({ page }) => {
   // Fail closed: no external traffic, including accidental real form submissions.
   await page.route('**/*', route => {
@@ -85,6 +87,62 @@ for (const [path, heading] of statusPages) {
     );
   });
 }
+
+// The unit tests check the functions that build the metadata. These check what
+// the export actually ships, which is the only thing a crawler sees: the whole
+// chain from the route manifest through next/head and into the built HTML.
+test('every exported page ships the title and description the manifest holds', async ({
+  page,
+}) => {
+  for (const route of SITE_ROUTES) {
+    await page.goto(route.path);
+    await expect(page).toHaveTitle(route.title);
+    // Strict mode: a second copy of either tag fails this rather than being
+    // silently preferred by one crawler and not another.
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      route.description
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      route.title
+    );
+  }
+});
+
+test('the homepage ships exactly one JSON-LD block and it parses', async ({ page }) => {
+  await page.goto('/');
+
+  const blocks = page.locator('script[type="application/ld+json"]');
+  // Two blocks is the state where one is stale and which one wins is a
+  // crawler's choice.
+  await expect(blocks).toHaveCount(1);
+
+  const graph = JSON.parse((await blocks.innerText()) ?? '');
+  expect(graph['@context']).toBe('https://schema.org');
+  expect(
+    graph['@graph'].map((node: { '@type': string }) => node['@type']).sort()
+  ).toEqual(['FAQPage', 'Organization', 'Person', 'WebPage', 'WebSite']);
+
+  // The graph is embedded in the document rather than fetched as JSON, so
+  // anything in the chain is free to escape what it writes. These check the
+  // strings came back intact: a description that round-tripped through HTML
+  // escaping would arrive holding an entity, and the apostrophes in the FAQ
+  // answers are the characters most likely to pick one up.
+  const home = SITE_ROUTES.find(route => route.path === '/')!;
+  const webPage = graph['@graph'].find(
+    (node: { '@type': string }) => node['@type'] === 'WebPage'
+  );
+  expect(webPage.name).toBe(home.title);
+  expect(webPage.description).toBe(home.description);
+
+  const strings = JSON.stringify(graph);
+  // A parsed value still holding an entity means it was escaped twice: once
+  // into the document and not undone on the way out.
+  expect(strings).not.toMatch(/&(amp|quot|apos|lt|gt|#\d+);/);
+  // And the escaping did not leave its own markers behind as literal text.
+  expect(strings).not.toContain('\\\\u003c');
+});
 
 test('the exported 404 links back into the site, not just to the homepage', async ({ page }) => {
   await page.goto('/404.html');
