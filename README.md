@@ -85,3 +85,7 @@ policy enforced and fails on any violation report.
 ## 📄 License
 
 © 2025 Modulix Solutions LLC. All rights reserved.
+
+### Built-page link and image check
+
+Run `npm ci`, `npm run build`, then `npm run check:pages` (Python 3.9+ required). CI runs the same check after the smoke suite builds the export. Every HTML file under `out/`, including error pages, is discovered automatically. Failures identify the source page and broken destination or image. Local links, same-site absolute URLs, fragments, and image `src` files are checked without network requests. External destinations are skipped. Every image must have an `alt` attribute; `alt=""` is allowed for decorative images. This checks attribute presence, not the quality of alternative text or dynamically inserted content.

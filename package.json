@@ -14,7 +14,8 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --runInBand --coverage",
-    "test:smoke": "npm run build && playwright test"
+    "test:smoke": "npm run build && playwright test",
+    "check:pages": "python3 -B scripts/test-check-built-pages.py && python3 -B scripts/check-built-pages.py"
   },
   "keywords": [
     "discord",
