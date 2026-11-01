@@ -18,7 +18,7 @@ export interface PageMetaInput {
   type?: string;
 }
 
-export interface PageMeta {
+interface PageMeta {
   title: string;
   canonical: string;
   tags: MetaTag[];

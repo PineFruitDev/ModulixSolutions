@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { MessageCircle, Twitter, Mail } from 'lucide-react';
 import Container from './Container';
 
 export default function Footer() {
