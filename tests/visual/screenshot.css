@@ -1,0 +1,13 @@
+/*
+ * Injected into every visual screenshot via `expect.toHaveScreenshot.stylePath`.
+ *
+ * The particle canvas is populated from `Math.random()`, so it can never be a
+ * baseline. `ParticleBackground` already returns before drawing when the
+ * reduced-motion preference these tests run under is set, which leaves the
+ * canvas blank, and hiding it is the belt to that braces: if that guard is
+ * ever removed, the reduced-motion unit test in tests/unit/particles.test.tsx
+ * is what fails, rather than every screenshot in this suite at once.
+ */
+.particles-canvas {
+  visibility: hidden !important;
+}

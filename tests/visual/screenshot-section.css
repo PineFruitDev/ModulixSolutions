@@ -1,0 +1,20 @@
+/*
+ * Injected on top of screenshot.css for the per-section element screenshots.
+ *
+ * A section taller than the viewport is captured with Chromium's
+ * capture-beyond-viewport path, which paints `position: fixed` elements into
+ * the top of the captured region rather than leaving them where the page puts
+ * them. The skip link, which the page keeps off screen with a
+ * `translateY(-120%)`, lands inside the frame that way, and the sticky bar
+ * reappears at the top of every section that happens to be tall.
+ *
+ * It is consistent enough to bake into a baseline, but it is a photograph of
+ * something the page never shows. All three are covered properly by the
+ * above-the-fold and drawer screenshots, which are viewport shots and render
+ * them where they really are.
+ */
+.skip-link,
+.site-header,
+header button[aria-label='Open menu'] {
+  display: none !important;
+}

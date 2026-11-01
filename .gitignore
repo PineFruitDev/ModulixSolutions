@@ -43,3 +43,9 @@ next-env.d.ts
 Thumbs.db
 /playwright-report/
 /test-results/
+
+# Visual baselines. Only the Linux set is committed, because that is the one
+# CI compares against; a run on any other platform writes its own directory
+# beside it, which is a local artefact rather than a baseline.
+/tests/visual/__screenshots__/*
+!/tests/visual/__screenshots__/linux/
