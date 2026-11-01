@@ -148,8 +148,70 @@ export const SECURITY_HEADERS: Record<string, string> = {
   'X-Modulix-Foundation': '1.1.0',
 };
 
+/**
+ * The rest of `public/_headers`: the note about the file not being in force on
+ * the current host, and the cache-control rules.
+ *
+ * This lives here because `buildHeadersFile()` is byte-compared against the
+ * committed file. The security block and the caching rules arrived in two
+ * changes that did not know about each other, and a generator covering only
+ * the security block is what made that comparison fail once both had landed.
+ * Anything in the file has to be generated from here, security header or not.
+ */
+const HEADERS_FILE_TAIL = `
+# NOT IN FORCE ON THE CURRENT HOST.
+#
+# _headers is a Cloudflare Pages and Netlify convention. This site deploys to
+# GitHub Pages (.github/workflows/deploy.yml), which serves static files with
+# its own fixed headers and ignores this file completely, so everything here
+# (including the security block above, which predates these rules) is staged
+# for a host that reads it rather than active today. On GitHub Pages the
+# hashed bundle comes back with max-age=600, and there is no supported way to
+# change that from inside the repo.
+#
+# Kept and extended rather than deleted so the policy is reviewed in one place
+# and is correct on the day the host moves.
+
+# Everything under /_next/static carries a content hash in its filename, so a
+# changed file is a changed URL and the response never needs revalidating.
+# Covers the JS chunks and the self-hosted next/font woff2 files.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images ship under stable, unhashed names, so they get a week in cache plus a
+# month of stale-while-revalidate rather than immutability: a replaced logo
+# still rolls out on its own. The splat crosses path separators, so these also
+# cover /companies/*-logo.webp.
+#
+# .webp leads because it is what the client marks under /companies now are.
+# .png still matters for the icons (/modulix-icon*.png) and .ico for the
+# favicon, so dropping either would leave a real file uncached.
+/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/*.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/*.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/*.ico
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+/*.svg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+# Documents revalidate so a deploy is picked up immediately while the
+# subresources they point at stay cached. next.config.js sets trailingSlash,
+# so the pages are served as / and /contact-confirmed/ rather than *.html;
+# these are matched by directory, with /404.html named for the exported
+# not-found page.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/*/
+  Cache-Control: public, max-age=0, must-revalidate
+/404.html
+  Cache-Control: public, max-age=0, must-revalidate
+`;
+
 /** Render `public/_headers` in full, trailing newline included. */
 export function buildHeadersFile(): string {
   const lines = Object.entries(SECURITY_HEADERS).map(([name, value]) => `  ${name}: ${value}`);
-  return `${HEADERS_PATH_PATTERN}\n${lines.join('\n')}\n`;
+  return `${HEADERS_PATH_PATTERN}\n${lines.join('\n')}\n${HEADERS_FILE_TAIL}`;
 }

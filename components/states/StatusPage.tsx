@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
 import Header from '../Header';
@@ -67,13 +67,13 @@ export default function StatusPage({
             className="relative z-10 flex-1 flex items-center justify-center px-4 py-20 md:pt-32"
           >
             <Container className="w-full">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 className="text-center max-w-4xl mx-auto"
               >
-                <motion.div
+                <m.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 100 }}
@@ -82,35 +82,35 @@ export default function StatusPage({
                   <div className="w-32 h-32 mx-auto bg-gradient-to-br from-cyber-blue to-neon-purple rounded-full flex items-center justify-center shadow-2xl shadow-cyber-blue/30">
                     <Icon className="w-16 h-16 text-white" aria-hidden="true" />
                   </div>
-                </motion.div>
+                </m.div>
 
-                <motion.h1
+                <m.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="text-4xl md:text-6xl font-bold mb-6"
                 >
                   {heading}
-                </motion.h1>
+                </m.h1>
 
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto"
                 >
                   {children}
-                </motion.div>
+                </m.div>
 
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.8 }}
                   className="flex flex-wrap items-center justify-center gap-4"
                 >
                   {actions}
-                </motion.div>
-              </motion.div>
+                </m.div>
+              </m.div>
             </Container>
           </main>
 

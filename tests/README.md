@@ -120,6 +120,29 @@ components and their variant branches, and `tests/unit/homepage.test.tsx` covers
 the hero call to action, hover-to-pause on the feature carousel, and the FAQ
 disclosures opening independently rather than as an accordion.
 
+`tests/unit/perf-budget.test.tsx` pins the front-end weight decisions that are
+visible in the source: that no file imports framer-motion's eager `motion`
+proxy, that `_app` registers `domAnimation` rather than `domMax` and wraps the
+tree in `LazyMotion`, that Inter carries no weight list while Lato still does,
+that every homepage `<img>` is sized, that the client marks are lazy,
+async-decoding WebP, and that the header wordmark is eager while the footer
+copy is lazy. These are asserted against the source text rather than the built
+output because `npm run perf` needs a build and so cannot gate every commit;
+the report is for reading a before/after, these are for catching a regression.
+Each case was checked by breaking the invariant and confirming the suite goes
+red, which is how the hover assertion originally written here was found to be
+measuring Tailwind's `hover:scale-105` rather than framer-motion, and dropped.
+
+`tests/smoke/motion-features.spec.ts` is the browser half of that, and the only
+test of any kind that can see a broken framer-motion feature set. `m` elements
+without a working provider still render, they just never animate, so the
+homepage goes blank below the hero while every unit test passes: jsdom has no
+layout and the `IntersectionObserver` in `tests/setup.ts` is a stub. It scrolls
+to each section that opens at `opacity: 0` and waits for the reveal, using the
+non-revealing `#hero` as a control so a CSS fault is distinguishable from a
+feature-set fault. One assertion covers all of `domAnimation`, because `inView`
+sits in the same `gestureAnimations` group as `hover`, `focus` and `tap`.
+
 `components/TypingEffect.tsx` and `components/LoadingScreen.tsx` have no import
 site anywhere in the app and so sit at 0%. Tests against them would raise the
 coverage number without testing anything that ships; they are left reported as

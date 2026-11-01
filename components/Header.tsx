@@ -160,7 +160,12 @@ export default function Header({ simple = false }: HeaderProps) {
         <Container className="py-4">
           <div className="flex items-center justify-between">
               <Link href="/" className={`${linkClass} flex items-center gap-3`}>
-                  <img src="/modulix-icon-128.png" alt="" width={56} height={56} className="w-14 h-14 object-contain" />
+                  {/* Deliberately eager: this is the only image above the fold
+                      on any route, and loading="lazy" on an in-viewport image
+                      holds it behind the lazy-load pass, which pushes out the
+                      first paint instead of helping it. decoding="async" keeps
+                      the decode off the critical path all the same. */}
+                  <img src="/modulix-icon-128.png" alt="" width={56} height={56} decoding="async" className="w-14 h-14 object-contain" />
                   <span className="text-4xl font-bold logo-font text-white">
                     MODULIX
                   </span>

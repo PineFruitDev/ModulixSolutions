@@ -129,7 +129,7 @@ test('the homepage loads its scripts, styles, fonts and images under the policy'
         img.src = src;
       });
     return Promise.all([
-      load('/companies/readyup-logo.png'),
+      load('/companies/readyup-logo.webp'),
       load(
         "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3C/svg%3E"
       ),

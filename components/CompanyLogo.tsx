@@ -14,6 +14,11 @@ interface CompanyLogoProps {
  *
  * Both branches are decorative. The company name is rendered beside this and
  * the whole card is a link, so announcing the mark again would just repeat it.
+ *
+ * The marks are lossless WebP, served without a PNG `<picture>` fallback on
+ * purpose: a browser too old for WebP lands on the monogram above, which is
+ * the same thing it would get if the file 404'd, so the fallback would double
+ * the published bytes to serve a path this component already handles.
  */
 export default function CompanyLogo({ logoUrl, displayName }: CompanyLogoProps) {
   const [failed, setFailed] = useState(false);

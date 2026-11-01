@@ -30,7 +30,13 @@
 # Images ship under stable, unhashed names, so they get a week in cache plus a
 # month of stale-while-revalidate rather than immutability: a replaced logo
 # still rolls out on its own. The splat crosses path separators, so these also
-# cover /companies/*-logo.png.
+# cover /companies/*-logo.webp.
+#
+# .webp leads because it is what the client marks under /companies now are.
+# .png still matters for the icons (/modulix-icon*.png) and .ico for the
+# favicon, so dropping either would leave a real file uncached.
+/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 /*.png
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 /*.jpg

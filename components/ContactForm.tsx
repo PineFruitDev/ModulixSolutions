@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Button from './Button';
 import Spinner from './states/Spinner';
@@ -141,7 +141,7 @@ export default function ContactForm() {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -293,7 +293,7 @@ export default function ContactForm() {
       )}
 
       </form>
-    </motion.div>
+    </m.div>
   );
 }
 
