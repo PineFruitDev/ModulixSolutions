@@ -452,9 +452,12 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [botFeaturesRotating]);
 
-  // shrink-0 keeps these round and keeps the tap target at 36px when the
-  // neighbouring tagline is long enough to compete for the row.
-  const rotationControlClass = 'inline-flex shrink-0 items-center justify-center w-9 h-9 rounded-full border border-cyber-blue/40 bg-dark-navy/70 text-gray-300 hover:text-white hover:border-cyber-blue transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue';
+  // shrink-0 keeps these round when the neighbouring tagline is long enough to
+  // compete for the row. They paint at 36px, which is below the 44px floor, so
+  // `tap-target` adds the missing reach as an overlay: four of them share the
+  // carousel's control row with the "Feature N of 10" readout, and growing the
+  // boxes themselves would not leave that row 360px to sit in.
+  const rotationControlClass = 'tap-target inline-flex shrink-0 items-center justify-center w-9 h-9 rounded-full border border-cyber-blue/40 bg-dark-navy/70 text-gray-300 hover:text-white hover:border-cyber-blue transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue';
 
   return (
     <>
@@ -477,21 +480,34 @@ export default function Home() {
 
           <main id="main">
             {/* Hero Section */}
+            {/*
+              One `min-h-screen`, not three. This was nested on the section, on
+              an inner wrapper and again on the text column, so the hero came
+              out at 100vh plus the Container's 160px of padding: 704px inside
+              a 360x640 viewport, which pushed "Launch Your Campaign" below the
+              fold on a small phone. Centring is the section's job and the
+              padding is the Container's; neither needs its own viewport box.
+            */}
             <SectionWrapper id="hero" labelledBy="hero-heading" reveal={false} className="min-h-screen flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-black/20 z-0"></div>
-                <div className="min-h-screen flex items-center justify-center">
-                  <Container className="py-20">
-                <div className="text-center flex flex-col items-center justify-center min-h-screen">
+                  <Container className="py-12 md:py-20">
+                <div className="text-center flex flex-col items-center justify-center">
                   <p className="text-lg md:text-xl text-gray-300 font-medium mb-4">
                     Congratulations! You&apos;ve just stumbled upon...
                   </p>
 
-                  <h1 id="hero-heading" className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
+                  <h1 id="hero-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 leading-tight">
                     <span className="gradient-text text-glow">MODULIX</span>{' '}
                     <span className="text-white">SOLUTIONS</span>
                   </h1>
 
-                  <div className="h-16 md:h-20 flex items-center justify-center gap-4 mb-6">
+                  {/*
+                    min-h, not h: at 360px the longest taglines already fill
+                    this row exactly, so a fixed height had no slack left and
+                    the first reader to enlarge their text (WCAG 1.4.4 asks for
+                    200%) would have had it spill over the copy below.
+                  */}
+                  <div className="min-h-16 md:min-h-20 flex items-center justify-center gap-4 mb-6">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-white">
                       {taglines[currentTagline]}
                     </h2>
@@ -509,7 +525,12 @@ export default function Home() {
                     )}
                   </div>
 
-                  <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
+                  {/*
+                    max-w-4xl: the Container runs to 1248px, and at 24px this
+                    paragraph was setting 103 characters to the line, well past
+                    the ~80 that stays comfortable to track.
+                  */}
+                  <p className="text-lg md:text-xl lg:text-2xl text-gray-300 max-w-4xl mb-8 md:mb-12 leading-relaxed">
                     Craft authentic, scalable engagements that transform fleeting interactions into enduring brand loyalty empowering gaming studios and brands to own the conversation in the heart of gaming&apos;s digital universe.
                   </p>
 
@@ -518,20 +539,22 @@ export default function Home() {
                   </Button>
                 </div>
               </Container>
-                </div>
             </SectionWrapper>
 
             {/* About & Value Propositions Section */}
             <SectionWrapper id="about" labelledBy="about-heading" className="py-16 bg-deeper-blue/60 relative">
               <div className="hex-overlay" aria-hidden="true"></div>
               <Container className="relative z-[10]">
-                {/* About Us Section */}
+                {/* About Us Section.
+
+                    max-w-3xl, down from 4xl: at 896px wide the body copy below
+                    was setting 96 characters to the line. */}
                 <div className="mb-20">
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center max-w-4xl mx-auto"
+                    className="text-center max-w-3xl mx-auto"
                   >
 
                     <div className="flex flex-col lg:flex-row items-start gap-8">
@@ -650,7 +673,7 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-5xl md:text-7xl font-bold mb-6 text-white"
+                        className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 text-white"
                   >
                         Introducing the <span className="text-cyber-blue">Modulix Bot</span>
                   </motion.h2>
@@ -691,9 +714,31 @@ export default function Home() {
 
                         {/* Right Column - Cards */}
                         <div className="flex flex-col items-center justify-center gap-4">
-                          {/* Rotating Feature Tile */}
+                          {/*
+                            Rotating Feature Tile
+
+                            A grid whose slides all sit in cell 1/1, rather
+                            than a fixed-height box with absolutely positioned
+                            slides. The slides used to be taken out of flow so
+                            they could cross-fade on top of each other, which
+                            left the track contributing no height of its own
+                            and needing to be told one: a flat 380px. Ten cards
+                            of varying copy do not share a height, and at 360px
+                            the tallest ("Engaging Leveling System") rendered
+                            486px and overlapped the stepper row below it by
+                            36px.
+
+                            Stacking them in one grid cell keeps the crossfade,
+                            since they still overlap, but the row now sizes to
+                            the tallest slide at whatever the current width and
+                            font size work out to. That is a height no longer
+                            possible to get wrong, and it cannot drift when the
+                            copy is edited. It also holds steady while the
+                            rotation runs, because every slide is measured, not
+                            just the visible one.
+                          */}
                           <div
-                            className="relative h-[380px] flex items-center justify-center w-full max-w-lg"
+                            className="relative grid w-full max-w-lg"
                             role="group"
                             aria-roledescription="carousel"
                             aria-label="Modulix Bot features"
@@ -716,7 +761,6 @@ export default function Home() {
                                     opacity: isVisible ? 1 : 0,
                                     x: isVisible ? 0 : isPrevious ? -100 : 100,
                                     scale: isVisible ? 1 : 0.95,
-                                    position: 'absolute' as const,
                                     pointerEvents: isVisible ? 'auto' as const : 'none' as const
                                   }}
                                   transition={{
@@ -724,17 +768,21 @@ export default function Home() {
                                     ease: "easeInOut",
                                     delay: isVisible ? 0.3 : 0
                                   }}
+                                  // Every slide shares one grid cell, so they
+                                  // stack for the crossfade while still being
+                                  // measured for the row's height.
+                                  style={{ gridArea: '1 / 1' }}
                                   className="w-full"
                                 >
                                   <Card
-                                    className={`text-center p-10 h-full transition-all duration-300 ${
+                                    className={`text-center p-5 sm:p-8 lg:p-10 h-full transition-all duration-300 ${
                                       feature.color === 'purple' ? 'hover:shadow-neon-purple-glow' : 'hover:shadow-neon-blue-glow'
                                     }`}
                                     glowColor={feature.color as 'blue' | 'purple'}
                                   >
-                                    <div className="flex justify-center mb-6">
+                                    <div className="flex justify-center mb-4 lg:mb-6">
                                       <div
-                                        className={`w-24 h-24 rounded-full flex items-center justify-center ${
+                                        className={`w-16 h-16 lg:w-24 lg:h-24 rounded-full flex items-center justify-center ${
                                           feature.color === 'purple'
                                             ? 'bg-gradient-to-br from-neon-purple to-cyber-blue'
                                             : 'bg-gradient-to-br from-cyber-blue to-neon-purple'
@@ -743,28 +791,28 @@ export default function Home() {
                                         {feature.icon}
                     </div>
                     </div>
-                                    <h4 className="text-2xl font-bold mb-4" style={{ color: feature.color === 'blue' ? '#00D4FF' : '#C084FC' }}>
+                                    <h4 className="text-xl lg:text-2xl font-bold mb-3 lg:mb-4" style={{ color: feature.color === 'blue' ? '#00D4FF' : '#C084FC' }}>
                                       {feature.title}
                                     </h4>
                                     <div
-                                      className="w-full h-1 mb-6 rounded-full"
+                                      className="w-full h-1 mb-4 lg:mb-6 rounded-full"
                                       style={{
                                         background: feature.color === 'blue'
                                           ? 'linear-gradient(90deg, #00D4FF, #C084FC)'
                                           : 'linear-gradient(90deg, #C084FC, #00D4FF)'
                                       }}
                                     />
-                                    <ul className="text-left space-y-4 max-w-xl mx-auto">
+                                    <ul className="text-left space-y-2 lg:space-y-4 max-w-xl mx-auto">
                                       {feature.bullets.map((bullet, bulletIndex) => (
                                         <li key={bulletIndex} className="flex items-start">
                                           <span
                                             aria-hidden="true"
-                                            className="text-2xl mr-3 flex-shrink-0 mt-[-2px]"
+                                            className="text-xl lg:text-2xl mr-2 lg:mr-3 flex-shrink-0 mt-[-2px]"
                                             style={{ color: feature.color === 'blue' ? '#00D4FF' : '#C084FC' }}
                                           >
                                             •
                                           </span>
-                                          <span className="text-gray-300 leading-relaxed text-lg">
+                                          <span className="text-gray-300 leading-relaxed text-base lg:text-lg">
                                             {bullet}
                                           </span>
                                         </li>
@@ -783,10 +831,12 @@ export default function Home() {
                             reachable. Pause/Play only appears when there is
                             motion to pause.
 
-                            relative z-10: the slides are absolutely positioned,
-                            and a card taller than the 380px track spills over
-                            this row on narrow viewports, where it would
-                            otherwise swallow taps on these controls.
+                            relative z-10 is kept as a backstop. It was load
+                            bearing when the slides were absolutely positioned
+                            and a tall card could spill over this row and
+                            swallow its taps; the track now sizes to its
+                            tallest slide, so nothing overlaps, but a stacking
+                            order that puts the controls on top costs nothing.
                           */}
                           <div className="relative z-10 flex items-center gap-3">
                             <button
@@ -837,8 +887,17 @@ export default function Home() {
                         transition={{ duration: 0.8, delay: 1 }}
                         className="flex justify-center mt-12"
                       >
-                        <div className="px-8 py-4 bg-gradient-to-r from-cyber-blue/30 to-neon-purple/30 border-2 border-cyber-blue rounded-full backdrop-blur-sm">
-                          <div className="flex items-center gap-3">
+                        {/*
+                          A pill with three pieces of text in a nowrap row does
+                          not survive 360px: "Coming Soon" broke across two
+                          lines mid-phrase and the dot separator was left
+                          stranded. Below `sm` the row is allowed to wrap
+                          instead, the separator (decoration either way) drops
+                          out, and the corner radius relaxes so a two-line
+                          badge does not read as a misshapen pill.
+                        */}
+                        <div className="px-5 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-cyber-blue/30 to-neon-purple/30 border-2 border-cyber-blue rounded-3xl sm:rounded-full backdrop-blur-sm">
+                          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                             {/* Hexagonal Loading Symbol with Tumbling Inner Hexagon */}
                             <div className="relative w-6 h-6">
                               {/* Outer rotating hexagon */}
@@ -887,8 +946,8 @@ export default function Home() {
                                 />
                               </motion.svg>
                     </div>
-                            <span className="text-white font-bold text-lg">Coming Soon</span>
-                            <span className="text-gray-300">•</span>
+                            <span className="text-white font-bold text-lg whitespace-nowrap">Coming Soon</span>
+                            <span aria-hidden="true" className="hidden sm:inline text-gray-300">•</span>
                             <span className="text-gray-300">Stay tuned for the revolution</span>
                           </div>
                         </div>
@@ -1251,8 +1310,8 @@ export default function Home() {
                 ) : (
                 <div className="relative overflow-hidden py-8" style={{ height: '360px' }}>
                   {/* Fade masks on edges */}
-                  <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0B18] to-transparent z-10 pointer-events-none" />
-                  <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0A0B18] to-transparent z-10 pointer-events-none" />
+                  <div className="absolute left-0 top-0 bottom-0 w-16 lg:w-32 bg-gradient-to-r from-[#0A0B18] to-transparent z-10 pointer-events-none" />
+                  <div className="absolute right-0 top-0 bottom-0 w-16 lg:w-32 bg-gradient-to-l from-[#0A0B18] to-transparent z-10 pointer-events-none" />
 
                   <motion.div
                     className="absolute inset-0 flex items-center gap-8 py-4"
@@ -1389,7 +1448,7 @@ export default function Home() {
                           href="https://discord.gg/modulix"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0789.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0789-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0067.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0408.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9758 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
@@ -1400,7 +1459,7 @@ export default function Home() {
                           href="https://x.com/ModulixSolution"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
                           <svg width="16" height="16" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" aria-hidden="true">
                             <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="currentColor"/>
@@ -1411,7 +1470,7 @@ export default function Home() {
                           href="https://www.linkedin.com/company/modulixsolution"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -1479,7 +1538,7 @@ export default function Home() {
                           <button
                             type="button"
                             id={`faq-question-${index}`}
-                            className="flex w-full items-center justify-between gap-4 text-left rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
+                            className="flex min-h-11 w-full items-center justify-between gap-4 py-1 text-left rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue"
                             aria-expanded={isOpen}
                             aria-controls={`faq-answer-${index}`}
                             onClick={() => {
