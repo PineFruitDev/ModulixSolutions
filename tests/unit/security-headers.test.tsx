@@ -42,9 +42,24 @@ describe('the headers file', () => {
   });
 
   test('every header is one indented "Name: value" line', () => {
-    const [, ...lines] = buildHeadersFile().trimEnd().split('\n');
+    // The first block only. buildHeadersFile() also emits the cache-control
+    // sections, which carry their own path patterns and comment lines, so
+    // splitting the whole file here would count those too.
+    const [securityBlock] = buildHeadersFile().split('\n\n');
+    const [, ...lines] = securityBlock.trimEnd().split('\n');
     expect(lines).toHaveLength(Object.keys(SECURITY_HEADERS).length);
     lines.forEach(line => expect(line).toMatch(/^ {2}[A-Za-z-]+: \S.*$/));
+  });
+
+  test('the cache-control rules are generated, not left to the file alone', () => {
+    // The regression this pins: the security block and the caching rules
+    // arrived in two changes that did not know about each other, and the
+    // generator covering only the security block made the byte comparison
+    // above fail the moment both had landed on main.
+    const file = buildHeadersFile();
+    for (const pattern of ['/_next/static/*', '/*.png', '/404.html']) {
+      expect(file).toContain(`${pattern}\n  Cache-Control:`);
+    }
   });
 });
 
