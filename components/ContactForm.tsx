@@ -149,11 +149,20 @@ export default function ContactForm() {
       className="max-w-lg mx-auto"
     >
       <form onSubmit={onSubmit} className="space-y-6">
+        {/* Send stays disabled until the required fields validate, so the rules
+            have to be discoverable before you trip over them. The asterisk is
+            decoration; this sentence and the per-field hints below are what
+            assistive technology can actually read. */}
+        <p className="text-sm text-gray-400">
+          Fields marked <span aria-hidden="true">*</span>
+          <span className="sr-only">with an asterisk</span> are required.
+        </p>
+
         {/* Name and Discord side by side */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-              Name *
+              Name <span aria-hidden="true">*</span>
             </label>
             <div className="relative">
               <input
@@ -161,6 +170,7 @@ export default function ContactForm() {
                 name="name"
                 id="name"
                 required
+                aria-describedby="name-hint"
                 className="form-input w-full pr-10"
                 placeholder="Your name"
                 disabled={isSubmitting}
@@ -172,18 +182,24 @@ export default function ContactForm() {
                 </div>
               )}
             </div>
+            <p id="name-hint" className="mt-2 text-sm text-gray-400">
+              Two characters or more.
+            </p>
           </div>
 
           <div>
             <label htmlFor="discord" className="block text-sm font-medium text-gray-300 mb-2">
-              Discord Username
+              Discord Username <span className="text-gray-400">(optional)</span>
             </label>
             <div className="relative">
+              {/* Uses the shared .form-input rather than restating it inline:
+                  the local copy had drifted to a /30 border, which is below the
+                  3:1 that WCAG 1.4.11 asks of a control boundary. */}
               <input
                 type="text"
                 name="discord"
                 id="discord"
-                className="bg-deeper-blue border border-neon-purple/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-purple/60 focus:border-neon-purple w-full pr-10"
+                className="form-input w-full pr-10"
                 placeholder="@username"
                 disabled={isSubmitting}
                 onChange={(e) => handleFieldChange('discord', e.target.value)}
@@ -199,7 +215,7 @@ export default function ContactForm() {
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-            Email *
+            Email <span aria-hidden="true">*</span>
           </label>
           <div className="relative">
             <input
@@ -207,6 +223,7 @@ export default function ContactForm() {
               name="email"
               id="email"
               required
+              aria-describedby="email-hint"
               className="form-input w-full pr-10"
               placeholder="your.email@example.com"
               disabled={isSubmitting}
@@ -218,11 +235,14 @@ export default function ContactForm() {
               </div>
             )}
           </div>
+          <p id="email-hint" className="mt-2 text-sm text-gray-400">
+            Where we will send our reply.
+          </p>
         </div>
 
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-          Message *
+          Message <span aria-hidden="true">*</span>
         </label>
         <div className="relative">
           <textarea
@@ -230,6 +250,7 @@ export default function ContactForm() {
             id="message"
             rows={5}
             required
+            aria-describedby="message-hint"
             className="form-textarea w-full pr-10"
             placeholder="Tell us about your project..."
             disabled={isSubmitting}
@@ -241,6 +262,9 @@ export default function ContactForm() {
             </div>
           )}
         </div>
+        <p id="message-hint" className="mt-2 text-sm text-gray-400">
+          Ten characters or more. Tell us what you are building and what you need.
+        </p>
       </div>
 
       <div className="text-center">

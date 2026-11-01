@@ -48,7 +48,9 @@ test('required fields gate submission; Discord remains optional', () => {
 test('invalid optional Discord prevents a network request', () => {
   render(<ContactForm />);
   fillForm();
-  fireEvent.change(screen.getByLabelText('Discord Username'), { target: { value: 'x' } });
+  // Matched loosely: the label now also carries an "(optional)" hint, and this
+  // test is about the validation behaviour rather than the wording.
+  fireEvent.change(screen.getByLabelText(/Discord Username/), { target: { value: 'x' } });
   fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
   expect(screen.getByText('Please fill out all required fields correctly.')).toBeInTheDocument();
   expect(fetch).not.toHaveBeenCalled();
