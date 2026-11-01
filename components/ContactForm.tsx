@@ -165,11 +165,15 @@ export default function ContactForm() {
               Name <span aria-hidden="true">*</span>
             </label>
             <div className="relative">
+              {/* autoComplete is what lets a browser or assistive tool fill
+                  this from the visitor's own stored details, and the token has
+                  to come from the fixed list in WCAG 2.2 1.3.5. */}
               <input
                 type="text"
                 name="name"
                 id="name"
                 required
+                autoComplete="name"
                 aria-describedby="name-hint"
                 className="form-input w-full pr-10"
                 placeholder="Your name"
@@ -199,6 +203,8 @@ export default function ContactForm() {
                 type="text"
                 name="discord"
                 id="discord"
+                autoComplete="nickname"
+                aria-describedby="discord-hint"
                 className="form-input w-full pr-10"
                 placeholder="@username"
                 disabled={isSubmitting}
@@ -210,6 +216,14 @@ export default function ContactForm() {
                 </div>
               )}
             </div>
+            {/* Optional, but not unconstrained: a value this field rejects
+                blocks submission, and the message that comes back talks about
+                required fields, which is no help on a field labelled optional.
+                Stating the limit up front is the part that can be read before
+                tripping over it. */}
+            <p id="discord-hint" className="mt-2 text-sm text-gray-400">
+              Optional. Two to thirty-two characters if you provide one.
+            </p>
           </div>
         </div>
 
@@ -223,6 +237,7 @@ export default function ContactForm() {
               name="email"
               id="email"
               required
+              autoComplete="email"
               aria-describedby="email-hint"
               className="form-input w-full pr-10"
               placeholder="your.email@example.com"
