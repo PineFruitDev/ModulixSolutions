@@ -21,7 +21,7 @@ body {
 }
 
 .skip-link {
-  position: absolute;
+  position: fixed;
   left: 1rem;
   top: 0;
   z-index: 10000;
@@ -304,4 +304,13 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+/* An outline remains visible even on controls with decorative shadows. */
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #00D4FF;
+  outline-offset: 3px;
+}
+@media (forced-colors: active) {
+  :focus-visible { outline-color: Highlight !important; }
 }

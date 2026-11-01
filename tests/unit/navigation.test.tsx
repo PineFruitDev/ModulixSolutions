@@ -196,6 +196,7 @@ describe('drawer and breakpoint', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(document.body.style.overflow).toBe('');
+    expect(screen.getByRole('link', { name: 'MODULIX' })).toHaveFocus();
   });
 
   test('a browser with only the deprecated listener API still closes at md', () => {
