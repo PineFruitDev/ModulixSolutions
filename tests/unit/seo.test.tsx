@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { buildPageMeta, type MetaTag } from '../../lib/seo/meta';
-import { SITE_ROUTES, buildSitemapXml } from '../../lib/seo/routes';
-import { OG_IMAGE, SITE_URL, absoluteUrl } from '../../lib/seo/site';
+import { SITE_ROUTES, buildSitemapXml, getRoute, routeMeta } from '../../lib/seo/routes';
+import { OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl } from '../../lib/seo/site';
 
 const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
@@ -113,6 +113,69 @@ describe('the social card file matches what the tags promise', () => {
       width: OG_IMAGE.width,
       height: OG_IMAGE.height,
     });
+  });
+});
+
+/**
+ * The manifest owns every page's title and description, so these run over all
+ * of them at once. That is the point of keeping the strings there: a new page
+ * is length-checked and uniqueness-checked the moment it is listed, with no
+ * per-page test to remember to write.
+ */
+describe('every route ships a usable title and description', () => {
+  // Google truncates the displayed title around 60 characters and the snippet
+  // around 160. The lower bounds are not style rules: a two-word description
+  // gets ignored in favour of scraped page text, which is worse than a
+  // deliberate one.
+  const TITLE_MAX = 60;
+  const DESCRIPTION_MIN = 70;
+  const DESCRIPTION_MAX = 158;
+
+  test.each(SITE_ROUTES.map((route) => [route.path, route] as const))(
+    '%s',
+    (_path, route) => {
+      expect(route.title.length).toBeLessThanOrEqual(TITLE_MAX);
+      expect(route.description.length).toBeGreaterThanOrEqual(DESCRIPTION_MIN);
+      expect(route.description.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
+
+      // The brand belongs in the title: these are the words a searcher scans
+      // for, and the status pages are reachable directly from a shared link.
+      expect(route.title).toContain(SITE_NAME);
+
+      // Leading, trailing or doubled whitespace survives into the rendered tag
+      // and into the social card, where it is visible.
+      for (const text of [route.title, route.description]) {
+        expect(text).toBe(text.trim());
+        expect(text).not.toMatch(/\s{2,}/);
+      }
+
+      // A description that is really a sentence fragment reads as truncated in
+      // a result snippet.
+      expect(route.description).toMatch(/[.!?]$/);
+    }
+  );
+
+  test('no two pages share a title or a description', () => {
+    // Duplicate metadata across URLs is the specific thing Search Console
+    // reports, and it makes the pages compete for the same query.
+    const titles = SITE_ROUTES.map((route) => route.title);
+    const descriptions = SITE_ROUTES.map((route) => route.description);
+    expect(new Set(titles).size).toBe(titles.length);
+    expect(new Set(descriptions).size).toBe(descriptions.length);
+  });
+
+  test('the robots directive follows from indexability rather than being set twice', () => {
+    for (const route of SITE_ROUTES) {
+      expect(routeMeta(route.path).robots).toBe(
+        route.indexable ? 'index, follow' : 'noindex, follow'
+      );
+    }
+  });
+
+  test('asking for a path that is not in the manifest fails loudly', () => {
+    // A page passing an unlisted path would otherwise render an empty title and
+    // a canonical URL pointing at the origin.
+    expect(() => getRoute('/not-a-page/')).toThrow(/manifest/);
   });
 });
 

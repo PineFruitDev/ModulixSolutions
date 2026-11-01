@@ -9,12 +9,11 @@ import Container from '../Container';
 import Seo from '../Seo';
 
 interface StatusPageProps {
-  /** Document title and the basis for the social card title. */
-  pageTitle: string;
-  metaDescription: string;
-  /** Exported path of this page, used for its canonical URL and og:url. */
+  /**
+   * Exported path of this page. Its title, description, canonical URL and
+   * robots directive all come from the route manifest keyed on this path.
+   */
   path: string;
-  robots?: string;
   icon: LucideIcon;
   heading: string;
   /** Body copy explaining what happened and what the visitor can do next. */
@@ -29,10 +28,7 @@ interface StatusPageProps {
  * keeps those pages from drifting apart as they get edited separately.
  */
 export default function StatusPage({
-  pageTitle,
-  metaDescription,
   path,
-  robots = 'noindex, follow',
   icon: Icon,
   heading,
   children,
@@ -40,15 +36,11 @@ export default function StatusPage({
 }: StatusPageProps) {
   return (
     <>
-      {/* noindex keeps these out of search results; the self-referencing
-          canonical is inert alongside it and gives the social card a complete
-          URL, which these pages previously shipped without. */}
-      <Seo
-        title={pageTitle}
-        description={metaDescription}
-        path={path}
-        robots={robots}
-      />
+      {/* These routes are marked non-indexable in the manifest, so they get
+          noindex from it. The self-referencing canonical is inert alongside
+          that and gives the social card a complete URL, which these pages
+          previously shipped without. */}
+      <Seo path={path} />
 
       {/* min-h-screen rather than h-screen: the content grows with the longest
           translation, the largest default font size and the extra links. */}

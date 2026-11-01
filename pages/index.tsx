@@ -18,6 +18,7 @@ import CompanyLogo from '../components/CompanyLogo';
 import StateMessage from '../components/states/StateMessage';
 import Seo from '../components/Seo';
 import { OG_IMAGE, SITE_URL, absoluteUrl } from '../lib/seo/site';
+import { getRoute } from '../lib/seo/routes';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 // Page copy is static, so it lives outside the component: the tagline interval
@@ -249,16 +250,10 @@ const companies = [
  */
 const companiesMarquee = [...companies, ...companies];
 
-/**
- * Page metadata. Broadened from "Discord Community Management" to cover the
- * whole user-generated content space the company works across, rather than one
- * platform or any single game. Discord stays named because it is the site's
- * established search term and still the largest of those surfaces; dropping it
- * outright would give up that ranking for no gain.
- */
-const HOME_TITLE = 'Modulix Solutions | Discord, Creator and UGC Growth Systems';
-const HOME_DESCRIPTION =
-  'Modulix builds community infrastructure, creator programmes and brand activations across Discord and the wider user-generated content space.';
+// Page metadata lives in the route manifest, alongside this page's sitemap
+// entry and indexability, so the structured data below and the <head> cannot
+// describe the page differently.
+const { title: HOME_TITLE, description: HOME_DESCRIPTION } = getRoute('/');
 
 /**
  * The three service groups, named once and read by both the section headings
@@ -462,12 +457,7 @@ export default function Home() {
           since 2009, and it named third-party companies), plus the
           non-standard language and revisit-after tags. The html lang attribute
           in _document.tsx already carries the language. */}
-      <Seo
-        title={HOME_TITLE}
-        description={HOME_DESCRIPTION}
-        path="/"
-        jsonLd={structuredDataJson}
-      />
+      <Seo path="/" jsonLd={structuredDataJson} />
 
       <div className="min-h-screen relative">
         <div className="absolute inset-0">
