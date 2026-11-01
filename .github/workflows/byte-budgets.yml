@@ -1,0 +1,28 @@
+name: Byte budgets
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  # Its own workflow rather than a job in test.yml so a size regression is
+  # reported as its own failed check, and so it is not queued behind the
+  # Playwright browser download that the smoke and visual jobs need.
+  budgets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # Builds the static export into out/ and measures it against
+      # docs/performance/byte-budgets.json. Fails on a page or asset over
+      # budget, on a budget whose pattern no longer matches anything, and on a
+      # new unbudgeted file above the ceiling.
+      - run: npm run perf:budgets

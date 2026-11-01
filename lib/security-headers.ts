@@ -191,6 +191,23 @@ const HEADERS_FILE_TAIL = `
 /*.svg
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
+# Discovery and structured-data files: robots.txt, sitemap.xml, security.txt,
+# llms.txt, llms-full.txt and modulix-node.json, plus the /.well-known copies,
+# which the splat reaches because it crosses path separators. These carried no
+# Cache-Control at all and fell back to whatever default the host picked. An
+# hour is short enough that a corrected robots rule or a new sitemap entry is
+# live the same day, and a day of stale-while-revalidate means a crawler never
+# blocks on the revalidation.
+#
+# The woff2 files need no rule of their own: next/font emits them under
+# /_next/static/media, which the immutable rule above already covers.
+/*.txt
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/*.xml
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/*.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
 # Documents revalidate so a deploy is picked up immediately while the
 # subresources they point at stay cached. next.config.js sets trailingSlash,
 # so the pages are served as / and /contact-confirmed/ rather than *.html;

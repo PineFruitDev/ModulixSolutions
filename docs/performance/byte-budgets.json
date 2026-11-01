@@ -1,0 +1,92 @@
+{
+  "exportDir": "out",
+  "unbudgetedFileCeiling": 16384,
+
+  "pages": {
+    "index.html": 245760,
+    "404.html": 212992,
+    "404/index.html": 212992,
+    "500/index.html": 212992,
+    "contact-confirmed/index.html": 212992
+  },
+
+  "rules": [
+    {
+      "label": "React and Next runtime",
+      "pattern": "_next/static/chunks/framework-*.js",
+      "budget": 47104,
+      "note": "react + react-dom. Moves only on a Next or React upgrade."
+    },
+    {
+      "label": "Next client runtime",
+      "pattern": "_next/static/chunks/main-*.js",
+      "budget": 36864,
+      "note": "Router and hydration. Moves only on a Next upgrade."
+    },
+    {
+      "label": "Shared app shell",
+      "pattern": "_next/static/chunks/pages/_app-*.js",
+      "budget": 40960,
+      "note": "Mostly framer-motion, which every page pays for because _app wraps the tree in MotionConfig. The place to look first if this budget is ever the one that fails."
+    },
+    {
+      "label": "Homepage route chunk",
+      "pattern": "_next/static/chunks/pages/index-*.js",
+      "budget": 20480,
+      "note": "The homepage's own components. The one chunk ordinary feature work actually grows."
+    },
+    {
+      "label": "Legacy polyfills (nomodule)",
+      "pattern": "_next/static/chunks/polyfills-*.js",
+      "budget": 40960,
+      "note": "Shipped with the nomodule attribute, so no module-supporting browser requests it. Budgeted because it is deploy weight, and deliberately left out of the page critical-path totals because it is not visitor weight."
+    },
+    {
+      "label": "All JavaScript",
+      "pattern": "_next/static/chunks/**/*.js",
+      "mode": "sum",
+      "budget": 199680,
+      "note": "Catches chunk proliferation, which the per-chunk budgets above cannot see: splitting one chunk into five keeps every per-chunk budget green."
+    },
+    {
+      "label": "Stylesheet",
+      "pattern": "_next/static/css/*.css",
+      "budget": 8192,
+      "note": "One render-blocking file: Tailwind's used utilities plus styles/globals.css. Tailwind purges against the content globs in tailwind.config.js, so this tracks classes actually referenced rather than the whole framework."
+    },
+    {
+      "label": "Self-hosted fonts",
+      "pattern": "_next/static/media/*.woff2",
+      "mode": "sum",
+      "minMatches": 9,
+      "budget": 245760,
+      "note": "Nine files, but a visitor fetches two (62.6 kB: Inter latin and Lato latin), and those two are the only ones in the critical-path totals. next/font emits every subset Google returns and uses the `subsets` option to decide what to PRELOAD, not what to download, so the latin-ext, cyrillic, cyrillic-ext, greek, greek-ext and vietnamese cuts ship unreferenced by any preload and are fetched only if a glyph in those ranges renders. There is no next/font option to stop emitting them."
+    },
+    {
+      "label": "App icon",
+      "pattern": "modulix-icon-128.png",
+      "budget": 16384,
+      "note": "Favicon and apple-touch-icon, referenced from the head in pages/_app.tsx."
+    },
+    {
+      "label": "Schema logo",
+      "pattern": "modulix-icon.png",
+      "budget": 460800,
+      "note": "1551x1549, referenced only by the Organization structured data in lib/seo/site.ts, so crawlers fetch it and visitors never do. Large for what it is, but lib/seo/site.ts pins its dimensions and a unit test reads them back out of the PNG header, so re-encoding it is a change to make deliberately with that test in hand rather than as part of a size pass."
+    },
+    {
+      "label": "Social card",
+      "pattern": "og-image.jpg",
+      "budget": 204800,
+      "note": "1200x630, the standard OG card size. Fetched by crawlers and link unfurlers, not by visitors."
+    },
+    {
+      "label": "Client logos",
+      "pattern": "companies/*.png",
+      "mode": "sum",
+      "minMatches": 11,
+      "budget": 435200,
+      "note": "Rendered by components/CompanyLogo.tsx. A sum rather than a per-file budget because the set grows as clients are added, and the total is what matters."
+    }
+  ]
+}
