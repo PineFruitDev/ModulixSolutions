@@ -17,8 +17,8 @@ import ParticleBackground from '../components/ParticleBackground';
 import CompanyLogo from '../components/CompanyLogo';
 import StateMessage from '../components/states/StateMessage';
 import Seo from '../components/Seo';
-import { OG_IMAGE, SITE_URL, absoluteUrl } from '../lib/seo/site';
 import { getRoute } from '../lib/seo/routes';
+import { buildHomeStructuredData, serializeJsonLd } from '../lib/seo/structuredData';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 // Page copy is static, so it lives outside the component: the tagline interval
@@ -284,130 +284,23 @@ const faqs = [
   { question: 'How does Modulix differ from generic ad networks?', answer: 'We\'re gaming natives: Modular, UEFN-savvy solutions that prioritize owned ecosystems over spray-and-pray tactics, delivering deeper ROI for brands ready to level up.' },
 ];
 
-// Node ids are referenced from several places in the graph, so they are named
-// once rather than spelled out as string literals at each use.
-const ORGANIZATION_ID = `${SITE_URL}/#organization`;
-const WEBSITE_ID = `${SITE_URL}/#website`;
-const WEBPAGE_ID = `${SITE_URL}/#webpage`;
-
-const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": ORGANIZATION_ID,
-      "name": "Modulix",
-      "legalName": "Modulix Solutions, LLC",
-      "alternateName": ["Modulix Solutions", "Modulix GG"],
-      "url": absoluteUrl('/'),
-      "logo": absoluteUrl('/modulix-icon.png'),
-      "image": absoluteUrl(OG_IMAGE.path),
-      // Ordered so the category leads and the platforms read as the examples
-      // they are: the same positioning as the page title and llms.txt.
-      "description": "Modulix Solutions, LLC builds community, creator and brand-activation infrastructure for the user-generated content space, alongside deployed AI and agent systems and the owned UGC Suite of creator tools. Platform work includes Discord, Fortnite UEFN and Roblox.",
-      "sameAs": [
-        "https://modulix.gg",
-        "https://discord.gg/modulix",
-        "https://x.com/ModulixSolution",
-        "https://www.linkedin.com/company/modulixsolution"
-      ],
-      "owns": [
-        {
-          "@type": "SoftwareApplication",
-          "name": "VerifyUGC",
-          "url": "https://verifyugc.dev"
-        },
-        {
-          "@type": "WebApplication",
-          "name": "UGC Market",
-          "url": "https://ugcmarket.dev"
-        },
-        {
-          "@type": "SoftwareApplication",
-          "name": "UGCAdaptr",
-          "url": "https://ugcadaptr.com"
-        },
-        {
-          "@type": "SoftwareApplication",
-          "name": "UGCPouch",
-          "url": "https://ugcpouch.com"
-        }
-      ],
-      // The contact section is a form rather than a published address or phone
-      // number, so the enquiry URL is the only contact detail asserted here.
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "sales",
-        "url": `${SITE_URL}/#contact`,
-        "availableLanguage": "en"
-      },
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Modulix service ecosystem",
-        "itemListElement": Object.values(serviceGroups).map((group) => ({
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": group.name,
-            "description": group.description,
-            "provider": { "@id": ORGANIZATION_ID }
-          }
-        }))
-      }
-    },
-    {
-      "@type": "WebSite",
-      "@id": WEBSITE_ID,
-      "name": "Modulix Solutions",
-      "url": absoluteUrl('/'),
-      "inLanguage": "en",
-      "publisher": {
-        "@id": ORGANIZATION_ID
-      }
-    },
-    // The page itself. Without this node the graph described the company and
-    // the site but never the document a crawler was actually reading, so the
-    // FAQ answers below had no page to hang off.
-    {
-      "@type": "WebPage",
-      "@id": WEBPAGE_ID,
-      "url": absoluteUrl('/'),
-      "name": HOME_TITLE,
-      "description": HOME_DESCRIPTION,
-      "inLanguage": "en",
-      "isPartOf": { "@id": WEBSITE_ID },
-      "about": { "@id": ORGANIZATION_ID },
-      "primaryImageOfPage": {
-        "@type": "ImageObject",
-        "url": absoluteUrl(OG_IMAGE.path),
-        "width": OG_IMAGE.width,
-        "height": OG_IMAGE.height
-      }
-    },
-    // A FAQPage with an empty mainEntity is invalid structured data, so the
-    // node is dropped rather than published empty.
-    ...(faqs.length > 0
-      ? [
-          {
-            "@type": "FAQPage",
-            "@id": `${SITE_URL}/#faq`,
-            "isPartOf": { "@id": WEBPAGE_ID },
-            "mainEntity": faqs.map((faq) => ({
-              "@type": "Question",
-              "name": faq.question,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
-              }
-            }))
-          }
-        ]
-      : [])
-  ]
-};
+/**
+ * The graph a crawler receives, built from the same copy this page renders.
+ *
+ * Exported so a unit test can assert on the real thing rather than a sample:
+ * it walks the graph for `@id` references no node declares, and checks the
+ * FAQ and offer catalog against the arrays above. Next.js reads only the
+ * exports it reserves from a page module, so this one is inert at runtime.
+ */
+export const homeStructuredData = buildHomeStructuredData({
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  services: Object.values(serviceGroups),
+  faqs,
+});
 
 // Serialized once at module load rather than on every render.
-const structuredDataJson = JSON.stringify(structuredData);
+const structuredDataJson = serializeJsonLd(homeStructuredData);
 
 export default function Home() {
   const [currentTagline, setCurrentTagline] = useState(0);
