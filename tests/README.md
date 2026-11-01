@@ -7,7 +7,9 @@ Use Node 22 and `npm ci`.
   thresholds in `jest.config.js`. This is what CI runs.
 - `npm run type-check`: TypeScript validation.
 - `npx playwright install chromium`: install the smoke-test browser.
-- `npm run test:smoke`: build the static export and test it on localhost port 3100.
+- `npm run test:smoke`: build the static export and test it on localhost port
+  3100. This runs three projects: `desktop`, `mobile` and `responsive`. Add
+  `-- --project=responsive` to run only the viewport suite.
 
 Coverage is collected per file across `components`, `hooks` and `pages`, so a
 component nobody imports reports the 0% it is rather than disappearing into an
@@ -73,6 +75,40 @@ the inverse: an injected inline script must not run and must be reported, so a
 policy accidentally relaxed to `'unsafe-inline'` cannot pass the rest of the
 file. Both that case and the unit suite were confirmed to fail against a
 deliberately relaxed `script-src`.
+
+`tests/smoke/responsive.spec.ts` is the viewport suite, run as its own
+Playwright project because it drives the viewport itself: under the `desktop`
+or `mobile` projects every case would re-run at a width it was not written
+for, and `iPhone 13` would additionally impose `isMobile`. The two device
+projects exclude it in return. It checks 360, 768 and 1280, the three widths
+the layout actually changes at, and every case measures the built export in
+Chromium after walking the page so the `whileInView` reveals have settled.
+Measuring before that reads the pre-reveal geometry, where much of the page is
+still at `opacity: 0` and its own offset transform.
+
+It asserts no page scrolls sideways, no control resolves below 44px, no text
+renders under 12px, the hero fits a 360x640 phone with its call to action above
+the fold, no carousel slide outgrows its track or reaches the stepper row, the
+track does not resize when the slide changes, and no paragraph exceeds 90
+characters to the line at 1280.
+
+The tap-target assertion is the one that needed care. Controls carrying their
+reach in a `.tap-target` overlay paint smaller than they measure, and neither
+`getBoundingClientRect` nor `elementFromPoint` reports that overlay:
+`elementFromPoint` returns an ancestor, because a pseudo-element is not an
+element. Real clicks do land on it, which was confirmed before relying on it.
+So the geometry case reads the overlay's resolved size out of the engine and
+counts it only when it is absolutely positioned against a control that is
+itself positioned, since a 44px box anchored to some ancestor instead covers
+everything but its own control. A separate behavioural case clicks 21px above
+the centre of a 36px stepper, outside the painted box and inside the overlay,
+and fails if the control does not advance. Without it the geometry cases would
+be trusting a mechanism nothing proves still works.
+
+Each assertion was confirmed to fail against the bug it replaces: the fixed
+380px carousel track, the hero's nested `min-h-screen`, the uncapped hero
+paragraph, the `.tap-target` overlay removed outright, and the overlay left
+sized but unanchored.
 
 `tests/unit/states.test.tsx` covers the shared state components: which tones
 interrupt with `role="alert"` versus announce politely, the busy flag on the

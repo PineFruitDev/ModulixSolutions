@@ -4,7 +4,15 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 6rem;
+}
+
+/* Anchor landings have to clear the sticky bar, but that bar is `hidden
+   md:block`, so below the breakpoint this padding was reserving 6rem of empty
+   space above every section the reader jumped to. */
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 6rem;
+  }
 }
 
 body {
@@ -160,6 +168,45 @@ body {
     outline: 3px solid Highlight;
     outline-offset: 2px;
   }
+}
+
+/* Expands a control's hit area to at least 44x44 without resizing what is
+   painted (WCAG 2.5.8 Target Size (Minimum), and the 44px floor both Apple and
+   Android publish).
+ *
+ * The icon controls this is applied to are 34-36px round buttons sitting in
+ * tight rows: the carousel's four steppers and the footer's eight social
+ * links. Growing the boxes themselves to 44px would push the footer row onto a
+ * second line at 360px and crowd the stepper row, so the overlay carries the
+ * extra reach instead and the layout does not move at any width.
+ *
+ * `position: relative` is set here rather than left to the call site, since
+ * without it the overlay would resolve against some ancestor and land
+ * somewhere else entirely. The overlay belongs to the control that generates
+ * it, so a pointer event anywhere on it is an event on that control; it stays
+ * transparent and is deliberately given no `z-index`, because pushing it
+ * behind the content risks it landing behind an opaque ancestor background
+ * instead, which would hand the tap to the ancestor.
+ *
+ * It does overhang its control by up to 5px, so it has to be applied only
+ * where that overhang falls in dead space. In both current rows it does: the
+ * steppers sit on a 12px gap and the footer links on an 8px one, so an overlay
+ * never reaches a neighbouring control's own box. */
+.tap-target {
+  position: relative;
+}
+
+.tap-target::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  transform: translate(-50%, -50%);
+  border-radius: inherit;
 }
 
 /* Button hover effects */

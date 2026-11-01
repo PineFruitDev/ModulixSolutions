@@ -154,6 +154,20 @@ export default function Header({ simple = false }: HeaderProps) {
 
   const linkClass = 'rounded-sm text-white hover:text-cyber-blue transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue';
 
+  // A bare nav link is only as tall as its line box, which measured 24px. The
+  // padding here takes it to 44px in both directions; "Bot", the shortest
+  // label, was 25px wide.
+  //
+  // The horizontal padding has to come out of the row's gap rather than on top
+  // of it. At 768px the bar had 67px of slack, and six links each gaining 24px
+  // would have overrun it, so `space-x-8` drops to `space-x-1`: the same dead
+  // space, now inside the targets instead of between them.
+  const navLinkClass = `${linkClass} inline-flex items-center px-3 py-2.5`;
+
+  // The drawer's links are text-xl, a 28px line box, and stretch the full
+  // column, so they only need height. `space-y-6` already separates them.
+  const drawerLinkClass = `${linkClass} flex items-center text-left text-xl py-2`;
+
   return (
     <header>
       <div className="site-header fixed top-0 left-0 right-0 z-50 bg-dark-navy/80 backdrop-blur-md border-b border-cyber-blue/30 hidden md:block">
@@ -166,7 +180,7 @@ export default function Header({ simple = false }: HeaderProps) {
                   </span>
               </Link>
 
-            <nav aria-label="Primary" className="flex space-x-8">
+            <nav aria-label="Primary" className="flex items-center space-x-1">
               {navItems.map((item) => (
                 item.href.startsWith('#') ? (
                   <a
@@ -176,12 +190,12 @@ export default function Header({ simple = false }: HeaderProps) {
                       event.preventDefault();
                       handleNavClick(item.href);
                     }}
-                    className={linkClass}
+                    className={navLinkClass}
                   >
                     {item.name}
                   </a>
                 ) : (
-                  <Link key={item.name} href={item.href} className={linkClass}>
+                  <Link key={item.name} href={item.href} className={navLinkClass}>
                     {item.name}
                   </Link>
                 )
@@ -227,12 +241,14 @@ export default function Header({ simple = false }: HeaderProps) {
             className="fixed top-0 right-0 bottom-0 w-80 max-w-[90vw] bg-dark-navy border-l border-cyber-blue/30 z-50 md:hidden flex flex-col"
           >
             <div className="flex justify-end p-4">
+              {/* The glyph is 24px; the padding is what makes this a 44px
+                  target, and it is the first thing focus lands on. */}
               <button
                 type="button"
                 ref={closeButtonRef}
                 onClick={closeMenu}
                 aria-label="Close menu"
-                className="text-white hover:text-cyber-blue transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue rounded-sm"
+                className="flex items-center justify-center p-2.5 text-white hover:text-cyber-blue transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-blue rounded-sm"
               >
                 <X size={24} aria-hidden="true" />
               </button>
@@ -248,7 +264,7 @@ export default function Header({ simple = false }: HeaderProps) {
                       event.preventDefault();
                       handleNavClick(item.href);
                     }}
-                    className={`text-left text-xl ${linkClass}`}
+                    className={drawerLinkClass}
                   >
                     {item.name}
                   </a>
@@ -257,7 +273,7 @@ export default function Header({ simple = false }: HeaderProps) {
                     key={item.name}
                     href={item.href}
                     onClick={closeMenu}
-                    className={`text-left text-xl ${linkClass}`}
+                    className={drawerLinkClass}
                   >
                     {item.name}
                   </Link>
