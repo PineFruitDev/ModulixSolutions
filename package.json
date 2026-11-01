@@ -11,6 +11,7 @@
     "deploy": "npx gh-pages -d out",
     "type-check": "tsc --noEmit",
     "lint": "next lint",
+    "perf": "node scripts/perf-report.mjs",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --runInBand --coverage",
