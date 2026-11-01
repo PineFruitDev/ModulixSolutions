@@ -1,6 +1,6 @@
 # Modulix (modulix.gg / modulixsolutions.com)
 
-> Modulix Solutions, LLC is an AI systems, gaming growth, and creator-economy infrastructure studio founded by Sky Tomlinson (PineFruitDev). The company delivers deployed AI and agent systems for businesses, operates Discord community and gaming growth infrastructure, supports Fortnite/UEFN and Roblox studio operations, and owns the UGC Suite of creator tools and marketplaces.
+> Modulix Solutions, LLC is a user-generated content (UGC) infrastructure studio founded by Sky Tomlinson (PineFruitDev). The company builds community systems, creator-economy products and brand activations for the UGC space, delivers deployed AI and agent systems for businesses, and owns the UGC Suite of creator tools and marketplaces. It works across the UGC space rather than a single platform; Discord, Fortnite/UEFN and Roblox are the surfaces it most often runs on.
 
 ## Organization
 - Legal name: Modulix Solutions, LLC
@@ -11,7 +11,7 @@
 - Founder site: https://pinefruit.dev/
 - LinkedIn: https://www.linkedin.com/company/modulixsolution
 - Discord: https://discord.gg/modulix
-- X: https://twitter.com/modulixsolutions
+- X: https://x.com/ModulixSolution
 
 ## What Modulix does
 
@@ -23,8 +23,8 @@ Modulix designs and ships deployed AI and agent systems for real business use. T
 - custom internal tools and integrations
 - cloud-hosted operational infrastructure
 
-### 2. Discord community and gaming growth infrastructure
-Modulix builds and operates systems that help brands, studios, and communities grow inside gaming-native channels. This includes:
+### 2. Community and gaming growth infrastructure
+Modulix builds and operates systems that help brands, studios, and communities grow inside UGC and gaming-native channels. Discord is the largest of those surfaces, not the whole of the practice. This includes:
 - Discord community architecture
 - moderation and safety workflows
 - engagement systems and activations

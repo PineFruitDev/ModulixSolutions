@@ -1,9 +1,16 @@
 import React from 'react';
 import Head from 'next/head';
 
-import { buildPageMeta, type PageMetaInput } from '../lib/seo/meta';
+import { buildPageMeta } from '../lib/seo/meta';
+import { routeMeta } from '../lib/seo/routes';
 
-interface SeoProps extends PageMetaInput {
+interface SeoProps {
+  /**
+   * This page's exported path, for example '/' or '/contact-confirmed/'. The
+   * title, description and robots directive are read from the route manifest,
+   * so a page cannot ship a title the sitemap and the manifest disagree with.
+   */
+  path: string;
   /**
    * Serialized JSON-LD for this page, if it publishes any. Callers build this
    * from static page copy at module scope; nothing here accepts visitor input,
@@ -19,8 +26,8 @@ interface SeoProps extends PageMetaInput {
  * its twitter:title from drifting apart, and stops a new page shipping without
  * a canonical URL or a complete social card.
  */
-export default function Seo({ jsonLd, ...page }: SeoProps) {
-  const { title, canonical, tags } = buildPageMeta(page);
+export default function Seo({ path, jsonLd }: SeoProps) {
+  const { title, canonical, tags } = buildPageMeta(routeMeta(path));
 
   return (
     <Head>
