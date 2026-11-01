@@ -24,3 +24,35 @@ jobs:
       - run: npm run test:coverage
       - run: npx playwright install --with-deps chromium
       - run: npm run test:smoke
+
+  # Separate from `test` so the two run at once, and so a pixel diff is
+  # reported as its own failed check rather than as the tail of the suite that
+  # also holds the type check and the coverage gate.
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # Builds the static export and compares it against the baselines in
+      # tests/visual/__screenshots__/linux, which were generated on this
+      # runner image. See tests/visual/README.md.
+      - run: npm run test:visual
+      # A visual regression is not readable from a log line, so the report,
+      # which carries the expected, actual and diff image for every failure,
+      # has to leave the runner for the failure to mean anything.
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

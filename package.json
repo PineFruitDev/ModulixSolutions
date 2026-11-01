@@ -14,7 +14,9 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --runInBand --coverage",
-    "test:smoke": "npm run build && playwright test"
+    "test:smoke": "npm run build && playwright test",
+    "test:visual": "npm run build && playwright test --config=playwright.visual.config.ts",
+    "test:visual:baselines": "bash scripts/update-visual-baselines.sh"
   },
   "keywords": [
     "ugc",
