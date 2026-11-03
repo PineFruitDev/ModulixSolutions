@@ -97,6 +97,52 @@ test('the canvas is sized to the viewport and resized with the window', () => {
   expect(canvas().height).toBe(900);
 });
 
+test('shrinking the viewport keeps every particle on screen', () => {
+  setViewportSize(1440, 900);
+  render(<ParticleBackground />);
+  runFrame();
+
+  // Rotating a phone back to portrait, or dragging a desktop window narrow.
+  setViewportSize(360, 640);
+  window.dispatchEvent(new Event('resize'));
+
+  context.arc.mockClear();
+  // Several frames, because a particle parked outside the canvas used to have
+  // its velocity flipped every frame and so never travelled back into view.
+  for (let i = 0; i < 20; i++) runFrame();
+
+  // A particle steps up to half a pixel past an edge before it reflects, so
+  // the bound is the canvas plus a pixel. The bug being pinned here stranded
+  // particles a thousand pixels out, not a fraction of one.
+  const SLACK = 1;
+  const drawn = context.arc.mock.calls;
+  expect(drawn).toHaveLength(50 * 20);
+  for (const [x, y] of drawn) {
+    expect(x).toBeGreaterThanOrEqual(-SLACK);
+    expect(x).toBeLessThanOrEqual(360 + SLACK);
+    expect(y).toBeGreaterThanOrEqual(-SLACK);
+    expect(y).toBeLessThanOrEqual(640 + SLACK);
+  }
+});
+
+test('growing the viewport spreads the particles across it', () => {
+  setViewportSize(800, 600);
+  render(<ParticleBackground />);
+  runFrame();
+
+  setViewportSize(1600, 1200);
+  window.dispatchEvent(new Event('resize'));
+
+  context.arc.mockClear();
+  runFrame();
+
+  // Carrying the old coordinates over unchanged would crowd the whole field
+  // into the top-left quarter of the new canvas.
+  const drawn = context.arc.mock.calls;
+  expect(drawn.some(([x]) => x > 800)).toBe(true);
+  expect(drawn.some(([, y]) => y > 600)).toBe(true);
+});
+
 test('a frame draws every particle and keeps the loop running', () => {
   render(<ParticleBackground />);
 
