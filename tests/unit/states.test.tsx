@@ -189,6 +189,25 @@ describe('contact form status', () => {
     });
   }
 
+  test.each(['name', 'message'])('whitespace-only %s cannot be sent, but correction allows retry', async (field) => {
+    (fetch as jest.Mock).mockResolvedValue({ ok: false, status: 503 });
+    const { container } = render(<ContactForm />);
+    fillForm();
+    const label = field === 'name' ? 'Name *' : 'Message *';
+    fireEvent.change(screen.getByLabelText(label), { target: { value: '          ' } });
+    expect(screen.getByRole('button', { name: 'Send Message' })).toBeDisabled();
+    fireEvent.submit(container.querySelector('form')!);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent('Please fill out all required fields correctly.');
+
+    fireEvent.change(screen.getByLabelText(label), {
+      target: { value: field === 'name' ? 'Test User' : 'A real project inquiry.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Failed to send message (503)');
+  });
+
   test('a transient error retires itself after five seconds', async () => {
     (fetch as jest.Mock).mockResolvedValue({ ok: false, status: 503, statusText: 'Unavailable' });
     render(<ContactForm />);
