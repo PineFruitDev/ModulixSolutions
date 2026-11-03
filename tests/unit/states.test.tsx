@@ -278,6 +278,25 @@ describe('contact form status', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Failed to send message (503)');
   });
 
+  test.each([{ detail: 'Rejected' }, ['Rejected'], true, 42, '   '])(
+    'an invalid provider error message (%j) preserves the form and allows retry',
+    async message => {
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: false, message }),
+      });
+      render(<ContactForm />);
+      fillForm();
+      fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Failed to send message. Please try again.'
+      );
+      expect(screen.getByLabelText(/^Name/)).toHaveValue('Test User');
+      expect(screen.getByRole('button', { name: 'Send Message' })).toBeEnabled();
+    }
+  );
+
   test('a rejected payload surfaces the provider message as an error', async () => {
     (fetch as jest.Mock).mockResolvedValue({
       ok: true,
