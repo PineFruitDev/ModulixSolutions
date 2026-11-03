@@ -147,6 +147,12 @@ export default function Header({ simple = false }: HeaderProps) {
         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
         const offsetPosition = elementPosition - headerOffset;
 
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+          window.scrollTo(0, offsetPosition);
+          setIsMenuOpen(false);
+          return;
+        }
+
         const startPosition = window.pageYOffset;
         const distance = offsetPosition - startPosition;
         const duration = Math.min(Math.abs(distance) * 0.8, 1000);
