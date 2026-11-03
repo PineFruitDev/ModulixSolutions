@@ -70,6 +70,26 @@ afterEach(() => {
 });
 
 describe('in-page navigation', () => {
+  test('reduced motion jumps directly to the destination without animation', () => {
+    window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    }));
+    setViewportWidth(500);
+    render(<Header />);
+    placeSection('services', 1000);
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('link', { name: 'Services' }));
+
+    expect(lastScrollY()).toBe(1000);
+    expect(pendingFrames).toHaveLength(0);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(document.getElementById('services')).toHaveFocus();
+    expect(document.body.style.overflow).toBe('');
+  });
+
   test('a desktop nav click eases to the section and clears the sticky header', () => {
     render(<Header />);
     setStickyHeaderHeight(80);
