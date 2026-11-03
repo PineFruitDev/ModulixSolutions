@@ -16,6 +16,7 @@ type FormStatus =
 
 const ERROR_VISIBLE_MS = 5000;
 const REDIRECT_DELAY_MS = 1500;
+const REQUEST_TIMEOUT_MS = 30000;
 
 export default function ContactForm() {
   const [status, setStatus] = useState<FormStatus>({ kind: 'idle' });
@@ -108,9 +109,13 @@ export default function ContactForm() {
     formData.append('access_key', 'ac55144c-ed04-4d25-8b83-fe6847721ebf');
     formData.append('subject', 'New Contact Form Submission - Modulix Solutions');
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
+        signal: controller.signal,
         body: formData
         // Remove manual headers - let browser set them automatically for FormData
       });
@@ -135,6 +140,8 @@ export default function ContactForm() {
       // A network or CORS error cannot establish delivery. Preserve the input
       // and report uncertainty instead of erasing it and promising success.
       showError("We couldn't confirm delivery. Your message is still here; please try again or contact us directly.");
+    } finally {
+      clearTimeout(timeout);
     }
   };
 
