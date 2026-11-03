@@ -30,7 +30,7 @@ export default function ContactForm() {
   const validateField = (field: string, value: string) => {
     switch (field) {
       case 'name':
-        return value.length >= 2;
+        return value.trim().length >= 2;
       case 'email':
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(value);
@@ -41,7 +41,7 @@ export default function ContactForm() {
         const discordRegex = /^.{2,32}(#\d{4})?$/;
         return discordRegex.test(value);
       case 'message':
-        return value.length >= 10;
+        return value.trim().length >= 10;
       default:
         return false;
     }
