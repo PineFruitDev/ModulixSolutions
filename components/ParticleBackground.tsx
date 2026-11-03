@@ -36,9 +36,30 @@ export default function ParticleBackground() {
     if (!ctx) return;
     const context = ctx;
 
+    const particles: Particle[] = [];
+
+    // Particles carry absolute pixel coordinates, so resizing the canvas has to
+    // bring them with it. Without this, shrinking the window (or rotating a
+    // phone from landscape to portrait) left everything seeded beyond the new
+    // width stranded off-screen for good: the bounce below flipped its velocity
+    // on every frame, so it jittered in place out of view instead of travelling
+    // back in, and the field thinned out permanently. Scaling rather than
+    // clamping keeps the spread even instead of piling the strays onto the new
+    // edge.
     const resizeCanvas = () => {
+      const previousWidth = canvas.width;
+      const previousHeight = canvas.height;
+
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+
+      const scaleX = previousWidth > 0 ? canvas.width / previousWidth : 1;
+      const scaleY = previousHeight > 0 ? canvas.height / previousHeight : 1;
+
+      for (const particle of particles) {
+        particle.x = Math.min(Math.max(particle.x * scaleX, 0), canvas.width);
+        particle.y = Math.min(Math.max(particle.y * scaleY, 0), canvas.height);
+      }
     };
 
     // Handled synchronously on purpose. Deferring this into requestAnimationFrame
@@ -49,7 +70,6 @@ export default function ParticleBackground() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    const particles: Particle[] = [];
     const isMobile = window.innerWidth < 768;
     const particleCount = isMobile ? 15 : 50;
     const colors = ['#00D4FF', '#A855F7', '#FFFFFF'];
@@ -86,8 +106,15 @@ export default function ParticleBackground() {
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        if (particle.x <= 0 || particle.x >= canvas.width) particle.vx *= -1;
-        if (particle.y <= 0 || particle.y >= canvas.height) particle.vy *= -1;
+        // Reflect only when the particle is actually heading out of the canvas.
+        // The unconditional form flipped the velocity again on the very next
+        // frame for anything sitting on or past an edge, which pinned it there.
+        if ((particle.x <= 0 && particle.vx < 0) || (particle.x >= canvas.width && particle.vx > 0)) {
+          particle.vx *= -1;
+        }
+        if ((particle.y <= 0 && particle.vy < 0) || (particle.y >= canvas.height && particle.vy > 0)) {
+          particle.vy *= -1;
+        }
 
         context.beginPath();
         context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
