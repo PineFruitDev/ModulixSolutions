@@ -126,7 +126,11 @@ export default function ContactForm() {
         if (data.success === true) {
           confirmSubmission(form);
         } else {
-          showError(data.message || 'Failed to send message. Please try again.');
+          showError(
+            typeof data.message === 'string' && data.message.trim()
+              ? data.message
+              : 'Failed to send message. Please try again.'
+          );
         }
       } catch {
         showError("We couldn't confirm delivery. Your message is still here; please try again or contact us directly.");
