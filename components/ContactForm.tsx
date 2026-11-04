@@ -31,7 +31,7 @@ export default function ContactForm() {
   const validateField = (field: string, value: string) => {
     switch (field) {
       case 'name':
-        return value.length >= 2;
+        return value.trim().length >= 2;
       case 'email':
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(value);
@@ -42,7 +42,7 @@ export default function ContactForm() {
         const discordRegex = /^.{2,32}(#\d{4})?$/;
         return discordRegex.test(value);
       case 'message':
-        return value.length >= 10;
+        return value.trim().length >= 10;
       default:
         return false;
     }
@@ -131,7 +131,11 @@ export default function ContactForm() {
         if (data.success === true) {
           confirmSubmission(form);
         } else {
-          showError(data.message || 'Failed to send message. Please try again.');
+          showError(
+            typeof data.message === 'string' && data.message.trim()
+              ? data.message
+              : 'Failed to send message. Please try again.'
+          );
         }
       } catch {
         showError("We couldn't confirm delivery. Your message is still here; please try again or contact us directly.");
