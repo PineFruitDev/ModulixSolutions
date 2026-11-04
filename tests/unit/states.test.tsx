@@ -189,6 +189,31 @@ describe('contact form status', () => {
     });
   }
 
+  test('a stalled request times out without losing the inquiry and permits retry', async () => {
+    let signal: AbortSignal;
+    (fetch as jest.Mock).mockImplementationOnce((_url, options) => {
+      signal = options.signal;
+      return new Promise((_resolve, reject) => {
+        signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
+      });
+    });
+    render(<ContactForm />);
+    fillForm();
+    fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
+    expect(screen.getByLabelText('Name *')).toBeDisabled();
+
+    await act(async () => { jest.advanceTimersByTime(30000); });
+    expect(screen.getByRole('alert')).toHaveTextContent("We couldn't confirm delivery");
+    expect(signal!.aborted).toBe(true);
+    expect(screen.getByLabelText('Message *')).toHaveValue('A synthetic project inquiry.');
+    expect(screen.getByRole('button', { name: 'Send Message' })).toBeEnabled();
+
+    (fetch as jest.Mock).mockResolvedValueOnce({ ok: false, status: 503 });
+    fireEvent.click(screen.getByRole('button', { name: 'Send Message' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Failed to send message (503)');
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   test.each(['name', 'message'])('whitespace-only %s cannot be sent, but correction allows retry', async (field) => {
     (fetch as jest.Mock).mockResolvedValue({ ok: false, status: 503 });
     const { container } = render(<ContactForm />);
